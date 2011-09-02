@@ -178,8 +178,8 @@ function SoundAlerter:OnInitialize()
 	}
 	local bliz_options = CopyTable(SoundAlerter.options)
 	bliz_options.args.load = {
-		name = "加载配置",
-		desc = "加载配置选项",
+		name = "Load configuration",
+		desc = "Load configuration options",
 		type = 'execute',
 		func = "ShowConfig",
 		handler = SoundAlerter,
@@ -235,16 +235,16 @@ end
 function SoundAlerter:OnOptionsCreate()
 	self:AddOption("profiles", LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db1))
 	self.options.args.profiles.order = -1
-	self:AddOption('一般', {
+	self:AddOption('General', {
 		type = 'group',
-		name = "一般",
-		desc = "一般选项",
+		name = "General",
+		desc = "General Options",
 		order = 1,
 		args = {
 			enableArea = {
 				type = 'group',
 				inline = true,
-				name = "当何时启用",
+				name = "General options",
 				set = setOption,
 				get = getOption,
 				args = {
