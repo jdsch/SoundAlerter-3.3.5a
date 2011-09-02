@@ -2,7 +2,7 @@
 ## Title: SoundAlerter
 ## Notes: Sound Alerter for player used spells
 ## Author: Trolololol, Abatorlos of Spinebreaker, Duskashes, Superk
-## SavedVariables: GladiatorlosSADB
+## SavedVariables: SoundAlerterDB
 ## Version: 1.0
 
 SoundAlerter.xml
