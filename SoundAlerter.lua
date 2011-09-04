@@ -107,6 +107,7 @@ local dbDefaults = {
 		hex = true,
 
 		polymorph = true,
+		evocation = true
 
 		revivePet = true,
 		scareBeast = true,
@@ -1043,6 +1044,14 @@ function SoundAlerter:OnOptionsCreate()
 								descStyle = "custom",
 								order = 1,
 							},
+							evocation = {
+								type = 'toggle',
+								name = GetSpellInfo(12051),
+								desc = function ()
+									GameTooltip:SetHyperlink(GetSpellLink(12051));
+								end,
+								descStyle = "custom",
+								order = 2,
 						}
 					},
 					hunter = {
@@ -1704,9 +1713,11 @@ function SoundAlerter:COMBAT_LOG_EVENT_UNFILTERED(event , ...)
 		if (spellName == "Hex" and SOUNDALERTERdb.hex) then -- 妖术
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Hex.mp3");
 		end
-		--maga
+		--mage
 		if (spellName == "Polymorph" and SOUNDALERTERdb.polymorph) then -- 变形术 羊猪猫兔蛇鸡龟
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\polymorph.mp3");
+		if (spellName == "Evocation" and SOUNDALERTERdb.evocation) then -- 变形术 羊猪猫兔蛇鸡龟
+			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Evocation.mp3");
 		end
 		--dk
 		--hunter
@@ -1822,7 +1833,7 @@ function SoundAlerter:COMBAT_LOG_EVENT_UNFILTERED(event , ...)
 		end
 	end
 	if (event == "SPELL_INTERRUPT" and toEnemy and not SOUNDALERTERdb.interrupt) then -- 法术封锁 法术反制 脚踢 拳击 盾击 心智冰封 碎颅猛击 责难
-		if ((spellName == "法术封锁" or spellName == "法术反制" or spellName == "脚踢" or spellName == "拳击" or spellName == "盾击" or spellName == "心灵冰冻" ) and SOUNDALERTERdb.lockout) then
+		if ((spellName == "Deep Freeze" or spellName == "Counterspell" or spellName == "Kick" or spellName == "Wind Shear" or spellName == "Shield Bash" or spellName == "Mind Freeze" ) and SOUNDALERTERdb.lockout) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\Voice\\lockout.mp3");
 		end
 	end
