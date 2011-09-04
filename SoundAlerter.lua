@@ -1510,7 +1510,7 @@ function SoundAlerter:COMBAT_LOG_EVENT_UNFILTERED(event , ...)
 	enddebug]]--
 	if (event == "SPELL_AURA_APPLIED" and toEnemy and (not SOUNDALERTERdb.onlyTarget or toTarget) and not SOUNDALERTERdb.aruaApplied) then
 		--general
-		if ( (spellName == "Every Man for Himself" or spellName == "Medallian of the Horde") and SOUNDALERTERdb.trinket) then -- 徽章
+		if ( (spellName == "Every Man for Himself" or spellName == "PVP Trinket") and SOUNDALERTERdb.trinket) then -- 徽章
 			if (SOUNDALERTERdb.class and currentZoneType == "arena" ) then
 				local c = self:ArenaClass(destGUID)
 				PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\"..c..".mp3");
