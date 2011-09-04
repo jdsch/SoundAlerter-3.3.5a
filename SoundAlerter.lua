@@ -337,14 +337,14 @@ function SoundAlerter:OnOptionsCreate()
 				args = {
 					onlyTarget = {
 						type = 'toggle',
-						name = "Only enabled on target",
-						desc = "Only when hostile spells on your target body that is enabled voice prompts",
+						name = "Target and Focus only",
+						desc = "Alert works only when your current target or focus gains the buff effect or use the ability",
 						order = 1,
 					},
 					class = {
 						type = 'toggle',
-						name = "徽章职业提示",
-						desc = "在竞技场中,通报徽章的同时提示使用徽章的职业",
+						name = "Alert Drinking",
+						desc = "In arena, alert when enemy is drinking",
 						order = 2,
 					},
 					general = {
@@ -367,7 +367,7 @@ function SoundAlerter:OnOptionsCreate()
 					druid = {
 						type = 'group',
 						inline = true,
-						name = "|cffFF7D0A德鲁伊|r",
+						name = "|cffFF7D0ADruid|r",
 						order = 4,
 						args = {
 							survivalInstincts = {
