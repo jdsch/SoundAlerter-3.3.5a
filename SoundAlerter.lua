@@ -1717,6 +1717,7 @@ function SoundAlerter:COMBAT_LOG_EVENT_UNFILTERED(event , ...)
 		--mage
 		if (spellName == "Polymorph" and SOUNDALERTERdb.polymorph) then -- 变形术 羊猪猫兔蛇鸡龟
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\polymorph.mp3");
+		end
 		if (spellName == "Evocation" and SOUNDALERTERdb.evocation) then -- 变形术 羊猪猫兔蛇鸡龟
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Evocation.mp3");
 		end
@@ -1839,6 +1840,5 @@ function SoundAlerter:COMBAT_LOG_EVENT_UNFILTERED(event , ...)
 		end
 	end
 end
-end -- ends function at line 1468
 
 
