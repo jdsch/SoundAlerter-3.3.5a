@@ -1510,7 +1510,7 @@ function SoundAlerter:COMBAT_LOG_EVENT_UNFILTERED(event , ...)
 	enddebug]]--
 	if (event == "SPELL_AURA_APPLIED" and toEnemy and (not SOUNDALERTERdb.onlyTarget or toTarget) and not SOUNDALERTERdb.aruaApplied) then
 		--general
-		if ( (spellName == "自利" or spellName == "PvP饰品") and SOUNDALERTERdb.trinket) then -- 徽章
+		if ( (spellName == "Every Man for Himself" or spellName == "Medallian of the Horde") and SOUNDALERTERdb.trinket) then -- 徽章
 			if (SOUNDALERTERdb.class and currentZoneType == "arena" ) then
 				local c = self:ArenaClass(destGUID)
 				PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\"..c..".mp3");
@@ -1718,9 +1718,6 @@ function SoundAlerter:COMBAT_LOG_EVENT_UNFILTERED(event , ...)
 		if (spellName == "Polymorph" and SOUNDALERTERdb.polymorph) then -- 变形术 羊猪猫兔蛇鸡龟
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\polymorph.mp3");
 		end
-		if (spellName == "Evocation" and SOUNDALERTERdb.evocation) then -- 变形术 羊猪猫兔蛇鸡龟
-			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Evocation.mp3");
-		end
 		--dk
 		--hunter
 		if (spellName == "Scare Beast" and SOUNDALERTERdb.scareBeast) then
@@ -1837,6 +1834,11 @@ function SoundAlerter:COMBAT_LOG_EVENT_UNFILTERED(event , ...)
 	if (event == "SPELL_INTERRUPT" and toEnemy and not SOUNDALERTERdb.interrupt) then -- 法术封锁 法术反制 脚踢 拳击 盾击 心智冰封 碎颅猛击 责难
 		if ((spellName == "Deep Freeze" or spellName == "Counterspell" or spellName == "Kick" or spellName == "Wind Shear" or spellName == "Shield Bash" or spellName == "Mind Freeze" ) and SOUNDALERTERdb.lockout) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\Voice\\lockout.mp3");
+		end
+	end
+	if (event == "SPELL_ENERGIZE" and toEnemy and (not SOUNDALERTERdb.onlyTarget or toTarget)
+		if (spellName == "Evocation" and SOUNDALERTERdb.evocation) then -- 变形术 羊猪猫兔蛇鸡龟
+			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Evocation.mp3");
 		end
 	end
 end
