@@ -792,7 +792,7 @@ function SoundAlerter:OnOptionsCreate()
 			spellAuraRemoved = {
 				type = 'group',
 				--inline = true,
-				name = "敌方增益结束",
+				name = "Buff Down",
 				set = setOption,
 				get = getOption,
 				disabled = function() return SOUNDALERTERdb.aruaRemoved end,
@@ -924,7 +924,7 @@ function SoundAlerter:OnOptionsCreate()
 			spellCastStart = {
 				type = 'group',
 				--inline = true,
-				name = "敌方读条技能",
+				name = "Spell Casting",
 				disabled = function() return SOUNDALERTERdb.castStart end,
 				set = setOption,
 				get = getOption,
@@ -1111,7 +1111,7 @@ function SoundAlerter:OnOptionsCreate()
 			spellCastSuccess = {
 				type = 'group',
 				--inline = true,
-				name = "敌方特殊技能",
+				name = "Special Abilities",
 				disabled = function() return SOUNDALERTERdb.castSuccess end,
 				set = setOption,
 				get = getOption,
