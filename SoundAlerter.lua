@@ -107,7 +107,7 @@ local dbDefaults = {
 		hex = true,
 
 		polymorph = true,
-		evocation = true
+		evocation = true,
 
 		revivePet = true,
 		scareBeast = true,
@@ -1052,6 +1052,7 @@ function SoundAlerter:OnOptionsCreate()
 								end,
 								descStyle = "custom",
 								order = 2,
+							},
 						}
 					},
 					hunter = {
