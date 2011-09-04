@@ -1796,7 +1796,7 @@ function SoundAlerter:COMBAT_LOG_EVENT_UNFILTERED(event , ...)
 		if (spellName == "Counterspell" and SOUNDALERTERdb.counterspell) then -- 法术反制
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Counterspell.mp3");
 		end
-		if (spellName == "Cold Snap" and SOUNDALERTERdb.counterspell) then -- 急速冷却
+		if (spellName == "Cold Snap" and SOUNDALERTERdb.ColdSnap) then -- 急速冷却
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\cold snap.mp3");
 		end
 		if (spellName == "Invisibility" and SOUNDALERTERdb.invisibility) then -- 隐形术
