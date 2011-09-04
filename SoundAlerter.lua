@@ -1447,7 +1447,7 @@ function SoundAlerter:OnOptionsCreate()
 					lockout = {
 						type = 'toggle',
 						name = "Self Interrupted spells",
-						desc = "Counterspell, Kick, Mind Freeze, etc,
+						desc = "Counterspell, Kick, Mind Freeze etc"
 						order = 1,
 					},
 				}
