@@ -1173,7 +1173,7 @@ function SoundAlerter:OnOptionsCreate()
 					warrior	= {
 						type = 'group',
 						inline = true,
-						name = "|cffC79C6E战士|r",
+						name = "|cffC79C6EWarrior|r",
 						order = 5,
 						args = {
 							disarm = {
@@ -1217,7 +1217,7 @@ function SoundAlerter:OnOptionsCreate()
 					preist	= {
 						type = 'group',
 						inline = true,
-						name = "|cffFFFFFF牧师|r",
+						name = "|cffFFFFFFPriest|r",
 						order = 6,
 						args = {
 							fear4 = {
@@ -1252,7 +1252,7 @@ function SoundAlerter:OnOptionsCreate()
 					shaman	= {
 						type = 'group',
 						inline = true,
-						name = "|cff0070DE萨满|r",
+						name = "|cff0070DEShaman|r",
 						order = 7,
 						args = {
 							grounding = {
@@ -1287,7 +1287,7 @@ function SoundAlerter:OnOptionsCreate()
 					mage = {
 						type = 'group',
 						inline = true,
-						name = "|cff69CCF0法师|r",
+						name = "|cff69CCF0Mage|r",
 						order = 8,
 						args = {
 							coldSnap = {
@@ -1331,7 +1331,7 @@ function SoundAlerter:OnOptionsCreate()
 					dk	= {
 						type = 'group',
 						inline = true,
-						name = "|cffC41F3B死亡骑士|r",
+						name = "|cffC41F3BDeath Knight|r",
 						order = 9,
 						args = {
 							mindFreeze = {
@@ -1384,7 +1384,7 @@ function SoundAlerter:OnOptionsCreate()
 					hunter = {
 						type = 'group',
 						inline = true,
-						name = "|cffABD473猎人|r",
+						name = "|cffABD473Hunter|r",
 						order = 10,
 						args = {
 							wyvernSting = {
@@ -1401,7 +1401,7 @@ function SoundAlerter:OnOptionsCreate()
 					warlock = {
 						type = 'group',
 						inline = true,
-						name = "|cff9482C9术士|r",
+						name = "|cff9482C9Warlock|r",
 						order = 11,
 						args = {
 							fear2 = {
@@ -1438,7 +1438,7 @@ function SoundAlerter:OnOptionsCreate()
 			spellInterrupt = {
 				type = 'group',
 				--inline = true,
-				name = "友方打断技能",
+				name = "Freindly Interrupts",
 				disabled = function() return SOUNDALERTERdb.interrupt end,
 				set = setOption,
 				get = getOption,
@@ -1446,8 +1446,8 @@ function SoundAlerter:OnOptionsCreate()
 				args = {
 					lockout = {
 						type = 'toggle',
-						name = "友方打断技能",
-						desc = "法术封锁 法术反制 脚踢 拳击 盾击 心智冰封",
+						name = "Self Interrupted spells",
+						desc = "Counterspell, Kick, Mind Freeze, etc,
 						order = 1,
 					},
 				}
