@@ -1839,6 +1839,6 @@ function SoundAlerter:COMBAT_LOG_EVENT_UNFILTERED(event , ...)
 		end
 	end
 end
-
+end -- ends function at line 1468
 
 
