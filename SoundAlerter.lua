@@ -49,6 +49,7 @@ local dbDefaults = {
 		cloakOfShadows = true,
 		adrenalineRush = true,
 		evasion = true,
+		CheatDeath = true,
 		vanish = true,
 
 		deathWish = true,
@@ -540,6 +541,15 @@ function SoundAlerter:OnOptionsCreate()
 								descStyle = "custom",
 								order = 5,
 							},
+							CheatDeath = {
+								type = 'toggle',
+								name = GetSpellInfo(45182),
+								desc = function ()
+									GameTooltip:SetHyperlink(GetSpellLink(45182));
+								end,
+								descStyle = "custom",
+								order = 6,
+							},
 						}
 					},
 					warrior	= {
@@ -785,6 +795,15 @@ function SoundAlerter:OnOptionsCreate()
 								end,
 								descStyle = "custom",
 								order = 2,
+							},
+							feignDeath = {
+								type = 'toggle',
+								name = GetSpellInfo(5384),
+								desc = function ()
+									GameTooltip:SetHyperlink(GetSpellLink(5384));
+								end,
+								descStyle = "custom",
+								order = 3,
 							},
 						}
 					},
@@ -1510,10 +1529,10 @@ function SoundAlerter:COMBAT_LOG_EVENT_UNFILTERED(event , ...)
 	enddebug]]--
 	if (event == "SPELL_AURA_APPLIED" and toEnemy and (not SOUNDALERTERdb.onlyTarget or toTarget) and not SOUNDALERTERdb.aruaApplied) then
 		--general
-		if ( (spellName == "Every Man for Himself" or spellName == "PVP Trinket") and SOUNDALERTERdb.trinket) then -- 徽章
+		if ( (spellName == "Every Man for Himself" or spellName == "PvP Trinket") and SOUNDALERTERdb.trinket) then -- 徽章
 			if (SOUNDALERTERdb.class and currentZoneType == "arena" ) then
 				local c = self:ArenaClass(destGUID)
-				PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\"..c..".mp3");
+				PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Trinket.mp3");
 				self:ScheduleTimer("PlayTrinket", 0.3)
 			else
 				self:PlayTrinket()
@@ -1573,6 +1592,9 @@ function SoundAlerter:COMBAT_LOG_EVENT_UNFILTERED(event , ...)
 		end
 		if (spellName == "Evasion" and SOUNDALERTERdb.evasion) then -- 闪避
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Evasion.mp3");
+		end
+		if (spellName == "Cheat Death" and SOUNDALERTERdb.cheatdeath) then -- 闪避
+			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Cheatdeath.mp3");
 		end
 		--warrior
 		if (spellName == "Shield Wall" and SOUNDALERTERdb.shieldWall) then --盾墙
@@ -1646,6 +1668,9 @@ function SoundAlerter:COMBAT_LOG_EVENT_UNFILTERED(event , ...)
 		end
 		if (spellName == "The Beast Within" and SOUNDALERTERdb.theBeastWithin) then -- 野兽之心
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\The Beast Within.mp3")
+		end
+		if (spellName == "Feign Death" or spellID == 5384 and SOUNDALERTERdb.feignDeath) then -- 野兽之心
+			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\feigndeath.mp3")
 		end
 		--warlock
 	end
