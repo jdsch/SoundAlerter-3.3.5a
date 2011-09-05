@@ -81,7 +81,7 @@ local dbDefaults = {
 
 		theBeastWithin = true,
 		deterrence = true,
-		feignDeath = true,
+
 
 		protectionDown = true,
 		bubbleDown = true,
@@ -795,15 +795,6 @@ function SoundAlerter:OnOptionsCreate()
 								end,
 								descStyle = "custom",
 								order = 2,
-							},
-							feignDeath = {
-								type = 'toggle',
-								name = GetSpellInfo(5384),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(5384));
-								end,
-								descStyle = "custom",
-								order = 3,
 							},
 						}
 					},
@@ -1668,9 +1659,6 @@ function SoundAlerter:COMBAT_LOG_EVENT_UNFILTERED(event , ...)
 		end
 		if (spellName == "The Beast Within" and SOUNDALERTERdb.theBeastWithin) then -- 野兽之心
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\The Beast Within.mp3")
-		end
-		if (spellName == "Feign Death" or spellID == 5384 and SOUNDALERTERdb.feignDeath) then -- 野兽之心
-			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\feigndeath.mp3")
 		end
 		--warlock
 	end
