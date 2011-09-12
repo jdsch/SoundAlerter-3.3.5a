@@ -283,14 +283,14 @@ function SoundAlerter:OnOptionsCreate()
 	})
 	self:AddOption('Skill', {
 		type = 'group',
-		name = "Skill",
-		desc = "Skill Options",
+		name = "Spells", --skills
+		desc = "Spell Options",
 		order = 1,
 		args = {
 			spellGeneral = {
 				type = 'group',
-				name = "Skills module control",
-				desc = "Skills of each module to disable options",
+				name = "Spell module control",
+				desc = "Customise enabling and disabling of certain spells",  --Skills of each module to disable options
 				inline = true,
 				set = setOption,
 				get = getOption,
@@ -1458,7 +1458,7 @@ function SoundAlerter:OnOptionsCreate()
 			spellInterrupt = {
 				type = 'group',
 				--inline = true,
-				name = "Freindly Interrupts",
+				name = "Friendly Interrupts",
 				disabled = function() return SOUNDALERTERdb.interrupt end,
 				set = setOption,
 				get = getOption,
@@ -1513,14 +1513,22 @@ function SoundAlerter:COMBAT_LOG_EVENT_UNFILTERED(event , ...)
 		toTarget = (UnitGUID("target") == destGUID)
 	end
 	--print (toTarget,sourceName,destName)
+	--DEBUG
+	--Adding spells to SoundAlerter will require you to know the ID, and know the type of event.
+	--If you would like to add a spell, PM me with the event, sourcename, destname and spell
+	--I cannot implement Feign death, as it isn't recorded by combat log, It's counted as a 'death'
+	--To do this, remove the "--[[debug and enddebug]]--" and insert a the spell ID
+	--To get the Spell ID, go to wowhead, search for a spell, click on the page, and your URL will show the ID at the end
 	--[[debug
 	if (spellID == 80964 or spellID == 80965 or spellID == 85285) then
 		print (sourceName,destName,event,spellName,spellID)
 	end
 	enddebug]]--
+
+	--Event Spell_AURA_APPLIED works with enemies with buffs on them from used cooldowns
 	if (event == "SPELL_AURA_APPLIED" and toEnemy and (not SOUNDALERTERdb.onlyTarget or toTarget) and not SOUNDALERTERdb.aruaApplied) then
-		--general
-		if ( (spellName == "Every Man for Himself" or spellName == "PvP Trinket") and SOUNDALERTERdb.trinket) then -- 徽章
+	--General
+		if ( (spellName == "Every Man for Himself" or spellName == "PvP Trinket") and SOUNDALERTERdb.trinket) then
 			if (SOUNDALERTERdb.class and currentZoneType == "arena" ) then
 				local c = self:ArenaClass(destGUID)
 				PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Trinket.mp3");
@@ -1531,137 +1539,137 @@ function SoundAlerter:COMBAT_LOG_EVENT_UNFILTERED(event , ...)
 			--PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Trinket.mp3");
 		end
 		--druid
-		if (spellName == "Survival Instincts" and SOUNDALERTERdb.survivalInstincts) then -- 求生本能
+		if (spellName == "Survival Instincts" and SOUNDALERTERdb.survivalInstincts) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Survival Instincts.mp3");
 		end
-		if (spellName == "Innervate" and SOUNDALERTERdb.innervate) then -- 启动
+		if (spellName == "Innervate" and SOUNDALERTERdb.innervate) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Innervate.mp3");
 		end
-		if (spellName == "Barkskin" and SOUNDALERTERdb.barkskin) then -- 树皮术
+		if (spellName == "Barkskin" and SOUNDALERTERdb.barkskin) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\barkskin.mp3");
 		end
-		if (spellName == "Natures Swiftness" and SOUNDALERTERdb.naturesSwiftness) then -- 自然迅捷
+		if (spellName == "Natures Swiftness" and SOUNDALERTERdb.naturesSwiftness) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Natures Swiftness.mp3");
 		end
-		if (spellName == "Natures Grasp" and SOUNDALERTERdb.naturesGrasp) then -- 自然之握
+		if (spellName == "Natures Grasp" and SOUNDALERTERdb.naturesGrasp) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Natures Grasp.mp3");
 		end
-		if (spellName == "Frenzied Regeneration" and SOUNDALERTERdb.frenziedRegeneration) then -- 狂暴恢复
+		if (spellName == "Frenzied Regeneration" and SOUNDALERTERdb.frenziedRegeneration) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Frenzied Regeneration.mp3");
 		end
 		--paladin
-		if (spellName == "Aura Mastery" and SOUNDALERTERdb.auraMastery) then -- 光环精通
+		if (spellName == "Aura Mastery" and SOUNDALERTERdb.auraMastery) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Aura Mastery.mp3");
 		end
-		if (spellName == "Hand of Protection" and SOUNDALERTERdb.handOfProtection) then -- 保护
+		if (spellName == "Hand of Protection" and SOUNDALERTERdb.handOfProtection) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Hand of Protection.mp3");
 		end
-		if (spellName == "Hand of Freedom" and SOUNDALERTERdb.handOfFreedom) then -- 自由
+		if (spellName == "Hand of Freedom" and SOUNDALERTERdb.handOfFreedom) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Hand of Freedom.mp3");
 		end
-		if (spellName == "Divine Shield" and SOUNDALERTERdb.divineShield) then -- 无敌
+		if (spellName == "Divine Shield" and SOUNDALERTERdb.divineShield) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\divine shield.mp3");
 		end
-		if (spellName == "Hand of Sacrifice" and SOUNDALERTERdb.sacrifice) then -- 牺牲祝福
+		if (spellName == "Hand of Sacrifice" and SOUNDALERTERdb.sacrifice) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Sacrifice.mp3");
 		end
-		if (spellName == "Divine Guardian" and SOUNDALERTERdb.divineGuardian) then -- 神性牺牲
+		if (spellName == "Divine Guardian" and SOUNDALERTERdb.divineGuardian) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Divine Guardian.mp3");
 		end
-		if (spellName == "Divine Plea" and SOUNDALERTERdb.divinePlea) then -- 神性恳求
+		if (spellName == "Divine Plea" and SOUNDALERTERdb.divinePlea) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Divine Plea.mp3");
 		end
 		--rogue
-		if (spellName == "Shadow Dance" and SOUNDALERTERdb.shadowDance) then -- 暗影之舞
+		if (spellName == "Shadow Dance" and SOUNDALERTERdb.shadowDance) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Shadow Dance.mp3");
 		end
-		if (spellName == "Cloak of Shadows" and SOUNDALERTERdb.cloakOfShadows) then -- 斗篷
+		if (spellName == "Cloak of Shadows" and SOUNDALERTERdb.cloakOfShadows) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Cloak of Shadows.mp3");
 		end
-		if (spellName == "Adrenaline Rush" and SOUNDALERTERdb.adrenalineRush) then -- 冲动
+		if (spellName == "Adrenaline Rush" and SOUNDALERTERdb.adrenalineRush) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Adrenaline Rush.mp3");
 		end
-		if (spellName == "Evasion" and SOUNDALERTERdb.evasion) then -- 闪避
+		if (spellName == "Evasion" and SOUNDALERTERdb.evasion) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Evasion.mp3");
 		end
-		if (spellName == "Cheat Death" and SOUNDALERTERdb.cheatdeath) then -- 闪避
+		if (spellName == "Cheat Death" and SOUNDALERTERdb.cheatdeath) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Cheatdeath.mp3");
 		end
 		--warrior
-		if (spellName == "Shield Wall" and SOUNDALERTERdb.shieldWall) then --盾墙
+		if (spellName == "Shield Wall" and SOUNDALERTERdb.shieldWall) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Shield Wall.mp3")
 		end
-		if (spellName == "Berserker Rage" and SOUNDALERTERdb.berserkerRage) then -- 狂暴之怒
+		if (spellName == "Berserker Rage" and SOUNDALERTERdb.berserkerRage) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Berserker Rage.mp3");
 		end
-		if (spellName == "Retaliation" and SOUNDALERTERdb.retaliation) then -- 反击风暴
+		if (spellName == "Retaliation" and SOUNDALERTERdb.retaliation) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Retaliation.mp3")
 		end
-		if (spellName == "Spell Reflection" and SOUNDALERTERdb.spellReflection) then -- 盾反
+		if (spellName == "Spell Reflection" and SOUNDALERTERdb.spellReflection) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Spell Reflection.mp3")
 		end
-		if (spellName == "Sweeping Strikes" and SOUNDALERTERdb.sweepingStrikes) then -- 横扫攻击
+		if (spellName == "Sweeping Strikes" and SOUNDALERTERdb.sweepingStrikes) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Sweeping Strikes.mp3");
 		end
-		if (spellName == "Bladestorm" and SOUNDALERTERdb.bladestorm) then -- 剑刃风暴
+		if (spellName == "Bladestorm" and SOUNDALERTERdb.bladestorm) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Bladestorm.mp3");
 		end
 		if (spellName == "Death Wish" and SOUNDALERTERdb.deathWish) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Death Wish.mp3");
 		end
 		--preist
-		if (spellName == "Pain Suppression" and SOUNDALERTERdb.painSuppression) then -- 痛苦压制
+		if (spellName == "Pain Suppression" and SOUNDALERTERdb.painSuppression) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\pain suppression.mp3");
 		end
-		if (spellName == "Power Infusion" and SOUNDALERTERdb.powerInfusion) then -- 能量灌注
+		if (spellName == "Power Infusion" and SOUNDALERTERdb.powerInfusion) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Power Infusion.mp3");
 		end
-		if (spellName == "Fear Ward" and SOUNDALERTERdb.fearWard) then -- 反恐
+		if (spellName == "Fear Ward" and SOUNDALERTERdb.fearWard) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Fear Ward.mp3");
 		end
-		if (spellName == "Dispersion" and SOUNDALERTERdb.dispersion) then -- 消散
+		if (spellName == "Dispersion" and SOUNDALERTERdb.dispersion) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Dispersion.mp3");
 		end
 		--shaman
-
 		if (spellName == "Water Shield" and SOUNDALERTERdb.waterShield) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\water shield.mp3");
 		end
-		if (spellName == "Shamanistic Rage" and SOUNDALERTERdb.shamanisticRage) then -- 萨满之怒
+		if (spellName == "Shamanistic Rage" and SOUNDALERTERdb.shamanisticRage) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Shamanistic Rage.mp3")
 		end
-		if (spellName == "Earth Shield" and SOUNDALERTERdb.earthShield) then -- 大地之盾
+		if (spellName == "Earth Shield" and SOUNDALERTERdb.earthShield) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Earth shield.mp3");
 		end
 		--mage
-		if (spellName == "Ice Block" and SOUNDALERTERdb.iceBlock) then -- 寒冰屏障
+		if (spellName == "Ice Block" and SOUNDALERTERdb.iceBlock) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\ice block.mp3");
 		end
-		if (spellName == "Arcane Power" and SOUNDALERTERdb.arcanePower) then -- 秘法强化
+		if (spellName == "Arcane Power" and SOUNDALERTERdb.arcanePower) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Arcane Power.mp3");
 		end
 		if (spellName == "Evocation" and SOUNDALERTERdb.evocation) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Evocation.mp3");
 		end
 		--dk
-		if (spellName == "Lichborne" and SOUNDALERTERdb.lichborne) then -- 巫妖之躯
+		if (spellName == "Lichborne" and SOUNDALERTERdb.lichborne) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Lichborne.mp3");
 		end
-		if (spellName == "Icebound Fortitude" and SOUNDALERTERdb.iceboundFortitude) then -- 冰固
+		if (spellName == "Icebound Fortitude" and SOUNDALERTERdb.iceboundFortitude) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Icebound Fortitude.mp3");
 		end
-		if (spellName == "Vampiric Blood" and SOUNDALERTERdb.vampiricBlood) then -- 血族之裔
+		if (spellName == "Vampiric Blood" and SOUNDALERTERdb.vampiricBlood) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Vampiric Blood.mp3");
 		end
-		--hunter
-		if (spellName == "Deterrence" and SOUNDALERTERdb.deterrence) then -- 威慑
+		--hunter. NOTE: Feign Death cannot be detected in combat log, it is counted as a 'death' and cannot be introduced :(
+		if (spellName == "Deterrence" and SOUNDALERTERdb.deterrence) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Deterrence.mp3");
 		end
-		if (spellName == "The Beast Within" and SOUNDALERTERdb.theBeastWithin) then -- 野兽之心
+		if (spellName == "The Beast Within" and SOUNDALERTERdb.theBeastWithin) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\The Beast Within.mp3")
 		end
-		--warlock
+		--warlock, anyone got any worth putting in?
 	end
+	--Event SPELL_AURA_REMOVED is when enemies have lost the buff provided by SPELL_AURA_APPLIED (eg. Bubble down)
 	if (event == "SPELL_AURA_REMOVED" and toEnemy and not SOUNDALERTERdb.auraRemoved) then
 		if (spellName == "Divine Shield" and SOUNDALERTERdb.bubbleDown) then
 		   PlaySoundFile("Interface\\Addons\\SoundAlerter\\Voice\\Bubble down.mp3")
@@ -1750,104 +1758,105 @@ function SoundAlerter:COMBAT_LOG_EVENT_UNFILTERED(event , ...)
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\fear2.mp3");
 		end
 	end
+	--SPELL_CAST_SUCCESS only applies when the enemy has casted a spell
 	if (event == "SPELL_CAST_SUCCESS" and fromEnemy and not SOUNDALERTERdb.castSuccess) then
 		--general
 		--druid
 		--paladin
 		--rogue
-		if (spellName == "Dismantle" and SOUNDALERTERdb.disarm2) then -- 拆卸
+		if (spellName == "Dismantle" and SOUNDALERTERdb.disarm2) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Disarm2.mp3")
 		end
-		if (spellName == "Blind" and SOUNDALERTERdb.blind) then -- 致盲
+		if (spellName == "Blind" and SOUNDALERTERdb.blind) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Blind.mp3")
 		end
-		if (spellName == "Kick" and SOUNDALERTERdb.kick) then -- 脚踢
+		if (spellName == "Kick" and SOUNDALERTERdb.kick) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\kick.mp3")
 		end
-		if (spellName == "Preparation" and SOUNDALERTERdb.kick) then -- 伺机待发
+		if (spellName == "Preparation" and SOUNDALERTERdb.kick) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\preparation.mp3")
 		end
-		if (spellName == "Vanish" and SOUNDALERTERdb.vanish) then -- 消失
+		if (spellName == "Vanish" and SOUNDALERTERdb.vanish) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Vanish.mp3")
 		end
 		--warrior
-		if (spellName == "Disarm" and SOUNDALERTERdb.disarm) then -- 缴械
+		if (spellName == "Disarm" and SOUNDALERTERdb.disarm) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Disarm.mp3")
 		end
-		if (spellName == "Intimidating Shout" and SOUNDALERTERdb.fear3) then -- 破胆怒吼
+		if (spellName == "Intimidating Shout" and SOUNDALERTERdb.fear3) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Fear3.mp3");
 		end
-		if (spellName == "Pummel" and SOUNDALERTERdb.pummel) then -- 拳击
+		if (spellName == "Pummel" and SOUNDALERTERdb.pummel) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\pummel.mp3")
 		end
-		if (spellName == "Shield Bash" and SOUNDALERTERdb.shieldBash) then -- 盾击
+		if (spellName == "Shield Bash" and SOUNDALERTERdb.shieldBash) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Shield Bash.mp3")
 		end
 		--preist
-		if (spellName == "Psychic Scream" and SOUNDALERTERdb.fear4) then -- 心灵尖啸
+		if (spellName == "Psychic Scream" and SOUNDALERTERdb.fear4) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Fear4.mp3");
 		end
-		if (spellName == "Shadowfiend" and SOUNDALERTERdb.shadowFiend) then -- 暗影恶魔
+		if (spellName == "Shadowfiend" and SOUNDALERTERdb.shadowFiend) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Shadowfiend.mp3")
 		end
-		if (spellName == "Psychic Horror" and SOUNDALERTERdb.disarm3) then -- 心灵惊骇
+		if (spellName == "Psychic Horror" and SOUNDALERTERdb.disarm3) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\disarm3.mp3")
 		end
 		--shaman
-		if (spellName == "Grounding Totem" and SOUNDALERTERdb.grounding) then -- 根基图腾
+		if (spellName == "Grounding Totem" and SOUNDALERTERdb.grounding) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Grounding.mp3")
 		end
-		if (spellName == "Mana Tide Totem" and SOUNDALERTERdb.manaTide) then -- 法力之潮
+		if (spellName == "Mana Tide Totem" and SOUNDALERTERdb.manaTide) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Mana Tide.mp3");
 		end
-		if (spellName == "Tremor Totem" and SOUNDALERTERdb.tremorTotem) then -- 战栗图腾
-			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\tremor Totem.mp3");
+		if (spellName == "Tremor Totem" and SOUNDALERTERdb.tremorTotem) then
+			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Tremor Totem.mp3");
 		end
 		--mage
-		if (spellName == "Deep Freeze" and SOUNDALERTERdb.deepFreeze) then -- 深结
+		if (spellName == "Deep Freeze" and SOUNDALERTERdb.deepFreeze) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Deep Freeze.mp3");
 		end
-		if (spellName == "Counterspell" and SOUNDALERTERdb.counterspell) then -- 法术反制
+		if (spellName == "Counterspell" and SOUNDALERTERdb.counterspell) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Counterspell.mp3");
 		end
-		if (spellName == "Cold Snap" and SOUNDALERTERdb.ColdSnap) then -- 急速冷却
+		if (spellName == "Cold Snap" and SOUNDALERTERdb.ColdSnap) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\cold snap.mp3");
 		end
-		if (spellName == "Invisibility" and SOUNDALERTERdb.invisibility) then -- 隐形术
+		if (spellName == "Invisibility" and SOUNDALERTERdb.invisibility) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Invisibility.mp3");
 		end
 		--dk
-		if (spellName == "Mind Freeze" and SOUNDALERTERdb.mindFreeze) then -- 心智冰封
+		if (spellName == "Mind Freeze" and SOUNDALERTERdb.mindFreeze) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Mind Freeze.mp3")
 		end
-		if (spellName == "Strangulate" and SOUNDALERTERdb.strangulate) then -- 绞杀
+		if (spellName == "Strangulate" and SOUNDALERTERdb.strangulate) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Strangulate.mp3");
 		end
-		if (spellName == "Dancing Rune Weapon" and SOUNDALERTERdb.runeWeapon) then -- 强力符文武器
+		if (spellName == "Dancing Rune Weapon" and SOUNDALERTERdb.runeWeapon) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Rune Weapon.mp3");
 		end
-		if (spellName == "Summon Gargoyle" and SOUNDALERTERdb.gargoyle) then -- 召唤石像鬼
+		if (spellName == "Summon Gargoyle" and SOUNDALERTERdb.gargoyle) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\gargoyle.mp3");
 		end
-		if (spellName == "Hungering Cold" and SOUNDALERTERdb.hungeringCold) then -- 饥饿之寒
+		if (spellName == "Hungering Cold" and SOUNDALERTERdb.hungeringCold) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Hungering cold.mp3");
 		end
 		--hunter
-		if (spellName == "Wyvern Sting" and SOUNDALERTERdb.wyvernSting) then -- 翼龙钉刺
+		if (spellName == "Wyvern Sting" and SOUNDALERTERdb.wyvernSting) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Wyvern Sting.mp3");
 		end
 		--warlock
-		if (spellName == "Howl of Terror" and SOUNDALERTERdb.fear2) then -- 恐惧嚎叫
+		if (spellName == "Howl of Terror" and SOUNDALERTERdb.fear2) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\fear2.mp3");
 		end
-		if (spellName == "Spell Lock" and SOUNDALERTERdb.spellLock) then -- 法术封锁
+		if (spellName == "Spell Lock" and SOUNDALERTERdb.spellLock) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Spell Lock.mp3");
 		end
-		if (spellName == "Demonic Circle: Teleport" and SOUNDALERTERdb.demonicCircleTeleport) then -- 恶魔法阵:传送
+		if (spellName == "Demonic Circle: Teleport" and SOUNDALERTERdb.demonicCircleTeleport) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Demonic Circle Teleport.mp3");
 		end
 	end
-	if (event == "SPELL_INTERRUPT" and toEnemy and not SOUNDALERTERdb.interrupt) then -- 法术封锁 法术反制 脚踢 拳击 盾击 心智冰封 碎颅猛击 责难
+	if (event == "SPELL_INTERRUPT" and toEnemy and not SOUNDALERTERdb.interrupt) then
 		if ((spellName == "Deep Freeze" or spellName == "Counterspell" or spellName == "Kick" or spellName == "Wind Shear" or spellName == "Shield Bash" or spellName == "Mind Freeze" ) and SOUNDALERTERdb.lockout) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\Voice\\lockout.mp3");
 		end
