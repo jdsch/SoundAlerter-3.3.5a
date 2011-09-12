@@ -5,7 +5,7 @@ local AceConfig = LibStub("AceConfig-3.0")
 local self , SoundAlerter = SoundAlerter , SoundAlerter
 local SOUNDALERTER_TEXT="SoundAlerter"
 local SOUNDALERTER_VERSION= " r335.01"
-local SOUNDALERTER_AUTHOR=" updated by Trololol"
+local SOUNDALERTER_AUTHOR=" updated by Trolollolol - Sargeras - Molten-WoW.com"
 local SOUNDALERTERdb
 local PlaySoundFile = PlaySoundFile
 local dbDefaults = {
