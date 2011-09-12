@@ -15,8 +15,8 @@ local dbDefaults = {
 		battleground = true,
 		field = true,
 
-		aruaApplied = false,
-		aruaRemoved = false,
+		auraApplied = false,
+		auraRemoved = false,
 		castStart = false,
 		castSuccess = false,
 		interrupt = false,
@@ -296,13 +296,13 @@ function SoundAlerter:OnOptionsCreate()
 				get = getOption,
 				order = -1,
 				args = {
-					aruaApplied = {
+					auraApplied = {
 						type = 'toggle',
 						name = "Disable buff applied", --Disable Enemy spell notifications
 						desc = "Disables sound notifications of buffs applied",
 						order = 1,
 					},
-					aruaRemoved = {
+					auraRemoved = {
 						type = 'toggle',
 						name = "Disable Buff down",
 						desc = "Disables sound notifications of buffs down",
@@ -334,7 +334,7 @@ function SoundAlerter:OnOptionsCreate()
 				name = "Buffs",
 				set = setOption,
 				get = getOption,
-				disabled = function() return SOUNDALERTERdb.aruaApplied end,
+				disabled = function() return SOUNDALERTERdb.auraApplied end,
 				order = 1,
 				args = {
 					onlyTarget = {
@@ -623,7 +623,7 @@ function SoundAlerter:OnOptionsCreate()
 							},
 						}
 					},
-					preist	= {
+					priest	= {
 						type = 'group',
 						inline = true,
 						name = "|cffFFFFFFPriest|r",
@@ -806,7 +806,7 @@ function SoundAlerter:OnOptionsCreate()
 				name = "Buff Down",
 				set = setOption,
 				get = getOption,
-				disabled = function() return SOUNDALERTERdb.aruaRemoved end,
+				disabled = function() return SOUNDALERTERdb.auraRemoved end,
 				order = 2,
 				args = {
 					paladin = {
@@ -861,7 +861,7 @@ function SoundAlerter:OnOptionsCreate()
 							},
 						}
 					},
-					preist	= {
+					priest	= {
 						type = 'group',
 						inline = true,
 						name = "|cffFFFFFFPriest|r",
@@ -987,7 +987,7 @@ function SoundAlerter:OnOptionsCreate()
 							},
 						}
 					},
-					preist	= {
+					priest	= {
 						type = 'group',
 						inline = true,
 						name = "|cffFFFFFFPriest|r",
@@ -1234,7 +1234,7 @@ function SoundAlerter:OnOptionsCreate()
 							},
 						}
 					},
-					preist	= {
+					priest	= {
 						type = 'group',
 						inline = true,
 						name = "|cffFFFFFFPriest|r",
@@ -1526,7 +1526,7 @@ function SoundAlerter:COMBAT_LOG_EVENT_UNFILTERED(event , ...)
 	enddebug]]--
 
 	--Event Spell_AURA_APPLIED works with enemies with buffs on them from used cooldowns
-	if (event == "SPELL_AURA_APPLIED" and toEnemy and (not SOUNDALERTERdb.onlyTarget or toTarget) and not SOUNDALERTERdb.aruaApplied) then
+	if (event == "SPELL_AURA_APPLIED" and toEnemy and (not SOUNDALERTERdb.onlyTarget or toTarget) and not SOUNDALERTERdb.auraApplied) then
 	--General
 		if ( (spellName == "Every Man for Himself" or spellName == "PvP Trinket") and SOUNDALERTERdb.trinket) then
 			if (SOUNDALERTERdb.class and currentZoneType == "arena" ) then
@@ -1617,7 +1617,7 @@ function SoundAlerter:COMBAT_LOG_EVENT_UNFILTERED(event , ...)
 		if (spellName == "Death Wish" and SOUNDALERTERdb.deathWish) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Death Wish.mp3");
 		end
-		--preist
+		--priest
 		if (spellName == "Pain Suppression" and SOUNDALERTERdb.painSuppression) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\pain suppression.mp3");
 		end
@@ -1724,7 +1724,7 @@ function SoundAlerter:COMBAT_LOG_EVENT_UNFILTERED(event , ...)
 		--paladin
 		--rogue
 		--warrior
-		--preist
+		--priest
 		if (spellName == "Mana Burn" and SOUNDALERTERdb.manaBurn) then -- 法力燃烧
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Mana Burn.mp3");
 		end
@@ -1792,7 +1792,7 @@ function SoundAlerter:COMBAT_LOG_EVENT_UNFILTERED(event , ...)
 		if (spellName == "Shield Bash" and SOUNDALERTERdb.shieldBash) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Shield Bash.mp3")
 		end
-		--preist
+		--priest
 		if (spellName == "Psychic Scream" and SOUNDALERTERdb.fear4) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Fear4.mp3");
 		end
