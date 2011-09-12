@@ -25,7 +25,7 @@ local dbDefaults = {
 		class = false,
 		shadowmeld = true,
 		trinket = true,
-
+--Druid
 		thorns = true,
 		survivalInstincts = true,
 		innervate = true,
@@ -35,7 +35,7 @@ local dbDefaults = {
 		frenziedRegeneration = true,
 		enrage = false,
 		desh = false,
-
+--Paladin
 		auraMastery = true,
 		handOfProtection = true,
 		handOfFreedom = true,
@@ -43,7 +43,7 @@ local dbDefaults = {
 		sacrifice = true,
 		divineGuardian = true,
 		divinePlea = true,
-
+--Rogue
 		shadowDance = true,
 		sprint = true,
 		cloakOfShadows = true,
@@ -51,7 +51,7 @@ local dbDefaults = {
 		evasion = true,
 		CheatDeath = true,
 		vanish = true,
-
+--Death Knight
 		deathWish = true,
 		enragedRegeneration = true,
 		shieldWall = true,
@@ -60,7 +60,7 @@ local dbDefaults = {
 		spellReflection = true,
 		sweepingStrikes = true,
 		bladestorm = true,
-
+--Priest
 		painSuppression = true,
 		powerInfusion = true,
 		fearWard = true,
@@ -70,19 +70,22 @@ local dbDefaults = {
 		shamanisticRage = true,
 		earthShield = true,
 		naturesSwiftness2 = true,
-
+		ElementalMastery = true,
+--Mage
 		iceBlock = true,
 		arcanePower = true,
 		invisibility = true,
-
+--Death Knight
 		iceboundFortitude = true,
 		lichborne = true,
 		vampiricBlood = true,
-
+		antimagicshell = true,
+--Hunter
 		theBeastWithin = true,
 		deterrence = true,
+		readiness = true,
 
-
+--SPELL_AURA_REMOVED
 		protectionDown = true,
 		bubbleDown = true,
 		cloakDown = true,
@@ -94,65 +97,66 @@ local dbDefaults = {
 		iceboundFortitudeDown = false,
 
 		onlySelf = false,
-
+--General Heals
 		bigHeal = true,
 		resurrection = true,
-
+--Druid
 		hibernate = true,
 		cyclone = true,
-
+--Priest
 		manaBurn = true,
 		shackleUndead = true,
 		mindControl = true,
-
+--Shaman
 		hex = true,
-
+--Mage
 		polymorph = true,
 		evocation = true,
-
+--Hunter
 		revivePet = true,
 		scareBeast = true,
-
+--Warlock
 		fear = true,
 		fear2 = true,
 		banish = true,
 
-
+--Druid
 		skullBash = false,
-
+--Paladin
 		rebuke = false,
 		repentance = true,
-
+--Rogue
 		disarm2 = true,
 		blind = true,
 		kick = true,
 		preparation = true,
-
+--Warrior
 		disarm = true,
 		fear3 = true,
 		pummel = true,
 		shieldBash = true,
-
+--Priest
 		fear4 = true,
 		shadowFiend = true,
 		disarm3 = true,
-
+--Shaman
 		grounding = true,
 		manaTide = true,
 		tremorTotem = true,
-
+--Mage
 		coldSnap = true,
 		deepFreeze = true,
 		counterspell = true,
-
+--Death Knight
 		mindFreeze = true,
 		strangulate = true,
 		runeWeapon = true,
 		gargoyle = true,
 		hungeringCold = true,
-
+--Hunter
 		wyvernSting = true,
-
+		silencingshot = true,
+--Warlock
 		fear2 = true,
 		spellLock = true,
 		demonicCircleTeleport = true,
@@ -709,6 +713,15 @@ function SoundAlerter:OnOptionsCreate()
 								descStyle = "custom",
 								order = 4,
 							},
+							ElementalMastery = {
+								type = 'toggle',
+								name = GetSpellInfo(64701),
+								desc = function ()
+									GameTooltip:SetHyperlink(GetSpellLink(64701));
+								end,
+								descStyle = "custom",
+								order = 5,
+							},
 						}
 					},
 					mage = {
@@ -770,6 +783,15 @@ function SoundAlerter:OnOptionsCreate()
 								descStyle = "custom",
 								order = 3,
 							},
+							antimagicshell = {
+								type = 'toggle',
+								name = GetSpellInfo(48707),
+								desc = function ()
+									GameTooltip:SetHyperlink(GetSpellLink(48707));
+								end,
+								descStyle = "custom",
+								order = 3,
+							},
 						}
 					},
 					hunter = {
@@ -795,6 +817,15 @@ function SoundAlerter:OnOptionsCreate()
 								end,
 								descStyle = "custom",
 								order = 2,
+							},
+							readiness = {
+								type = 'toggle',
+								name = GetSpellInfo(23989),
+								desc = function ()
+									GameTooltip:SetHyperlink(GetSpellLink(23989));
+								end,
+								descStyle = "custom",
+								order = 3,
 							},
 						}
 					},
@@ -1416,6 +1447,15 @@ function SoundAlerter:OnOptionsCreate()
 								descStyle = "custom",
 								order = 1,
 							},
+							silencingshot = {
+								type = 'toggle',
+								name = GetSpellInfo(34490),
+								desc = function ()
+									GameTooltip:SetHyperlink(GetSpellLink(34490));
+								end,
+								descStyle = "custom",
+								order = 1,
+							},
 						}
 					},
 					warlock = {
@@ -1519,12 +1559,11 @@ function SoundAlerter:COMBAT_LOG_EVENT_UNFILTERED(event , ...)
 	--I cannot implement Feign death, as it isn't recorded by combat log, It's counted as a 'death'
 	--To do this, remove the "--[[debug and enddebug]]--" and insert a the spell ID
 	--To get the Spell ID, go to wowhead, search for a spell, click on the page, and your URL will show the ID at the end
-	--[[debug
-	if (spellID == 80964 or spellID == 80965 or spellID == 85285) then
+--[[debug
+	if (spellID == 23989) then
 		print (sourceName,destName,event,spellName,spellID)
 	end
-	enddebug]]--
-
+enddebug]]
 	--Event Spell_AURA_APPLIED works with enemies with buffs on them from used cooldowns
 	if (event == "SPELL_AURA_APPLIED" and toEnemy and (not SOUNDALERTERdb.onlyTarget or toTarget) and not SOUNDALERTERdb.auraApplied) then
 	--General
@@ -1634,6 +1673,9 @@ function SoundAlerter:COMBAT_LOG_EVENT_UNFILTERED(event , ...)
 		if (spellName == "Water Shield" and SOUNDALERTERdb.waterShield) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\water shield.mp3");
 		end
+		if (spellName == "Elemental Mastery" and SOUNDALERTERdb.ElementalMastery) then
+			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\ElementalMastery.mp3");
+		end
 		if (spellName == "Shamanistic Rage" and SOUNDALERTERdb.shamanisticRage) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Shamanistic Rage.mp3")
 		end
@@ -1659,6 +1701,9 @@ function SoundAlerter:COMBAT_LOG_EVENT_UNFILTERED(event , ...)
 		end
 		if (spellName == "Vampiric Blood" and SOUNDALERTERdb.vampiricBlood) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Vampiric Blood.mp3");
+		end
+		if (spellName == "Anti-Magic Shell" and SOUNDALERTERdb.antimagicshell) then
+			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Anti Magic Shell.mp3");
 		end
 		--hunter. NOTE: Feign Death cannot be detected in combat log, it is counted as a 'death' and cannot be introduced :(
 		if (spellName == "Deterrence" and SOUNDALERTERdb.deterrence) then
@@ -1844,6 +1889,12 @@ function SoundAlerter:COMBAT_LOG_EVENT_UNFILTERED(event , ...)
 		--hunter
 		if (spellName == "Wyvern Sting" and SOUNDALERTERdb.wyvernSting) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Wyvern Sting.mp3");
+		end
+		if (spellName == "Silencing Shot" and SOUNDALERTERdb.silencingshot) then
+			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\silencingshot.mp3");
+		end
+		if (spellName == "Readiness" and SOUNDALERTERdb.readiness) then
+			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Readiness.mp3");
 		end
 		--warlock
 		if (spellName == "Howl of Terror" and SOUNDALERTERdb.fear2) then
