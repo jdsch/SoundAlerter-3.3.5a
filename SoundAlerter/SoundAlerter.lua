@@ -1,11 +1,10 @@
 ﻿SoundAlerter = LibStub("AceAddon-3.0"):NewAddon("SoundAlerter", "AceEvent-3.0","AceConsole-3.0","AceTimer-3.0")
-
 local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 local AceConfig = LibStub("AceConfig-3.0")
 local self , SoundAlerter = SoundAlerter , SoundAlerter
-local SOUNDALERTER_TEXT="SoundAlerter"
+local SOUNDALERTER_TEXT="|cffFF7D0ASoundAlerter|r"
 local SOUNDALERTER_VERSION= " r335.01"
-local SOUNDALERTER_AUTHOR=" updated by Trolollolol - Sargeras - Molten-WoW.com"
+local SOUNDALERTER_AUTHOR=" updated by |cff0070DETrolollolol|r - Sargeras - Molten-WoW.com"
 local SOUNDALERTERdb
 local PlaySoundFile = PlaySoundFile
 local dbDefaults = {
@@ -120,6 +119,7 @@ local dbDefaults = {
 		fear = true,
 		fear2 = true,
 		banish = true,
+		deathcoil = true,
 
 --Druid
 		skullBash = false,
@@ -1509,6 +1509,15 @@ function SoundAlerter:OnOptionsCreate()
 								descStyle = "custom",
 								order = 3,
 							},
+							deathcoil = {
+								type = 'toggle',
+								name = GetSpellInfo(6789),
+								desc = function ()
+									GameTooltip:SetHyperlink(GetSpellLink(6789));
+								end,
+								descStyle = "custom",
+								order = 4,
+							},
 						}
 					},
 					paladin = {
@@ -1800,17 +1809,17 @@ enddebug]]
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Resurrection.mp3");
 		end
 	--hunter
-		if (spellName == "Revive Pet" and SOUNDALERTERdb.revivePet) then -- 复活宠物
+		if (spellName == "Revive Pet" and SOUNDALERTERdb.revivePet) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Revive Pet.mp3");
 		end
 	end
 	if (event == "SPELL_CAST_START" and fromEnemy and not SOUNDALERTERdb.castStart) then
 
 		--druid
-		if (spellName == "Cyclone" and SOUNDALERTERdb.cyclone) then -- 吹风
+		if (spellName == "Cyclone" and SOUNDALERTERdb.cyclone) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\cyclone.mp3");
 		end
-		if (spellName == "Hibernate" and SOUNDALERTERdb.hibernate) then -- 休眠
+		if (spellName == "Hibernate" and SOUNDALERTERdb.hibernate) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\hibernate.mp3");
 		end
 		--paladin
@@ -1820,18 +1829,18 @@ enddebug]]
 		if (spellName == "Mana Burn" and SOUNDALERTERdb.manaBurn) then -- 法力燃烧
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Mana Burn.mp3");
 		end
-		if (spellName == "Shackle Undead" and SOUNDALERTERdb.shackleUndead) then -- 束缚亡灵
+		if (spellName == "Shackle Undead" and SOUNDALERTERdb.shackleUndead) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Shackle Undead.mp3");
 		end
-		if (spellName == "Mind Control" and SOUNDALERTERdb.mindControl) then -- 精神控制
+		if (spellName == "Mind Control" and SOUNDALERTERdb.mindControl) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Mind Control.mp3");
 		end
 		--shaman
-		if (spellName == "Hex" and SOUNDALERTERdb.hex) then -- 妖术
+		if (spellName == "Hex" and SOUNDALERTERdb.hex) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Hex.mp3");
 		end
 		--mage
-		if (spellName == "Polymorph" and SOUNDALERTERdb.polymorph) then -- 变形术 羊猪猫兔蛇鸡龟
+		if (spellName == "Polymorph" and SOUNDALERTERdb.polymorph) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\polymorph.mp3");
 		end
 		--dk
@@ -1840,13 +1849,13 @@ enddebug]]
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Scare Beast.mp3");
 		end
 		--warlock
-		if (spellName == "Banish" and SOUNDALERTERdb.banish) then -- 放逐术
+		if (spellName == "Banish" and SOUNDALERTERdb.banish) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Banish.mp3");
 		end
-		if (spellName == "Fear" and SOUNDALERTERdb.fear) then -- 恐惧
+		if (spellName == "Fear" and SOUNDALERTERdb.fear) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\fear.mp3");
 		end
-		if (spellName == "Howl of Terror" and SOUNDALERTERdb.fear2) then -- 恐惧嚎叫
+		if (spellName == "Howl of Terror" and SOUNDALERTERdb.fear2) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\fear2.mp3");
 		end
 	end
@@ -1952,6 +1961,9 @@ enddebug]]
 		end
 		if (spellName == "Demonic Circle: Teleport" and SOUNDALERTERdb.demonicCircleTeleport) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Demonic Circle Teleport.mp3");
+		end
+		if (spellName == "Death Coil" and SOUNDALERTERdb.deathcoil) then
+			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\DeathCoil.mp3");
 		end
 		--paladin
 		if (spellName == "Repentance" and SOUNDALERTERdb.repentance) then
