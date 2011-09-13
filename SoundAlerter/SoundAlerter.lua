@@ -69,20 +69,21 @@ local dbDefaults = {
 		waterShield = false,
 		shamanisticRage = true,
 		earthShield = true,
-		naturesSwiftness2 = true,
-		ElementalMastery = true,
+		naturesSwiftness2 = false,
+		ElementalMastery = false,
 --Mage
 		iceBlock = true,
-		arcanePower = true,
+		arcanePower = false,
 		invisibility = true,
 --Death Knight
 		iceboundFortitude = true,
 		lichborne = true,
-		vampiricBlood = true,
+		vampiricBlood = false,
 		antimagicshell = true,
 --Hunter
 		theBeastWithin = true,
 		deterrence = true,
+		deterdown = true,
 		readiness = true,
 
 --SPELL_AURA_REMOVED
@@ -123,8 +124,8 @@ local dbDefaults = {
 --Druid
 		skullBash = false,
 --Paladin
-		rebuke = false,
-		repentance = true,
+		repentance = false,
+		hammerofjustice = true,
 --Rogue
 		disarm2 = true,
 		blind = true,
@@ -177,7 +178,7 @@ function SoundAlerter:OnInitialize()
 	SOUNDALERTERdb = self.db1.profile
 	SoundAlerter.options = {
 		name = "SoundAlerter",
-		desc = "PVP技能语音提示",
+		desc = "Voice prompts from enemy used spells",
 		type = 'group',
 		icon = [[Interface\Icons\Spell_Nature_ForceOfNature]],
 		args = {},
@@ -960,8 +961,25 @@ function SoundAlerter:OnOptionsCreate()
 								order = 2,
 							},
 						},
-					}
-				},
+					},
+					hunter = {
+						type = 'group',
+						inline = true,
+						name = "|cffABD473Hunter|r",
+						order = 12,
+						args = {
+							deterdown = {
+								type = 'toggle',
+								name = GetSpellInfo(19263),
+								desc = function ()
+									GameTooltip:SetHyperlink(GetSpellLink(19263));
+								end,
+								descStyle = "custom",
+								order = 1,
+							},
+						}
+					},
+				}
 			},
 			spellCastStart = {
 				type = 'group',
@@ -981,7 +999,7 @@ function SoundAlerter:OnOptionsCreate()
 							bigHeal = {
 								type = 'toggle',
 								name = "Big Heals",
-								desc = "Heal Holy Light Healing Wave Healing Touch",
+								desc = "Heal, Holy Light, Healing Wave, Healing Touch",
 								order = 1,
 							},
 							resurrection = {
@@ -1493,6 +1511,32 @@ function SoundAlerter:OnOptionsCreate()
 							},
 						}
 					},
+					paladin = {
+						type = 'group',
+						inline = true,
+						name = "|cffF58CBAPaladin|r",
+						order = 11,
+						args = {
+							repentance = {
+								type = 'toggle',
+								name = GetSpellInfo(20066),
+								desc = function ()
+									GameTooltip:SetHyperlink(GetSpellLink(20066));
+								end,
+								descStyle = "custom",
+								order = 1,
+							},
+							hammerofjustice = {
+								type = 'toggle',
+								name = GetSpellInfo(853),
+								desc = function ()
+									GameTooltip:SetHyperlink(GetSpellLink(853));
+								end,
+								descStyle = "custom",
+								order = 1,
+							},
+						}
+					},
 				},
 			},
 			spellInterrupt = {
@@ -1716,6 +1760,9 @@ enddebug]]
 	end
 	--Event SPELL_AURA_REMOVED is when enemies have lost the buff provided by SPELL_AURA_APPLIED (eg. Bubble down)
 	if (event == "SPELL_AURA_REMOVED" and toEnemy and not SOUNDALERTERdb.auraRemoved) then
+		if (spellName == "Deterrence" and SOUNDALERTERdb.deterdown) then
+			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Deterrencedown.mp3");
+		end
 		if (spellName == "Divine Shield" and SOUNDALERTERdb.bubbleDown) then
 		   PlaySoundFile("Interface\\Addons\\SoundAlerter\\Voice\\Bubble down.mp3")
 		end
@@ -1905,6 +1952,13 @@ enddebug]]
 		end
 		if (spellName == "Demonic Circle: Teleport" and SOUNDALERTERdb.demonicCircleTeleport) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Demonic Circle Teleport.mp3");
+		end
+		--paladin
+		if (spellName == "Repentance" and SOUNDALERTERdb.repentance) then
+			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Repentance.mp3");
+		end
+		if (spellName == "Hammer of Justice" and SOUNDALERTERdb.hammerofjustice) then
+			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\hammer of justice.mp3");
 		end
 	end
 	if (event == "SPELL_INTERRUPT" and toEnemy and not SOUNDALERTERdb.interrupt) then
