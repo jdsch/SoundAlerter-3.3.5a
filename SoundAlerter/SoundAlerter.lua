@@ -1715,10 +1715,6 @@ enddebug]]
 		if (spellName == "Berserking" and SOUNDALERTERdb.berserking) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Beserk.mp3");
 		end
-		--Undead
-		if (spellName == "Will of the Forsaken" and SOUNDALERTERdb.willoftheforsaken) then
-			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Will Of The Forsaken.mp3");
-		end
 		--Orcs
 		if (spellName == "Blood Fury" and SOUNDALERTERdb.BloodFury) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\BloodFury.mp3");
@@ -1965,6 +1961,10 @@ enddebug]]
 		--druid
 		--paladin
 		--rogue
+		--Undead
+		if (spellName == "Will of the Forsaken" and SOUNDALERTERdb.willoftheforsaken) then
+			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Will Of The Forsaken.mp3");
+		end
 		if (spellName == "Dismantle" and SOUNDALERTERdb.disarm2) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Disarm2.mp3")
 		end
