@@ -100,6 +100,13 @@ local dbDefaults = {
 --General Heals
 		bigHeal = true,
 		resurrection = true,
+--Races
+		willoftheforsaken = false,
+		Shadowmeld = false,
+		giftofthenaaru = false,
+		BloodFury = false,
+		berserking = false,
+
 --Druid
 		hibernate = true,
 		cyclone = true,
@@ -120,6 +127,7 @@ local dbDefaults = {
 		fear2 = true,
 		banish = true,
 		deathcoil = true,
+		shadowtrance = false,
 
 --Druid
 		skullBash = false,
@@ -158,7 +166,6 @@ local dbDefaults = {
 		wyvernSting = true,
 		silencingshot = true,
 --Warlock
-		fear2 = true,
 		spellLock = true,
 		demonicCircleTeleport = true,
 
@@ -827,6 +834,76 @@ function SoundAlerter:OnOptionsCreate()
 								end,
 								descStyle = "custom",
 								order = 3,
+							},
+						}
+					},
+					races = {
+						type = 'group',
+						inline = true,
+						name = "|cffABD473General Races|r",
+						order = 14,
+						args = {
+							Shadowmeld = { --need to add mp3
+								type = 'toggle',
+								name = GetSpellInfo(58984),
+								desc = function ()
+									GameTooltip:SetHyperlink(GetSpellLink(58984));
+								end,
+								descStyle = "custom",
+								order = 1,
+							},
+							giftofthenaaru = { --need to add mp3
+								type = 'toggle',
+								name = GetSpellInfo(28880),
+								desc = function ()
+									GameTooltip:SetHyperlink(GetSpellLink(28880));
+								end,
+								descStyle = "custom",
+								order = 2,
+							},
+							BloodFury = { --need to add mp3
+								type = 'toggle',
+								name = GetSpellInfo(20572),
+								desc = function ()
+									GameTooltip:SetHyperlink(GetSpellLink(20572));
+								end,
+								descStyle = "custom",
+								order = 3,
+							},
+							willoftheforsaken = {
+								type = 'toggle',
+								name = GetSpellInfo(7744),
+								desc = function ()
+									GameTooltip:SetHyperlink(GetSpellLink(7744));
+								end,
+								descStyle = "custom",
+								order = 4,
+							},
+							berserking = { --need to add mp3
+								type = 'toggle',
+								name = GetSpellInfo(26297),
+								desc = function ()
+									GameTooltip:SetHyperlink(GetSpellLink(26297));
+								end,
+								descStyle = "custom",
+								order = 5,
+							},
+						}
+					},
+					warlock	= {
+						type = 'group',
+						inline = true,
+						name = "|cff9482C9Warlock|r",
+						order = 13,
+						args = {
+							shadowtrance = {
+								type = 'toggle',
+								name = GetSpellInfo(17941),
+								desc = function ()
+									GameTooltip:SetHyperlink(GetSpellLink(17941));
+								end,
+								descStyle = "custom",
+								order = 1,
 							},
 						}
 					},
@@ -1630,6 +1707,26 @@ enddebug]]
 			end
 			--PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Trinket.mp3");
 		end
+		--Night Elves
+		if (spellName == "Shadowmeld" and SOUNDALERTERdb.Shadowmeld) then
+			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Shadowmeld.mp3");
+		end
+		--Trolls
+		if (spellName == "Berserking" and SOUNDALERTERdb.berserking) then
+			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Beserk.mp3");
+		end
+		--Undead
+		if (spellName == "Will of the Forsaken" and SOUNDALERTERdb.willoftheforsaken) then
+			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Will Of The Forsaken.mp3");
+		end
+		--Orcs
+		if (spellName == "Blood Fury" and SOUNDALERTERdb.BloodFury) then
+			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\BloodFury.mp3");
+		end
+		--dranei
+		if (spellName == "Gift of the Naaru" and SOUNDALERTERdb.giftofthenaaru) then
+			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\giftofthenaaru.mp3");
+		end
 		--druid
 		if (spellName == "Survival Instincts" and SOUNDALERTERdb.survivalInstincts) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Survival Instincts.mp3");
@@ -1765,7 +1862,10 @@ enddebug]]
 		if (spellName == "The Beast Within" and SOUNDALERTERdb.theBeastWithin) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\The Beast Within.mp3")
 		end
-		--warlock, anyone got any worth putting in?
+		--warlock
+		if (spellName == "Shadow Trance" and SOUNDALERTERdb.shadowtrance) then
+			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Shadowtrance.mp3")
+		end
 	end
 	--Event SPELL_AURA_REMOVED is when enemies have lost the buff provided by SPELL_AURA_APPLIED (eg. Bubble down)
 	if (event == "SPELL_AURA_REMOVED" and toEnemy and not SOUNDALERTERdb.auraRemoved) then
