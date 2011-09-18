@@ -165,6 +165,8 @@ local dbDefaults = {
 --Hunter
 		wyvernSting = true,
 		silencingshot = true,
+		aimedshot = true,
+		freezingtrap = true,
 --Warlock
 		spellLock = true,
 		demonicCircleTeleport = true,
@@ -1551,6 +1553,24 @@ function SoundAlerter:OnOptionsCreate()
 								descStyle = "custom",
 								order = 1,
 							},
+							aimedshot = {
+								type = 'toggle',
+								name = GetSpellInfo(19434),
+								desc = function ()
+									GameTooltip:SetHyperlink(GetSpellLink(19434));
+								end,
+								descStyle = "custom",
+								order = 1,
+							},
+							freezingtrap = {
+								type = 'toggle',
+								name = GetSpellInfo(1499),
+								desc = function ()
+									GameTooltip:SetHyperlink(GetSpellLink(1499));
+								end,
+								descStyle = "custom",
+								order = 1,
+							},
 						}
 					},
 					warlock = {
@@ -2049,8 +2069,14 @@ enddebug]]
 		if (spellName == "Silencing Shot" and SOUNDALERTERdb.silencingshot) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\silencingshot.mp3");
 		end
+		if (spellName == "Aimed Shot" and SOUNDALERTERdb.aimedshot) then
+			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Aimed Shot.MP3");
+		end
 		if (spellName == "Readiness" and SOUNDALERTERdb.readiness) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Readiness.mp3");
+		end
+		if (spellName == "Freezing Trap" and SOUNDALERTERdb.freezingtrap) then
+			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\FreezingTrap.mp3");
 		end
 		--warlock
 		if (spellName == "Howl of Terror" and SOUNDALERTERdb.fear2) then
