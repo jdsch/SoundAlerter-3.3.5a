@@ -1696,17 +1696,7 @@ function SoundAlerter:COMBAT_LOG_EVENT_UNFILTERED(event , ...)
 enddebug]]
 	--Event Spell_AURA_APPLIED works with enemies with buffs on them from used cooldowns
 	if (event == "SPELL_AURA_APPLIED" and toEnemy and (not SOUNDALERTERdb.onlyTarget or toTarget) and not SOUNDALERTERdb.auraApplied) then
-	--General
-		if ( (spellName == "Every Man for Himself" or spellName == "PvP Trinket") and SOUNDALERTERdb.trinket) then
-			if (SOUNDALERTERdb.class and currentZoneType == "arena" ) then
-				local c = self:ArenaClass(destGUID)
-				PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Trinket.mp3");
-				self:ScheduleTimer("PlayTrinket", 0.3)
-			else
-				self:PlayTrinket()
-			end
-			--PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Trinket.mp3");
-		end
+
 		--Night Elves
 		if (spellName == "Shadowmeld" and SOUNDALERTERdb.Shadowmeld) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Shadowmeld.mp3");
@@ -1957,7 +1947,17 @@ enddebug]]
 	end
 	--SPELL_CAST_SUCCESS only applies when the enemy has casted a spell
 	if (event == "SPELL_CAST_SUCCESS" and fromEnemy and not SOUNDALERTERdb.castSuccess) then
-		--general
+	--General
+		if ( (spellName == "Every Man for Himself" or spellName == "PvP Trinket") and SOUNDALERTERdb.trinket) then
+			if (SOUNDALERTERdb.class and currentZoneType == "arena" ) then
+				local c = self:ArenaClass(destGUID)
+				PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Trinket.mp3");
+				self:ScheduleTimer("PlayTrinket", 0.3)
+			else
+				self:PlayTrinket()
+			end
+			--PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Trinket.mp3");
+		end
 		--druid
 		--paladin
 		--rogue
