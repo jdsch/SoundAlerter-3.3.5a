@@ -50,7 +50,9 @@ local dbDefaults = {
 		evasion = true,
 		CheatDeath = true,
 		vanish = true,
---Death Knight
+		bladeflurry = false,
+		stealth = true,
+--Warrior
 		deathWish = true,
 		enragedRegeneration = true,
 		shieldWall = true,
@@ -79,6 +81,7 @@ local dbDefaults = {
 		lichborne = true,
 		vampiricBlood = false,
 		antimagicshell = true,
+		boneshield = false,
 --Hunter
 		theBeastWithin = true,
 		deterrence = true,
@@ -800,7 +803,16 @@ function SoundAlerter:OnOptionsCreate()
 									GameTooltip:SetHyperlink(GetSpellLink(48707));
 								end,
 								descStyle = "custom",
-								order = 3,
+								order = 4,
+							},
+							boneshield = {
+								type = 'toggle',
+								name = GetSpellInfo(49222),
+								desc = function ()
+									GameTooltip:SetHyperlink(GetSpellLink(49222));
+								end,
+								descStyle = "custom",
+								order = 5,
 							},
 						}
 					},
@@ -1315,6 +1327,24 @@ function SoundAlerter:OnOptionsCreate()
 								end,
 								descStyle = "custom",
 								order = 5,
+							},
+							bladeflurry = {
+								type = 'toggle',
+								name = GetSpellInfo(13877),
+								desc = function ()
+									GameTooltip:SetHyperlink(GetSpellLink(13877));
+								end,
+								descStyle = "custom",
+								order = 6,
+							},
+							stealth = {
+								type = 'toggle',
+								name = GetSpellInfo(1784),
+								desc = function ()
+									GameTooltip:SetHyperlink(GetSpellLink(1784));
+								end,
+								descStyle = "custom",
+								order = 6,
 							},
 						}
 					},
@@ -1861,6 +1891,9 @@ enddebug]]
 		if (spellName == "Anti-Magic Shell" and SOUNDALERTERdb.antimagicshell) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Anti Magic Shell.mp3");
 		end
+		if (spellName == "Bone Shield" and SOUNDALERTERdb.boneshield) then
+			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Bone Shield.mp3");
+		end
 		--hunter. NOTE: Feign Death cannot be detected in combat log, it is counted as a 'death' and cannot be introduced :(
 		if (spellName == "Deterrence" and SOUNDALERTERdb.deterrence) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Deterrence.mp3");
@@ -1966,6 +1999,7 @@ enddebug]]
 		end
 	end
 	--SPELL_CAST_SUCCESS only applies when the enemy has casted a spell
+	--TODO: Add seperate LUA File for spell list
 	if (event == "SPELL_CAST_SUCCESS" and fromEnemy and not SOUNDALERTERdb.castSuccess) then
 	--General
 		if ( (spellName == "Every Man for Himself" or spellName == "PvP Trinket") and SOUNDALERTERdb.trinket) then
@@ -1999,6 +2033,12 @@ enddebug]]
 		end
 		if (spellName == "Vanish" and SOUNDALERTERdb.vanish) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Vanish.mp3")
+		end
+		if (spellName == "Blade Flurry" and SOUNDALERTERdb.bladeflurry) then
+			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Blade Flurry.mp3")
+		end
+		if (spellName == "Stealth" and SOUNDALERTERdb.stealth) then
+			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Stealth.mp3")
 		end
 		--warrior
 		if (spellName == "Disarm" and SOUNDALERTERdb.disarm) then
