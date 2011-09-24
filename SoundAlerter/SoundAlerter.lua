@@ -36,7 +36,7 @@ local dbDefaults = {
 		interrupt = false,
 
 		onlyTarget = false,
-		class = false,
+		class = true,
 		shadowmeld = true,
 		trinket = true,
 --Druid
@@ -379,8 +379,8 @@ function SoundAlerter:OnOptionsCreate()
 					},
 					class = {
 						type = 'toggle',
-						name = "Alert Drinking",
-						desc = "In arena, alert when enemy is drinking",
+						name = "Alert Trinket",
+						desc = "In arena, alert when enemy trinketted",
 						order = 2,
 					},
 					general = {
@@ -1745,7 +1745,9 @@ function SoundAlerter:PLAYER_ENTERING_WORLD()
 end
 function SoundAlerter:COMBAT_LOG_EVENT_UNFILTERED(event , ...)
 	local _,currentZoneType = IsInInstance()
-	if (not ((currentZoneType == "none" and SOUNDALERTERdb.field) or (currentZoneType == "pvp" and SOUNDALERTERdb.battleground) or (currentZoneType == "arena" and SOUNDALERTERdb.arena) or SOUNDALERTERdb.all)) then
+	local pvpType, isFFA, faction = GetZonePVPInfo();
+	--if (not ((currentZoneType == "none" and SOUNDALERTERdb.field) or (currentZoneType == "pvp" and SOUNDALERTERdb.battleground) or (currentZoneType == "arena" and SOUNDALERTERdb.arena) or SOUNDALERTERdb.all)) then
+	if (not ((pvpType == "contested" and SOUNDALERTERdb.field) or (pvpType == "hostile" and SOUNDALERTERdb.field) or (currentZoneType == "pvp" and SOUNDALERTERdb.battleground) or (currentZoneType == "arena" and SOUNDALERTERdb.arena) or SOUNDALERTERdb.all)) then
 		--print (currentZoneType,SOUNDALERTERdb.field,SOUNDALERTERdb.battleground,SOUNDALERTERdb.arena,SOUNDALERTERdb.all)
 		return
 	end
