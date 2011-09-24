@@ -76,6 +76,7 @@ local dbDefaults = {
 		spellReflection = true,
 		sweepingStrikes = true,
 		bladestorm = true,
+		lastStand = false,
 --Priest
 		painSuppression = true,
 		powerInfusion = true,
@@ -137,6 +138,7 @@ local dbDefaults = {
 --Mage
 		polymorph = true,
 		evocation = true,
+		HotStreak = false,
 --Hunter
 		revivePet = true,
 		scareBeast = true,
@@ -652,6 +654,15 @@ function SoundAlerter:OnOptionsCreate()
 								end,
 								descStyle = "custom",
 								order = 8,
+							},
+							lastStand = {
+								type = 'toggle',
+								name = GetSpellInfo(12975),
+								desc = function ()
+									GameTooltip:SetHyperlink(GetSpellLink(12975));
+								end,
+								descStyle = "custom",
+								order = 9,
 							},
 						}
 					},
@@ -1218,6 +1229,15 @@ function SoundAlerter:OnOptionsCreate()
 								descStyle = "custom",
 								order = 2,
 							},
+							HotStreak = {
+								type = 'toggle',
+								name = GetSpellInfo(44445),
+								desc = function ()
+									GameTooltip:SetHyperlink(GetSpellLink(44445));
+								end,
+								descStyle = "custom",
+								order = 3,
+							},
 						}
 					},
 					hunter = {
@@ -1760,6 +1780,8 @@ function SoundAlerter:COMBAT_LOG_EVENT_UNFILTERED(event , ...)
 	end
 enddebug]]
 	--Event Spell_AURA_APPLIED works with enemies with buffs on them from used cooldowns
+
+--local COMBATLOG_TARGET	= COMBATLOG_OBJECT_TARGET
 	if (event == "SPELL_AURA_APPLIED" and toEnemy and (not SOUNDALERTERdb.onlyTarget or toTarget) and not SOUNDALERTERdb.auraApplied) then
 
 		--Night Elves
@@ -1839,6 +1861,9 @@ enddebug]]
 		if (spellName == "Shield Wall" and SOUNDALERTERdb.shieldWall) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Shield Wall.mp3")
 		end
+		if (spellName == "Last Stand" and SOUNDALERTERdb.laststand) then
+			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Shield Wall.mp3")
+		end
 		if (spellName == "Berserker Rage" and SOUNDALERTERdb.berserkerRage) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Berserker Rage.mp3");
 		end
@@ -1892,6 +1917,9 @@ enddebug]]
 		end
 		if (spellName == "Evocation" and SOUNDALERTERdb.evocation) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Evocation.mp3");
+		end
+		if (spellName == "Hot Streak" and SOUNDALERTERdb.HotStreak) then
+			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Hot Streak.MP3");
 		end
 		--dk
 		if (spellName == "Lichborne" and SOUNDALERTERdb.lichborne) then
