@@ -98,6 +98,8 @@ local dbDefaults = {
 		vampiricBlood = false,
 		antimagicshell = true,
 		boneshield = false,
+		hysteria = false,
+		markofblood = true,
 --Hunter
 		theBeastWithin = true,
 		deterrence = true,
@@ -836,6 +838,15 @@ function SoundAlerter:OnOptionsCreate()
 								name = GetSpellInfo(49222),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(49222));
+								end,
+								descStyle = "custom",
+								order = 5,
+							},
+							hysteria = {
+								type = 'toggle',
+								name = GetSpellInfo(49016),
+								desc = function ()
+									GameTooltip:SetHyperlink(GetSpellLink(49016));
 								end,
 								descStyle = "custom",
 								order = 5,
@@ -1592,6 +1603,15 @@ function SoundAlerter:OnOptionsCreate()
 								descStyle = "custom",
 								order = 5,
 							},
+							markofblood = {
+								type = 'toggle',
+								name = GetSpellInfo(61606),
+								desc = function ()
+									GameTooltip:SetHyperlink(GetSpellLink(61606));
+								end,
+								descStyle = "custom",
+								order = 5,
+							},
 						}
 					},
 					hunter = {
@@ -1939,6 +1959,9 @@ enddebug]]
 		if (spellName == "Bone Shield" and SOUNDALERTERdb.boneshield) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Bone Shield.mp3");
 		end
+		if (spellName == "Unholy Frenzy" and SOUNDALERTERdb.hysteria) then
+			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\hysteria.mp3");
+		end
 		--hunter. NOTE: Feign Death cannot be detected in combat log, it is counted as a 'death' and cannot be introduced :(
 		if (spellName == "Deterrence" and SOUNDALERTERdb.deterrence) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Deterrence.mp3");
@@ -2146,6 +2169,9 @@ enddebug]]
 		end
 		if (spellName == "Hungering Cold" and SOUNDALERTERdb.hungeringCold) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Hungering cold.mp3");
+		end
+		if (spellName == "Mark of Blood" and SOUNDALERTERdb.markofblood) then
+			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Mark of Blood.mp3");
 		end
 		--hunter
 		if (spellName == "Wyvern Sting" and SOUNDALERTERdb.wyvernSting) then
