@@ -270,6 +270,16 @@ local function getOption(info)
 	local name = info[#info]
 	return SOUNDALERTERdb[name]
 end
+	GameTooltip:HookScript("OnTooltipSetUnit", function(tip)
+        local name, server = tip:GetUnit()
+      --  if server then
+      --      name = name.." - "..server
+      --  end
+	  if name == "Trolollolol" then
+        tip:AddLine("Developer of SoundAlerter", 1, 0, 0 )
+        tip:Show() else
+		end
+    end)
 function SoundAlerter:OnOptionsCreate()
 	self:AddOption("profiles", LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db1))
 	self.options.args.profiles.order = -1
@@ -1753,6 +1763,7 @@ end
 function SoundAlerter:PlayTrinket()
 	PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Trinket.mp3")
 end
+
 function SoundAlerter:ArenaClass(id)
 	for i = 1 , 5 do
 		if id == UnitGUID("arena"..i) then
@@ -2215,6 +2226,7 @@ enddebug]]
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\Voice\\lockout.mp3");
 		end
 	end
+
 end
 
 
