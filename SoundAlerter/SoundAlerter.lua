@@ -1761,7 +1761,7 @@ function SoundAlerter:OnOptionsCreate()
 	})
 end
 function SoundAlerter:PlayTrinket()
-	PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Trinket.mp3")
+	PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Trinket.mp3");
 end
 
 function SoundAlerter:ArenaClass(id)
@@ -2083,13 +2083,14 @@ enddebug]]
 	--General
 		if ( (spellName == "Every Man for Himself" or spellName == "PvP Trinket") and SOUNDALERTERdb.trinket) then
 			if (SOUNDALERTERdb.class and currentZoneType == "arena" ) then
-				local c = self:ArenaClass(destGUID)
-				PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Trinket.mp3");
-				self:ScheduleTimer("PlayTrinket", 0.3)
+				local c = self:ArenaClass(sourceGUID)--destguid
+				if c then
+				PlaySoundFile("Interface\\Addons\\SoundAlerter\\Voice\\"..c..".mp3");
+				self:ScheduleTimer("PlayTrinket", 0.4);
+				end
 			else
 				self:PlayTrinket()
 			end
-			--PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Trinket.mp3");
 		end
 		--druid
 		--paladin
