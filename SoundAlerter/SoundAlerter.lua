@@ -272,10 +272,7 @@ local function getOption(info)
 end
 	GameTooltip:HookScript("OnTooltipSetUnit", function(tip)
         local name, server = tip:GetUnit()
-		local Realm = GetRealmName();
-      --  if server then
-      --      name = name.." - "..server
-      --  end
+		local Realm = GetRealmName()
 	  if (name == "Trollolloll" and Realm == "Warsong (Pure PvP)") or (name == "Trolollolol" and Realm == "Sargeras x20") then
         tip:AddLine("Developer of SoundAlerter", 1, 0, 0 ) --red, green, blue
         tip:Show() elseif
@@ -1768,9 +1765,6 @@ end
 function SoundAlerter:PlayTrinket()
 	PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Trinket.mp3");
 end
-function SoundAlerter:DrinkingSpell()
-	PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\drinking.mp3");
-end
 function SoundAlerter:ArenaClass(id)
 	for i = 1 , 5 do
 		if id == UnitGUID("arena"..i) then
@@ -1785,7 +1779,7 @@ function SoundAlerter:COMBAT_LOG_EVENT_UNFILTERED(event , ...)
 	local _,currentZoneType = IsInInstance()
 	local pvpType, isFFA, faction = GetZonePVPInfo();
 	--if (not ((currentZoneType == "none" and SOUNDALERTERdb.field) or (currentZoneType == "pvp" and SOUNDALERTERdb.battleground) or (currentZoneType == "arena" and SOUNDALERTERdb.arena) or SOUNDALERTERdb.all)) then
-	if (not ((pvpType == "contested" and SOUNDALERTERdb.field) or (pvpType == "hostile" and SOUNDALERTERdb.field) or (currentZoneType == "pvp" and SOUNDALERTERdb.battleground) or (currentZoneType == "arena" and SOUNDALERTERdb.arena) or SOUNDALERTERdb.all)) then
+	if (not ((pvpType == "contested" and SOUNDALERTERdb.field) or (pvpType == "hostile" and SOUNDALERTERdb.field) or (pvpType == "friendly" and SOUNDALERTERdb.field) or (currentZoneType == "pvp" and SOUNDALERTERdb.battleground) or (currentZoneType == "arena" and SOUNDALERTERdb.arena) or SOUNDALERTERdb.all)) then
 		--print (currentZoneType,SOUNDALERTERdb.field,SOUNDALERTERdb.battleground,SOUNDALERTERdb.arena,SOUNDALERTERdb.all)
 		return
 	end
