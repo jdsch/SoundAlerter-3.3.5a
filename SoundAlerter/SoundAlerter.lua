@@ -2225,7 +2225,7 @@ enddebug]]
 		end
 	end
 	if (event == "SPELL_INTERRUPT" and toEnemy and not SOUNDALERTERdb.interrupt) then
-		if ((spellName == "Deep Freeze" or spellName == "Counterspell" or spellName == "Kick" or spellName == "Wind Shear" or spellName == "Shield Bash" or spellName == "Mind Freeze" ) and SOUNDALERTERdb.lockout) then
+		if ((spellName == "Deep Freeze" or spellName == "Counterspell" or spellName == "Arcane Torrent" or spellName == "Kick" or spellName == "Wind Shear" or spellName == "Shield Bash" or spellName == "Mind Freeze" ) and SOUNDALERTERdb.lockout) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\Voice\\lockout.mp3");
 		end
 	end
