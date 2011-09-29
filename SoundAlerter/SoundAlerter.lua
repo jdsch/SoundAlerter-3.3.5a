@@ -272,14 +272,19 @@ local function getOption(info)
 end
 	GameTooltip:HookScript("OnTooltipSetUnit", function(tip)
         local name, server = tip:GetUnit()
+		local Realm = GetRealmName();
       --  if server then
       --      name = name.." - "..server
       --  end
-	  if name == "Trolollolol" then
-        tip:AddLine("Developer of SoundAlerter", 1, 0, 0 )
+	  if (name == "Trollolloll" and Realm == "Warsong (Pure PvP)") or (name == "Trolollolol" and Realm == "Sargeras x20") then
+        tip:AddLine("Developer of SoundAlerter", 1, 0, 0 ) --red, green, blue
+        tip:Show() elseif
+		(name == "Shaquetta" and Realm == "Warsong (Pure PvP)") then
+		tip:AddLine("Contributer of SoundAlerter", 1, 0, 0 )
         tip:Show() else
 		end
     end)
+
 function SoundAlerter:OnOptionsCreate()
 	self:AddOption("profiles", LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db1))
 	self.options.args.profiles.order = -1
@@ -391,8 +396,8 @@ function SoundAlerter:OnOptionsCreate()
 					},
 					class = {
 						type = 'toggle',
-						name = "Alert Trinket",
-						desc = "In arena, alert when enemy trinketted",
+						name = "Alert Class calling for trinketting in Arena",
+						desc = "Alert when an enemy class trinkets in arena",
 						order = 2,
 					},
 					general = {
@@ -1763,7 +1768,9 @@ end
 function SoundAlerter:PlayTrinket()
 	PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Trinket.mp3");
 end
-
+function SoundAlerter:DrinkingSpell()
+	PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\drinking.mp3");
+end
 function SoundAlerter:ArenaClass(id)
 	for i = 1 , 5 do
 		if id == UnitGUID("arena"..i) then
@@ -1815,6 +1822,7 @@ enddebug]]
 	--Event Spell_AURA_APPLIED works with enemies with buffs on them from used cooldowns
 
 --local COMBATLOG_TARGET	= COMBATLOG_OBJECT_TARGET
+
 	if (event == "SPELL_AURA_APPLIED" and toEnemy and (not SOUNDALERTERdb.onlyTarget or toTarget) and not SOUNDALERTERdb.auraApplied) then
 
 		--Night Elves
@@ -2088,10 +2096,10 @@ enddebug]]
 				PlaySoundFile("Interface\\Addons\\SoundAlerter\\Voice\\"..c..".mp3");
 				self:ScheduleTimer("PlayTrinket", 0.4);
 				end
-			else
+				else
 				self:PlayTrinket()
+				end
 			end
-		end
 		--druid
 		--paladin
 		--rogue
