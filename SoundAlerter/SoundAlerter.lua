@@ -276,8 +276,8 @@ end
 	  if (name == "Trollolloll" and Realm == "Warsong (Pure PvP)") or ((name == "Trolollolol" or name == "Trollollollo" or name == "Trollololool" or name == "Troolololol" or name == "Ammonia") and Realm == "Sargeras x20") then
         tip:AddLine("Developer of SoundAlerter", 1, 0, 0 ) --red, green, blue
         tip:Show() elseif
-		(name == "Shaquetta" and Realm == "Warsong (Pure PvP)") then
-		tip:AddLine("Contributer of SoundAlerter", 1, 0, 0 )
+		(name == "Shaquetta" and Realm == "Warsong (Pure PvP)") --[[ Warsong Realm]] or ((name == "Drterror" or name == "Horrorshaman" or name == "Cheaptrick" or name == "Zerodeath") and Realm == "Neltharion x12") --[[ Neltharion Realm]]or (name == "Clov" and Realm == "Frostwolf x3") --[[ Frostwolf Realm]] then
+		tip:AddLine("Official Contributer of SoundAlerter", 1, 0, 0 )
         tip:Show() else
 		end
     end)
