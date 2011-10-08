@@ -49,6 +49,8 @@ local dbDefaults = {
 		frenziedRegeneration = true,
 		enrage = false,
 		desh = false,
+		starfall = true,
+		sfalldown = true,
 --Paladin
 		auraMastery = true,
 		handOfProtection = true,
@@ -273,7 +275,7 @@ end
 	GameTooltip:HookScript("OnTooltipSetUnit", function(tip)
         local name, server = tip:GetUnit()
 		local Realm = GetRealmName()
-	  if (name == "Trollolloll" and Realm == "Warsong (Pure PvP)") or ((name == "Trolollolol" or name == "Trollollollo" or name == "Trollololool" or name == "Troolololol" or name == "Ammonia" or name == "Lockmepls") and Realm == "Sargeras x20") then
+	  if (name == "Trollolloll" and Realm == "Warsong (Pure PvP)") or ((name == "Trolollolol" or name == "Trollollollo" or name == "Trollololool" or name == "Troolololol" or name == "Ammonia") and Realm == "Sargeras x20") then
         tip:AddLine("Developer of SoundAlerter", 1, 0, 0 ) --red, green, blue
         tip:Show() elseif
 		(name == "Shaquetta" and Realm == "Warsong (Pure PvP)") --[[ Warsong Realm]] or ((name == "Drterror" or name == "Horrorshaman" or name == "Cheaptrick" or name == "Zerodeath") and Realm == "Neltharion x12") --[[ Neltharion Realm]]or (name == "Clov" and Realm == "Frostwolf x3") --[[ Frostwolf Realm]] then
@@ -473,6 +475,15 @@ function SoundAlerter:OnOptionsCreate()
 								end,
 								descStyle = "custom",
 								order = 7,
+							},
+							starfall = {
+								type = 'toggle',
+								name = GetSpellInfo(48505),
+								desc = function ()
+									GameTooltip:SetHyperlink(GetSpellLink(48505));
+								end,
+								descStyle = "custom",
+								order = 8,
 							},
 						}
 					},
@@ -1099,6 +1110,23 @@ function SoundAlerter:OnOptionsCreate()
 								end,
 								descStyle = "custom",
 								order = 2,
+							},
+						},
+					},
+					druid = {
+						type = 'group',
+						inline = true,
+						name = "|cffFF7D0ADruid|r",
+						order = 11,
+						args = {
+							sfalldown = {
+								type = 'toggle',
+								name = GetSpellInfo(48505),
+								desc = function ()
+									GameTooltip:SetHyperlink(GetSpellLink(48505));
+								end,
+								descStyle = "custom",
+								order = 1,
 							},
 						},
 					},
@@ -1854,6 +1882,9 @@ enddebug]]
 		if (spellName == "Frenzied Regeneration" and SOUNDALERTERdb.frenziedRegeneration) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Frenzied Regeneration.mp3");
 		end
+		if (spellName == "Starfall" and SOUNDALERTERdb.starfall) then
+			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Starfall.mp3");
+		end
 		--paladin
 		if (spellName == "Aura Mastery" and SOUNDALERTERdb.auraMastery) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Aura Mastery.mp3");
@@ -1934,7 +1965,7 @@ enddebug]]
 		if (spellName == "Water Shield" and SOUNDALERTERdb.waterShield) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\water shield.mp3");
 		end
-		if (spellName == "Elemental Mastery" and SOUNDALERTERdb.ElementalMastery) then
+		if (spellID == "16166" and SOUNDALERTERdb.ElementalMastery) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\ElementalMastery.mp3");
 		end
 		if (spellName == "Shamanistic Rage" and SOUNDALERTERdb.shamanisticRage) then
@@ -1992,6 +2023,9 @@ enddebug]]
 		if (spellName == "Deterrence" and SOUNDALERTERdb.deterdown) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Deterrencedown.mp3");
 		end
+		if (spellName == "Starfall" and SOUNDALERTERdb.sfalldown) then
+			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Starfalldown.mp3");
+		end
 		if (spellName == "Divine Shield" and SOUNDALERTERdb.bubbleDown) then
 		   PlaySoundFile("Interface\\Addons\\SoundAlerter\\Voice\\Bubble down.mp3")
 		end
@@ -2022,19 +2056,16 @@ enddebug]]
 	end
 	if (event == "SPELL_CAST_START" and fromEnemy and not SOUNDALERTERdb.castStart) then
 	--general
-		if ((spellName == "Heal" or spellName == "Holy Light" or spellName == "Healing Wave" or spellName == "Healing Touch") and SOUNDALERTERdb.bigHeal) then -- 强效治疗术 神光术 强效治疗波 治疗之触
+		if ((spellName == "Heal" or spellName == "Holy Light" or spellName == "Healing Wave" or spellName == "Healing Touch") and SOUNDALERTERdb.bigHeal) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\Voice\\big heal.mp3");
 		end
-		if ((spellName == "Resurrection" or spellName == "Ancestral Spirit" or spellName == "Redemption" or spellName == "Revive") and SOUNDALERTERdb.resurrection) then -- 复活术 救赎 先祖之魂 复活
+		if ((spellName == "Resurrection" or spellName == "Ancestral Spirit" or spellName == "Redemption" or spellName == "Revive") and SOUNDALERTERdb.resurrection) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Resurrection.mp3");
 		end
 	--hunter
 		if (spellName == "Revive Pet" and SOUNDALERTERdb.revivePet) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Revive Pet.mp3");
 		end
-	end
-	if (event == "SPELL_CAST_START" and fromEnemy and not SOUNDALERTERdb.castStart) then
-
 		--druid
 		if (spellName == "Cyclone" and SOUNDALERTERdb.cyclone) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\cyclone.mp3");
@@ -2046,7 +2077,7 @@ enddebug]]
 		--rogue
 		--warrior
 		--priest
-		if (spellName == "Mana Burn" and SOUNDALERTERdb.manaBurn) then -- 法力燃烧
+		if (spellName == "Mana Burn" and SOUNDALERTERdb.manaBurn) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Mana Burn.mp3");
 		end
 		if (spellName == "Shackle Undead" and SOUNDALERTERdb.shackleUndead) then
