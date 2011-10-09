@@ -67,10 +67,8 @@ local dbDefaults = {
 		evasion = true,
 		CheatDeath = true,
 		vanish = true,
-		vanishalert = true,
 		bladeflurry = false,
 		stealth = true,
-		stealthalert = true,
 --Warrior
 		deathWish = true,
 		enragedRegeneration = true,
@@ -198,6 +196,9 @@ local dbDefaults = {
 		demonicCircleTeleport = true,
 
 		lockout = true,
+--Chat Alerts
+		stealthalert = true,
+		vanishalert = true,
 
 	}
 }
@@ -372,11 +373,17 @@ function SoundAlerter:OnOptionsCreate()
 						desc = "Disbles sound notifications of special abilities",
 						order = 4,
 					},
+					chatalerts = {
+						type = 'toggle',
+						name = "Disable Chat Alerts",
+						desc = "Disbles Chat notifications of special abilities in the chat bar",
+						order = 5,
+					},
 					interrupt = {
 						type = 'toggle',
 						name = "Disable friendly interrupted spells",
 						desc = "Check this option to disable notifications of friendly interrupted spells",
-						order = 5,
+						order = 6,
 					}
 				},
 			},
@@ -1416,13 +1423,6 @@ function SoundAlerter:OnOptionsCreate()
 								descStyle = "custom",
 								order = 5,
 							},
-							vanishalert = {
-								type = 'toggle',
-								name = "Alert Vanish in Chat Bar",
-								desc = "Adds a line in your chat bar notifying if the target has vanished",
-								descStyle = "custom",
-								order = 6,
-							},
 							bladeflurry = {
 								type = 'toggle',
 								name = GetSpellInfo(13877),
@@ -1430,7 +1430,7 @@ function SoundAlerter:OnOptionsCreate()
 									GameTooltip:SetHyperlink(GetSpellLink(13877));
 								end,
 								descStyle = "custom",
-								order = 7,
+								order = 6,
 							},
 							stealth = {
 								type = 'toggle',
@@ -1439,14 +1439,7 @@ function SoundAlerter:OnOptionsCreate()
 									GameTooltip:SetHyperlink(GetSpellLink(1784));
 								end,
 								descStyle = "custom",
-								order = 8,
-							},
-							stealthalert = {
-								type = 'toggle',
-								name = "Alert Stealth in Chat bar",
-								desc = "Alerts Stealth in chat bar",
-								descStyle = "custom",
-								order = 9,
+								order = 7,
 							},
 						}
 					},
@@ -1786,6 +1779,43 @@ function SoundAlerter:OnOptionsCreate()
 					},
 				},
 			},
+			chatalerter = {
+				type = 'group',
+				--inline = true,
+				name = "Chat Alerts",
+				disabled = function() return SOUNDALERTERdb.chatalerts end,
+				set = setOption,
+				get = getOption,
+				order = 4,
+				args = {
+						rogue = {
+						type = 'group',
+						inline = true,
+						name = "|cffFFF569Rogue|r",
+						order = 1,
+						args = {
+							stealthalert = {
+								type = 'toggle',
+								name = GetSpellInfo(1784),
+								desc = function ()
+									GameTooltip:SetHyperlink(GetSpellLink(1784));
+								end,
+								descStyle = "custom",
+								order = 1,
+							},
+							vanishalert = {
+								type = 'toggle',
+								name = GetSpellInfo(1856),
+								desc = function ()
+									GameTooltip:SetHyperlink(GetSpellLink(1856));
+								end,
+								descStyle = "custom",
+								order = 2,
+							},
+						},
+					}
+				},
+			},
 			spellInterrupt = {
 				type = 'group',
 				--inline = true,
@@ -1793,7 +1823,7 @@ function SoundAlerter:OnOptionsCreate()
 				disabled = function() return SOUNDALERTERdb.interrupt end,
 				set = setOption,
 				get = getOption,
-				order = 4,
+				order = 5,
 				args = {
 					lockout = {
 						type = 'toggle',
@@ -2160,20 +2190,20 @@ enddebug]]
 		if (spellName == "Preparation" and SOUNDALERTERdb.kick) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\preparation.mp3")
 		end
-		if (spellName == "Vanish" and SOUNDALERTERdb.vanish and not SOUNDALERTERdb.vanishalert) then
+		if (spellName == "Vanish" and SOUNDALERTERdb.vanish and (SOUNDALERTERdb.chatalerts or not SOUNDALERTERdb.vanishalert)) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Vanish.mp3")
 		end
-		if (spellName == "Vanish" and SOUNDALERTERdb.vanish and SOUNDALERTERdb.vanishalert) then
+		if (spellName == "Vanish" and SOUNDALERTERdb.vanish and SOUNDALERTERdb.vanishalert and not SOUNDALERTERdb.chatalerts) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Vanish.mp3")
 			DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." casts Vanish.", 1.0, 0.25, 0.25);
 		end
 		if (spellName == "Blade Flurry" and SOUNDALERTERdb.bladeflurry) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Blade Flurry.mp3")
 		end
-		if (spellName == "Stealth" and SOUNDALERTERdb.stealth and not SOUNDALERTERdb.stealthalert) then
+		if (spellName == "Stealth" and SOUNDALERTERdb.stealth and (SOUNDALERTERdb.chatalerts or not SOUNDALERTERdb.stealthalert)) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Stealth.mp3")
 		end
-		if (spellName == "Stealth" and SOUNDALERTERdb.stealth and SOUNDALERTERdb.stealthalert) then
+		if (spellName == "Stealth" and SOUNDALERTERdb.stealth and SOUNDALERTERdb.stealthalert and not SOUNDALERTERdb.chatalerts) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Stealth.mp3")
 			DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." casts Stealth.", 1.0, 0.25, 0.25);
 		end
