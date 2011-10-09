@@ -199,6 +199,7 @@ local dbDefaults = {
 --Chat Alerts
 		stealthalert = true,
 		vanishalert = true,
+		trinketalert = true,
 
 	}
 }
@@ -923,7 +924,7 @@ function SoundAlerter:OnOptionsCreate()
 					races = {
 						type = 'group',
 						inline = true,
-						name = "|cffABD473General Races|r",
+						name = "|cffFFFFFFGeneral Races|r",
 						order = 14,
 						args = {
 							Shadowmeld = { --need to add mp3
@@ -1792,7 +1793,7 @@ function SoundAlerter:OnOptionsCreate()
 						type = 'group',
 						inline = true,
 						name = "|cffFFF569Rogue|r",
-						order = 1,
+						order = 2,
 						args = {
 							stealthalert = {
 								type = 'toggle',
@@ -1811,6 +1812,23 @@ function SoundAlerter:OnOptionsCreate()
 								end,
 								descStyle = "custom",
 								order = 2,
+							},
+						},
+					},
+					general = {
+						type = 'group',
+						inline = true,
+						name = "|cffFFFFFFGeneral|r",
+						order = 1,
+						args = {
+							trinketalert = {
+								type = 'toggle',
+								name = GetSpellInfo(42292),
+								desc = function ()
+									GameTooltip:SetHyperlink(GetSpellLink(42292));
+								end,
+								descStyle = "custom",
+								order = 1,
 							},
 						},
 					}
@@ -2171,6 +2189,9 @@ enddebug]]
 				self:PlayTrinket()
 				end
 			end
+		if ((spellName == "Every Man for Himself" or spellName == "PvP Trinket") and SOUNDALERTERdb.trinketalert and not SOUNDALERTERdb.chatalerts) then
+		DEFAULT_CHAT_FRAME:AddMessage("["..sourceName.."]: Trinketted - Cooldown: 2 minutes", 1.0, 0.25, 0.25);
+		end
 		--druid
 		--paladin
 		--rogue
@@ -2190,12 +2211,12 @@ enddebug]]
 		if (spellName == "Preparation" and SOUNDALERTERdb.kick) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\preparation.mp3")
 		end
-		if (spellName == "Vanish" and SOUNDALERTERdb.vanish and (SOUNDALERTERdb.chatalerts or not SOUNDALERTERdb.vanishalert)) then
+		if (spellName == "Vanish" and SOUNDALERTERdb.vanish) then -- and (SOUNDALERTERdb.chatalerts or not SOUNDALERTERdb.vanishalert)
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Vanish.mp3")
 		end
 		if (spellName == "Vanish" and SOUNDALERTERdb.vanish and SOUNDALERTERdb.vanishalert and not SOUNDALERTERdb.chatalerts) then
-			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Vanish.mp3")
-			DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." casts Vanish.", 1.0, 0.25, 0.25);
+		--	PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Vanish.mp3")
+			DEFAULT_CHAT_FRAME:AddMessage("["..sourceName.."] Casts \124cff71d5ff\124Hspell:1856\124h[Vanish]\124h\124r - Cooldown: 2 minutes", 1.0, 0.25, 0.25);
 		end
 		if (spellName == "Blade Flurry" and SOUNDALERTERdb.bladeflurry) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Blade Flurry.mp3")
@@ -2205,7 +2226,7 @@ enddebug]]
 		end
 		if (spellName == "Stealth" and SOUNDALERTERdb.stealth and SOUNDALERTERdb.stealthalert and not SOUNDALERTERdb.chatalerts) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Stealth.mp3")
-			DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." casts Stealth.", 1.0, 0.25, 0.25);
+			DEFAULT_CHAT_FRAME:AddMessage("["..sourceName.."]: Casted \124cff71d5ff\124Hspell:1784\124h[Stealth]\124h\124r", 1.0, 0.25, 0.25);
 		end
 		--warrior
 		if (spellName == "Disarm" and SOUNDALERTERdb.disarm) then
