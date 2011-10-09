@@ -8,6 +8,8 @@ local SOUNDALERTER_AUTHOR=" updated by |cff0070DETrolollolol|r - Sargeras - Molt
 local SOUNDALERTERdb
 local PlaySoundFile = PlaySoundFile
 
+
+
 --warning to non-english clients
 if (GetLocale() == "zhCN") then
 DEFAULT_CHAT_FRAME:AddMessage("|cffFF7D0ASoundAlerter|r Currently only works on English Clients only, sorry. If you would like to get involved, send a PM to shamwoww on forum.molten-wow.com or send a message to |cff0070DETrolollolol|r - Sargeras - Horde - Molten-WoW.com");
@@ -35,10 +37,11 @@ local dbDefaults = {
 		castSuccess = false,
 		interrupt = false,
 
-		onlyTarget = false,
+		enemyinrange = true,
 		class = true,
 		shadowmeld = true,
 		trinket = true,
+		myself = false,
 --Druid
 		thorns = true,
 		survivalInstincts = true,
@@ -330,6 +333,20 @@ function SoundAlerter:OnOptionsCreate()
 						desc = "Enabled outside Battlegrounds and arenas",
 						disabled = function() return SOUNDALERTERdb.all end,
 						order = 4,
+					},
+					myself = {
+						type = 'toggle',
+						name = "Enemy Target abilities only",
+						disabled = function() return SOUNDALERTERdb.enemyinrange end,
+						desc = "Alert works only when your current target casts a spell, or an enemy casts a spell on you",
+						order = 5,
+					},
+					enemyinrange = {
+						type = 'toggle',
+						name = "All Enemies in Range",
+						desc = "Alerts are enabled for all enemies in range",
+						disabled = function() return SOUNDALERTERdb.myself end,
+						order = 6,
 					}
 				},
 			},
@@ -397,23 +414,17 @@ function SoundAlerter:OnOptionsCreate()
 				disabled = function() return SOUNDALERTERdb.auraApplied end,
 				order = 1,
 				args = {
-					onlyTarget = {
-						type = 'toggle',
-						name = "Target and Focus only",
-						desc = "Alert works only when your current target or focus gains the buff effect or use the ability",
-						order = 1,
-					},
 					class = {
 						type = 'toggle',
 						name = "Alert Class calling for trinketting in Arena",
 						desc = "Alert when an enemy class trinkets in arena",
-						order = 2,
+						order = 3,
 					},
 					general = {
 						type = 'group',
 						inline = true,
 						name = "General spells",
-						order = 3,
+						order = 4,
 						args = {
 							trinket = {
 								type = 'toggle',
@@ -422,7 +433,7 @@ function SoundAlerter:OnOptionsCreate()
 									GameTooltip:SetHyperlink(GetSpellLink(42292));
 								end,
 								descStyle = "custom",
-								order = 2,
+								order = 1,
 							},
 						}
 					},
@@ -1877,12 +1888,14 @@ function SoundAlerter:COMBAT_LOG_EVENT_UNFILTERED(event , ...)
 	end
 	local timestamp,event,sourceGUID,sourceName,sourceFlags,destGUID,destName,destFlags,spellID,spellName= select ( 1 , ... );
 	--print (sourceName,destName,event,spellName,spellID);
-	local toEnemy,fromEnemy,toSelf,toTarget = false , false , false , false
+	local toEnemy,fromEnemy,toSelf,toTarget,fromFocus = false , false , false , false , false
 	if (destName and not CombatLog_Object_IsA(destFlags, COMBATLOG_OBJECT_NONE) ) then
 		toEnemy = CombatLog_Object_IsA(destFlags, COMBATLOG_FILTER_HOSTILE_PLAYERS)
 	end
 	if (sourceName and not CombatLog_Object_IsA(sourceFlags, COMBATLOG_OBJECT_NONE) ) then
 		fromEnemy = CombatLog_Object_IsA(sourceFlags, COMBATLOG_FILTER_HOSTILE_PLAYERS)
+		fromTarget = CombatLog_Object_IsA(sourceFlags, COMBATLOG_OBJECT_TARGET)
+		fromFocus = CombatLog_Object_IsA(sourceFlags, COMBATLOG_OBJECT_FOCUS)
 	end
 	if (destName and not CombatLog_Object_IsA(destFlags, COMBATLOG_OBJECT_NONE) ) then
 		toSelf = CombatLog_Object_IsA(destFlags, COMBATLOG_FILTER_MINE)
@@ -1891,7 +1904,10 @@ function SoundAlerter:COMBAT_LOG_EVENT_UNFILTERED(event , ...)
 		toFriend = CombatLog_Object_IsA(destFlags, COMBATLOG_FILTER_FRIENDLY_UNITS)
 	end
 	if (destName and not CombatLog_Object_IsA(destFlags, COMBATLOG_OBJECT_NONE) ) then
-		toTarget = (UnitGUID("target") == destGUID)
+	toTarget = COMBATLOG_OBJECT_TARGET
+	toFocus = CombatLog_Object_IsA(destFlags, COMBATLOG_OBJECT_FOCUS)
+		--toTarget = CombatLog_Object_IsA(destFlags, COMBATLOG_OBJECT_TARGET)
+		--toTarget = (UnitGUID("target") == destGUID)
 	end
 	--print (toTarget,sourceName,destName)
 	--DEBUG
@@ -1907,9 +1923,7 @@ function SoundAlerter:COMBAT_LOG_EVENT_UNFILTERED(event , ...)
 enddebug]]
 	--Event Spell_AURA_APPLIED works with enemies with buffs on them from used cooldowns
 
---local COMBATLOG_TARGET	= COMBATLOG_OBJECT_TARGET
-
-	if (event == "SPELL_AURA_APPLIED" and toEnemy and (not SOUNDALERTERdb.onlyTarget or toTarget) and not SOUNDALERTERdb.auraApplied) then
+	if (event == "SPELL_AURA_APPLIED" and toEnemy and ((SOUNDALERTERdb.myself and fromTarget) or SOUNDALERTERdb.enemyinrange) and not SOUNDALERTERdb.auraApplied) then --(not SOUNDALERTERdb.onlyTarget or toTarget)
 
 		--Night Elves
 		if (spellName == "Shadowmeld" and SOUNDALERTERdb.Shadowmeld) then
@@ -2083,7 +2097,7 @@ enddebug]]
 		end
 	end
 	--Event SPELL_AURA_REMOVED is when enemies have lost the buff provided by SPELL_AURA_APPLIED (eg. Bubble down)
-	if (event == "SPELL_AURA_REMOVED" and toEnemy and not SOUNDALERTERdb.auraRemoved) then
+	if (event == "SPELL_AURA_REMOVED" and toEnemy and ((SOUNDALERTERdb.myself and fromTarget) or SOUNDALERTERdb.enemyinrange) and not SOUNDALERTERdb.auraRemoved) then
 		if (spellName == "Deterrence" and SOUNDALERTERdb.deterdown) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Deterrencedown.mp3");
 		end
@@ -2118,7 +2132,7 @@ enddebug]]
 		   PlaySoundFile("Interface\\Addons\\SoundAlerter\\Voice\\Icebound Fortitude Down.mp3")
 		end
 	end
-	if (event == "SPELL_CAST_START" and fromEnemy and not SOUNDALERTERdb.castStart) then
+	if (event == "SPELL_CAST_START" and fromEnemy and ((SOUNDALERTERdb.myself and fromTarget) or SOUNDALERTERdb.enemyinrange) and not SOUNDALERTERdb.castStart) then--or not (SOUNDALERTERdb.myself or SOUNDALERTERdb.enemyinrange) and not SOUNDALERTERdb.castStart) then
 	--general
 		if ((spellName == "Heal" or spellName == "Holy Light" or spellName == "Healing Wave" or spellName == "Healing Touch") and SOUNDALERTERdb.bigHeal) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\Voice\\big heal.mp3");
@@ -2137,10 +2151,6 @@ enddebug]]
 		if (spellName == "Hibernate" and SOUNDALERTERdb.hibernate) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\hibernate.mp3");
 		end
-		--paladin
-		--rogue
-		--warrior
-		--priest
 		if (spellName == "Mana Burn" and SOUNDALERTERdb.manaBurn) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Mana Burn.mp3");
 		end
@@ -2176,7 +2186,7 @@ enddebug]]
 	end
 	--SPELL_CAST_SUCCESS only applies when the enemy has casted a spell
 	--TODO: Add seperate LUA File for spell list
-	if (event == "SPELL_CAST_SUCCESS" and fromEnemy and not SOUNDALERTERdb.castSuccess) then
+	if (event == "SPELL_CAST_SUCCESS" and fromEnemy and ((SOUNDALERTERdb.myself and fromTarget) or SOUNDALERTERdb.enemyinrange) and not SOUNDALERTERdb.castSuccess) then
 	--General
 		if ( (spellName == "Every Man for Himself" or spellName == "PvP Trinket") and SOUNDALERTERdb.trinket) then
 			if (SOUNDALERTERdb.class and currentZoneType == "arena" ) then
@@ -2216,13 +2226,14 @@ enddebug]]
 		end
 		if (spellName == "Vanish" and SOUNDALERTERdb.vanish and SOUNDALERTERdb.vanishalert and not SOUNDALERTERdb.chatalerts) then
 		--	PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Vanish.mp3")
-			DEFAULT_CHAT_FRAME:AddMessage("["..sourceName.."] Casts \124cff71d5ff\124Hspell:1856\124h[Vanish]\124h\124r - Cooldown: 2 minutes", 1.0, 0.25, 0.25);
+			DEFAULT_CHAT_FRAME:AddMessage("["..sourceName.."]: Casts \124cff71d5ff\124Hspell:1856\124h[Vanish]\124h\124r - Cooldown: 2 minutes", 1.0, 0.25, 0.25);
 		end
 		if (spellName == "Blade Flurry" and SOUNDALERTERdb.bladeflurry) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Blade Flurry.mp3")
 		end
 		if (spellName == "Stealth" and SOUNDALERTERdb.stealth and (SOUNDALERTERdb.chatalerts or not SOUNDALERTERdb.stealthalert)) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Stealth.mp3")
+			
 		end
 		if (spellName == "Stealth" and SOUNDALERTERdb.stealth and SOUNDALERTERdb.stealthalert and not SOUNDALERTERdb.chatalerts) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Stealth.mp3")
@@ -2335,7 +2346,6 @@ enddebug]]
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\Voice\\lockout.mp3");
 		end
 	end
-
 end
 
 
