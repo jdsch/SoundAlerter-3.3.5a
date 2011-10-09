@@ -67,8 +67,10 @@ local dbDefaults = {
 		evasion = true,
 		CheatDeath = true,
 		vanish = true,
+		vanishalert = true,
 		bladeflurry = false,
 		stealth = true,
+		stealthalert = true,
 --Warrior
 		deathWish = true,
 		enragedRegeneration = true,
@@ -1414,6 +1416,13 @@ function SoundAlerter:OnOptionsCreate()
 								descStyle = "custom",
 								order = 5,
 							},
+							vanishalert = {
+								type = 'toggle',
+								name = "Alert Vanish in Chat Bar",
+								desc = "Adds a line in your chat bar notifying if the target has vanished",
+								descStyle = "custom",
+								order = 6,
+							},
 							bladeflurry = {
 								type = 'toggle',
 								name = GetSpellInfo(13877),
@@ -1421,7 +1430,7 @@ function SoundAlerter:OnOptionsCreate()
 									GameTooltip:SetHyperlink(GetSpellLink(13877));
 								end,
 								descStyle = "custom",
-								order = 6,
+								order = 7,
 							},
 							stealth = {
 								type = 'toggle',
@@ -1430,7 +1439,14 @@ function SoundAlerter:OnOptionsCreate()
 									GameTooltip:SetHyperlink(GetSpellLink(1784));
 								end,
 								descStyle = "custom",
-								order = 6,
+								order = 8,
+							},
+							stealthalert = {
+								type = 'toggle',
+								name = "Alert Stealth in Chat bar",
+								desc = "Alerts Stealth in chat bar",
+								descStyle = "custom",
+								order = 9,
 							},
 						}
 					},
@@ -2144,14 +2160,22 @@ enddebug]]
 		if (spellName == "Preparation" and SOUNDALERTERdb.kick) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\preparation.mp3")
 		end
-		if (spellName == "Vanish" and SOUNDALERTERdb.vanish) then
+		if (spellName == "Vanish" and SOUNDALERTERdb.vanish and not SOUNDALERTERdb.vanishalert) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Vanish.mp3")
+		end
+		if (spellName == "Vanish" and SOUNDALERTERdb.vanish and SOUNDALERTERdb.vanishalert) then
+			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Vanish.mp3")
+			DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." casts Vanish.", 1.0, 0.25, 0.25);
 		end
 		if (spellName == "Blade Flurry" and SOUNDALERTERdb.bladeflurry) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Blade Flurry.mp3")
 		end
-		if (spellName == "Stealth" and SOUNDALERTERdb.stealth) then
+		if (spellName == "Stealth" and SOUNDALERTERdb.stealth and not SOUNDALERTERdb.stealthalert) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Stealth.mp3")
+		end
+		if (spellName == "Stealth" and SOUNDALERTERdb.stealth and SOUNDALERTERdb.stealthalert) then
+			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Stealth.mp3")
+			DEFAULT_CHAT_FRAME:AddMessage(""..sourceName.." casts Stealth.", 1.0, 0.25, 0.25);
 		end
 		--warrior
 		if (spellName == "Disarm" and SOUNDALERTERdb.disarm) then
