@@ -2011,7 +2011,7 @@ enddebug]]
 		if (spellName == "Water Shield" and SOUNDALERTERdb.waterShield) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\water shield.mp3");
 		end
-		if (spellID == "16166" and SOUNDALERTERdb.ElementalMastery) then
+		if (spellID == 16166 and SOUNDALERTERdb.ElementalMastery) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\ElementalMastery.mp3");
 		end
 		if (spellName == "Shamanistic Rage" and SOUNDALERTERdb.shamanisticRage) then
