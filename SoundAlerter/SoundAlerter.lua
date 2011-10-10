@@ -282,7 +282,7 @@ end
 	GameTooltip:HookScript("OnTooltipSetUnit", function(tip)
         local name, server = tip:GetUnit()
 		local Realm = GetRealmName()
-	  if (name == "Trollolloll" and Realm == "Warsong (Pure PvP)") or ((name == "Trolollolol" or name == "Trollollollo" or name == "Trollololool" or name == "Troolololol" or name == "Ammonia") and Realm == "Sargeras x20") then
+	  if (name == "Trollolloll" and Realm == "Warsong (Pure PvP)") or ((name == "Trolollolol" or name == "Trollollollo" or name == "Trollololool" or name == "Troolololol" or name == "Ammonia" or name == "Lockmepls") and Realm == "Sargeras x20") then
         tip:AddLine("Developer of SoundAlerter", 1, 0, 0 ) --red, green, blue
         tip:Show() elseif
 		(name == "Shaquetta" and Realm == "Warsong (Pure PvP)") --[[ Warsong Realm]] or ((name == "Drterror" or name == "Horrorshaman" or name == "Cheaptrick" or name == "Zerodeath") and Realm == "Neltharion x12") --[[ Neltharion Realm]]or (name == "Clov" and Realm == "Frostwolf x3") --[[ Frostwolf Realm]] then
