@@ -2314,9 +2314,9 @@ enddebug]]
 		--if (spellName == "Stealth" and SOUNDALERTERdb.stealth and (SOUNDALERTERdb.chatalerts or not SOUNDALERTERdb.stealthalert)) then
 		--	PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Stealth.mp3")
 		--end
-		if (spellName == "Stealth" and SOUNDALERTERdb.stealth) then
+		if (spellName == "Stealth") then
 			if not SOUNDALERTERdb.chatalerts then
-					if SOUNDALERTERdb.stealthalert then
+					if SOUNDALERTERdb.stealthalert and SOUNDALERTERdb.stealth then
 							if SOUNDALERTERdb.party then
 							SendChatMessage("["..sourceName.."]: "..SOUNDALERTERdb.spelltext.." \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "PARTY", nil, nil)
 							end
@@ -2331,11 +2331,25 @@ enddebug]]
 							end
 					PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Stealth.mp3")
 					end
-				if not SOUNDALERTERdb.stealthalert then
+					if SOUNDALERTERdb.stealthalert and not SOUNDALERTERdb.stealth then
+							if SOUNDALERTERdb.party then
+							SendChatMessage("["..sourceName.."]: "..SOUNDALERTERdb.spelltext.." \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "PARTY", nil, nil)
+							end
+							if SOUNDALERTERdb.clientonly then
+							DEFAULT_CHAT_FRAME:AddMessage("["..sourceName.."]: "..SOUNDALERTERdb.spelltext.." \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", 1.0, 0.25, 0.25);
+							end
+							if SOUNDALERTERdb.say then
+							SendChatMessage("["..sourceName.."]: "..SOUNDALERTERdb.spelltext.." \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "SAY", nil, nil)
+							end
+							if SOUNDALERTERdb.bgchat then
+							SendChatMessage("["..sourceName.."]: "..SOUNDALERTERdb.spelltext.." \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "BATTLEGROUND", nil, nil)
+							end
+					end
+				if not SOUNDALERTERdb.stealthalert and SOUNDALERTERdb.stealth then
 				PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Stealth.mp3")
 				end
 			end
-			if SOUNDALERTERdb.chatalerts then
+			if SOUNDALERTERdb.chatalerts and SOUNDALERTERdb.stealth then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Stealth.mp3")
 			end
 		end
