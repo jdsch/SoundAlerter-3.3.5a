@@ -2255,7 +2255,7 @@ enddebug]]
 							SendChatMessage("["..sourceName.."]: Trinketted - Cooldown: 2 minutes", "SAY", nil, nil)
 							end
 							if SOUNDALERTERdb.bgchat then
-							SendChatMessage("["..sourceName.."]: Trinketted - Cooldown: 2 minutesD", nil, nil)
+							SendChatMessage("["..sourceName.."]: Trinketted - Cooldown: 2 minutes", "BATTLEGROUND", nil, nil)
 							end
 		end
 		--druid
