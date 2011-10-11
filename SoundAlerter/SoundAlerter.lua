@@ -2460,28 +2460,28 @@ enddebug]]
 					if not SOUNDALERTERdb.lockout then
 								if not SOUNDALERTERdb.chatalerts and SOUNDALERTERdb.interruptalert then
 											if SOUNDALERTERdb.party then
-												if sourceName == playerName then
+												if sourceName == playerName and (SOUNDALERTERdb.myself or SOUNDALERTERdb.enemyinrange) then
 													SendChatMessage(""..SOUNDALERTERdb.InterruptText.." ["..destName.."]: with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "PARTY", nil, nil)
 													else
 													SendChatMessage("["..sourceName.."]: "..SOUNDALERTERdb.InterruptText.." ["..destName.."]:  with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "PARTY", nil, nil)
 												end
 											end
 											if SOUNDALERTERdb.clientonly then
-												if sourceName == playerName then
+												if sourceName == playerName and (SOUNDALERTERdb.myself or SOUNDALERTERdb.enemyinrange) then
 												DEFAULT_CHAT_FRAME:AddMessage(""..SOUNDALERTERdb.InterruptText.." ["..destName.."]: with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", 1.0, 0.25, 0.25);
 												else
 												DEFAULT_CHAT_FRAME:AddMessage("["..sourceName.."]: has "..SOUNDALERTERdb.InterruptText.." ["..destName.."]:  with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", 1.0, 0.25, 0.25);
 												end
 											end
 											if SOUNDALERTERdb.say then
-												if sourceName == playerName then
+												if sourceName == playerName and (SOUNDALERTERdb.myself or SOUNDALERTERdb.enemyinrange) then
 												SendChatMessage(""..SOUNDALERTERdb.InterruptText.." ["..destName.."]: with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "SAY", nil, nil)
 												else
 												SendChatMessage("["..sourceName.."]: "..SOUNDALERTERdb.InterruptText.." ["..destName.."]:  with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "SAY", nil, nil)
 												end
 											end
 											if SOUNDALERTERdb.bgchat then
-												if sourceName == playerName then
+												if sourceName == playerName  and (SOUNDALERTERdb.myself or SOUNDALERTERdb.enemyinrange) then
 												SendChatMessage(""..SOUNDALERTERdb.InterruptText.." ["..destName.."]: with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "BATTLEGROUND", nil, nil)
 												else
 												SendChatMessage("["..sourceName.."]: "..SOUNDALERTERdb.InterruptText.." ["..destName.."]:  with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "BATTLEGROUND", nil, nil)
@@ -2492,28 +2492,28 @@ enddebug]]
 		if SOUNDALERTERdb.lockout then
 				if not SOUNDALERTERdb.chatalerts and SOUNDALERTERdb.interruptalert then
 					if SOUNDALERTERdb.party then
-						if sourceName == playerName then
+						if sourceName == playerName and (SOUNDALERTERdb.myself or SOUNDALERTERdb.enemyinrange) then
 						SendChatMessage(""..SOUNDALERTERdb.InterruptText.." ["..destName.."]: with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "PARTY", nil, nil)
 						else
 						SendChatMessage("["..sourceName.."]: "..SOUNDALERTERdb.InterruptText.." ["..destName.."]:  with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "PARTY", nil, nil)
 						end
 					end
 					if SOUNDALERTERdb.clientonly then
-						if sourceName == playerName then
+						if sourceName == playerName and (SOUNDALERTERdb.myself or SOUNDALERTERdb.enemyinrange) then
 						DEFAULT_CHAT_FRAME:AddMessage(""..SOUNDALERTERdb.InterruptText.." ["..destName.."]: with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", 1.0, 0.25, 0.25);
 						else
 						DEFAULT_CHAT_FRAME:AddMessage("["..sourceName.."]: has "..SOUNDALERTERdb.InterruptText.." ["..destName.."]:  with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", 1.0, 0.25, 0.25);
 						end
 					end
 					if SOUNDALERTERdb.say then
-						if sourceName == playerName then
+						if sourceName == playerName and (SOUNDALERTERdb.myself or SOUNDALERTERdb.enemyinrange) then
 						SendChatMessage(""..SOUNDALERTERdb.InterruptText.." ["..destName.."]: with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "SAY", nil, nil)
 						else
 						SendChatMessage("["..sourceName.."]: "..SOUNDALERTERdb.InterruptText.." ["..destName.."]:  with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "SAY", nil, nil)
 						end
 					end
 					if SOUNDALERTERdb.bgchat then
-						if sourceName == playerName then
+						if sourceName == playerName and (SOUNDALERTERdb.myself or SOUNDALERTERdb.enemyinrange) then
 						SendChatMessage(""..SOUNDALERTERdb.InterruptText.." ["..destName.."]: with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "BATTLEGROUND", nil, nil)
 						else
 						SendChatMessage("["..sourceName.."]: "..SOUNDALERTERdb.InterruptText.." ["..destName.."]:  with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "BATTLEGROUND", nil, nil)
