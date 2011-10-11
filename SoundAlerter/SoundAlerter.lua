@@ -2443,7 +2443,39 @@ enddebug]]
 	end
 	if (event == "SPELL_INTERRUPT" and toEnemy and not SOUNDALERTERdb.interrupt) then
 		if (spellName == "Deep Freeze" or spellName == "Counterspell" or spellName == "Arcane Torrent" or spellName == "Kick" or spellName == "Wind Shear" or spellName == "Shield Bash" or spellName == "Mind Freeze" ) then
-			if SOUNDALERTERdb.lockout then
+					if not SOUNDALERTERdb.lockout then
+								if not SOUNDALERTERdb.chatalerts and SOUNDALERTERdb.interruptalert then
+											if SOUNDALERTERdb.party then
+												if sourceName == playerName then
+													SendChatMessage(""..SOUNDALERTERdb.InterruptText.." ["..destName.."]: with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "PARTY", nil, nil)
+													else
+													SendChatMessage("["..sourceName.."]: "..SOUNDALERTERdb.InterruptText.." ["..destName.."]:  with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "PARTY", nil, nil)
+												end
+											end
+											if SOUNDALERTERdb.clientonly then
+												if sourceName == playerName then
+												DEFAULT_CHAT_FRAME:AddMessage(""..SOUNDALERTERdb.InterruptText.." ["..destName.."]: with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", 1.0, 0.25, 0.25);
+												else
+												DEFAULT_CHAT_FRAME:AddMessage("["..sourceName.."]: has "..SOUNDALERTERdb.InterruptText.." ["..destName.."]:  with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", 1.0, 0.25, 0.25);
+												end
+											end
+											if SOUNDALERTERdb.say then
+												if sourceName == playerName then
+												SendChatMessage(""..SOUNDALERTERdb.InterruptText.." ["..destName.."]: with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "SAY", nil, nil)
+												else
+												SendChatMessage("["..sourceName.."]: "..SOUNDALERTERdb.InterruptText.." ["..destName.."]:  with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "SAY", nil, nil)
+												end
+											end
+											if SOUNDALERTERdb.bgchat then
+												if sourceName == playerName then
+												SendChatMessage(""..SOUNDALERTERdb.InterruptText.." ["..destName.."]: with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "BATTLEGROUND", nil, nil)
+												else
+												SendChatMessage("["..sourceName.."]: "..SOUNDALERTERdb.InterruptText.." ["..destName.."]:  with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "BATTLEGROUND", nil, nil)
+												end
+											end		
+								end
+					end
+		if SOUNDALERTERdb.lockout then
 				if not SOUNDALERTERdb.chatalerts and SOUNDALERTERdb.interruptalert then
 					if SOUNDALERTERdb.party then
 						if sourceName == playerName then
@@ -2471,10 +2503,10 @@ enddebug]]
 						SendChatMessage(""..SOUNDALERTERdb.InterruptText.." ["..destName.."]: with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "BATTLEGROUND", nil, nil)
 						else
 						SendChatMessage("["..sourceName.."]: "..SOUNDALERTERdb.InterruptText.." ["..destName.."]:  with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "BATTLEGROUND", nil, nil)
+						end
 					end
 				end
-			PlaySoundFile("Interface\\Addons\\SoundAlerter\\Voice\\lockout.mp3");
-			end
+		PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\lockout.mp3");			
 		end
 		end
 	end
