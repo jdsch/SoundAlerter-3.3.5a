@@ -8,3 +8,4 @@
 SoundAlerter.xml
 
 SoundAlerter.lua
+sponsors.lua
