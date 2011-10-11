@@ -7,21 +7,13 @@ local SOUNDALERTER_VERSION= " r335.01"
 local SOUNDALERTER_AUTHOR=" updated by |cff0070DETrolollolol|r - Sargeras - Molten-WoW.com"
 local SOUNDALERTERdb
 local PlaySoundFile = PlaySoundFile
+local SendChatMessage = SendChatMessage
+local playerName = UnitName("player")
 
 
 
 --warning to non-english clients
-if (GetLocale() == "zhCN") then
-DEFAULT_CHAT_FRAME:AddMessage("|cffFF7D0ASoundAlerter|r Currently only works on English Clients only, sorry. If you would like to get involved, send a PM to shamwoww on forum.molten-wow.com or send a message to |cff0070DETrolollolol|r - Sargeras - Horde - Molten-WoW.com");
-elseif (GetLocale() == "zhTW") then
-DEFAULT_CHAT_FRAME:AddMessage("|cffFF7D0ASoundAlerter|r Currently only works on English Clients only, sorry. If you would like to get involved, send a PM to shamwoww on forum.molten-wow.com or send a message to |cff0070DETrolollolol|r - Sargeras - Horde - Molten-WoW.com");
-elseif (GetLocale() == "koKR") then
-DEFAULT_CHAT_FRAME:AddMessage("|cffFF7D0ASoundAlerter|r Currently only works on English Clients only, sorry. If you would like to get involved, send a PM to shamwoww on forum.molten-wow.com or send a message to |cff0070DETrolollolol|r - Sargeras - Horde - Molten-WoW.com");
-elseif (GetLocale() == "frFR") then
-DEFAULT_CHAT_FRAME:AddMessage("|cffFF7D0ASoundAlerter|r Currently only works on English Clients only, sorry. If you would like to get involved, send a PM to shamwoww on forum.molten-wow.com or send a message to |cff0070DETrolollolol|r - Sargeras - Horde - Molten-WoW.com");
-elseif (GetLocale() == "esES") then
-DEFAULT_CHAT_FRAME:AddMessage("|cffFF7D0ASoundAlerter|r Currently only works on English Clients only, sorry. If you would like to get involved, send a PM to shamwoww on forum.molten-wow.com or send a message to |cff0070DETrolollolol|r - Sargeras - Horde - Molten-WoW.com");
-elseif (GetLocale() == "ruRU") then
+if ((GetLocale() == "zhCN") or (GetLocale() == "zhTW") or (GetLocale() == "koKR") or (GetLocale() == "frFR") or (GetLocale() == "esES") or (GetLocale() == "ruRU")) then
 DEFAULT_CHAT_FRAME:AddMessage("|cffFF7D0ASoundAlerter|r Currently only works on English Clients only, sorry. If you would like to get involved, send a PM to shamwoww on forum.molten-wow.com or send a message to |cff0070DETrolollolol|r - Sargeras - Horde - Molten-WoW.com");
 end
 local dbDefaults = {
@@ -202,7 +194,14 @@ local dbDefaults = {
 --Chat Alerts
 		stealthalert = true,
 		vanishalert = true,
-		trinketalert = true,
+		trinketalert = false,
+		interruptalert = true,
+		party = false,
+		say = false,
+		clientonly = true,
+		bgchat = false,
+		InterruptText = "INTERRUPTED:",
+		spelltext = "Casted",
 
 	}
 }
@@ -282,13 +281,11 @@ end
 	GameTooltip:HookScript("OnTooltipSetUnit", function(tip)
         local name, server = tip:GetUnit()
 		local Realm = GetRealmName()
-	  if (name == "Trollolloll" and Realm == "Warsong (Pure PvP)") or ((name == "Trolollolol" or name == "Trollollollo" or name == "Trollololool" or name == "Troolololol" or name == "Ammonia" or name == "Lockmepls") and Realm == "Sargeras x20") then
-        tip:AddLine("Developer of SoundAlerter", 1, 0, 0 ) --red, green, blue
-        tip:Show() elseif
-		(name == "Shaquetta" and Realm == "Warsong (Pure PvP)") --[[ Warsong Realm]] or ((name == "Drterror" or name == "Horrorshaman" or name == "Cheaptrick" or name == "Zerodeath") and Realm == "Neltharion x12") --[[ Neltharion Realm]]or (name == "Clov" and Realm == "Frostwolf x3") --[[ Frostwolf Realm]] then
-		tip:AddLine("Official Contributer of SoundAlerter", 1, 0, 0 )
-        tip:Show() else
-		end
+	--  if (name == "Trollolloll" and Realm == "Warsong (Pure PvP)") or ((name == "Trolollolol" or name == "Trollollollo" or name == "Trollololool" or name == "Troolololol" or name == "Ammonia" or name == "Lockmepls") and Realm == "Sargeras x20") then
+        if (SA_sponsors[name] ) then if ( SA_sponsors[name]["Realm"] == Realm ) then
+	--	tip:AddLine("Developer of SoundAlerter", 1, 0, 0 ) --red, green, blue
+		tip:AddLine(SA_sponsors[SA_sponsors[name].Type], 1, 0, 0 ) end; end
+       -- tip:Show() 
     end)
 
 function SoundAlerter:OnOptionsCreate()
@@ -1800,11 +1797,35 @@ function SoundAlerter:OnOptionsCreate()
 				get = getOption,
 				order = 4,
 				args = {
+				party = {
+						type = 'toggle',
+						name = "Alert in Party Chat",
+						desc = "Chat Message alerts are shown in party chat",
+						order = 1,
+					},
+				say = {
+						type = 'toggle',
+						name = "Alert in Say Chat",
+						desc = "Chat Message alerts are shown in Say chat",
+						order = 2,
+					},
+				clientonly = {
+						type = 'toggle',
+						name = "Alert in Client",
+						desc = "Chat Message alerts are only visible to yourself",
+						order = 3,
+					},
+				bgchat = {
+						type = 'toggle',
+						name = "Alert in BGs",
+						desc = "Chat Message alerts are shown in BG chat",
+						order = 4,
+					},
 						rogue = {
 						type = 'group',
 						inline = true,
 						name = "|cffFFF569Rogue|r",
-						order = 2,
+						order = 6,
 						args = {
 							stealthalert = {
 								type = 'toggle',
@@ -1830,7 +1851,7 @@ function SoundAlerter:OnOptionsCreate()
 						type = 'group',
 						inline = true,
 						name = "|cffFFFFFFGeneral|r",
-						order = 1,
+						order = 5,
 						args = {
 							trinketalert = {
 								type = 'toggle',
@@ -1841,7 +1862,28 @@ function SoundAlerter:OnOptionsCreate()
 								descStyle = "custom",
 								order = 1,
 							},
+							interruptalert = {
+								type = 'toggle',
+								name = "Interrupts on Target",
+								desc = "Alerts you if you have interrupted an enemys spell",
+								descStyle = "custom",
+								order = 2,
+							},
 						},
+					},
+					InterruptText = {
+						type = "input",
+						name = "Interrupt Text",
+						desc = "Example: Interrupted = Interrupted [PlayerName]: with [SpellName]",
+						order = 7,
+						width = full,
+					},
+					spelltext = {
+						type = "input",
+						name = "Ability Casting Text",
+						desc = "Example: Casted = [PlayerName] Casted [SpellName]",
+						order = 8,
+						width = full,
 					}
 				},
 			},
@@ -2199,8 +2241,22 @@ enddebug]]
 				self:PlayTrinket()
 				end
 			end
+	--	if ((spellName == "Every Man for Himself" or spellName == "PvP Trinket") and SOUNDALERTERdb.trinketalert and not SOUNDALERTERdb.chatalerts) then
+	--	DEFAULT_CHAT_FRAME:AddMessage("["..sourceName.."]: Trinketted - Cooldown: 2 minutes", 1.0, 0.25, 0.25);
+	--	end
 		if ((spellName == "Every Man for Himself" or spellName == "PvP Trinket") and SOUNDALERTERdb.trinketalert and not SOUNDALERTERdb.chatalerts) then
-		DEFAULT_CHAT_FRAME:AddMessage("["..sourceName.."]: Trinketted - Cooldown: 2 minutes", 1.0, 0.25, 0.25);
+							if SOUNDALERTERdb.party then
+							SendChatMessage("["..sourceName.."]: Trinketted - Cooldown: 2 minutes", "PARTY", nil, nil)
+							end
+							if SOUNDALERTERdb.clientonly then
+							DEFAULT_CHAT_FRAME:AddMessage("["..sourceName.."]: Trinketted - Cooldown: 2 minutes", 1.0, 0.25, 0.25);
+							end
+							if SOUNDALERTERdb.say then
+							SendChatMessage("["..sourceName.."]: Trinketted - Cooldown: 2 minutes", "SAY", nil, nil)
+							end
+							if SOUNDALERTERdb.bgchat then
+							SendChatMessage("["..sourceName.."]: Trinketted - Cooldown: 2 minutesD", nil, nil)
+							end
 		end
 		--druid
 		--paladin
@@ -2221,23 +2277,67 @@ enddebug]]
 		if (spellName == "Preparation" and SOUNDALERTERdb.kick) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\preparation.mp3")
 		end
-		if (spellName == "Vanish" and SOUNDALERTERdb.vanish) then -- and (SOUNDALERTERdb.chatalerts or not SOUNDALERTERdb.vanishalert)
+		if (spellName == "Vanish" and SOUNDALERTERdb.stealth) then
+				if not SOUNDALERTERdb.chatalerts then
+					if SOUNDALERTERdb.vanishalert then
+							if SOUNDALERTERdb.party then
+							SendChatMessage("["..sourceName.."]: "..SOUNDALERTERdb.spelltext.." \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "PARTY", nil, nil)
+							end
+							if SOUNDALERTERdb.clientonly then
+							DEFAULT_CHAT_FRAME:AddMessage("["..sourceName.."]: "..SOUNDALERTERdb.spelltext.." \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", 1.0, 0.25, 0.25);
+							end
+							if SOUNDALERTERdb.say then
+							SendChatMessage("["..sourceName.."]: "..SOUNDALERTERdb.spelltext.." \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "SAY", nil, nil)
+							end
+							if SOUNDALERTERdb.bgchat then
+							SendChatMessage("["..sourceName.."]: "..SOUNDALERTERdb.spelltext.." \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "BATTLEGROUND", nil, nil)
+							end
+					PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Vanish.mp3")
+					end
+					if not SOUNDALERTERdb.vanishalert then
+					PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Vanish.mp3")
+					end
+				end
+			if SOUNDALERTERdb.chatalerts then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Vanish.mp3")
+			end
 		end
-		if (spellName == "Vanish" and SOUNDALERTERdb.vanish and SOUNDALERTERdb.vanishalert and not SOUNDALERTERdb.chatalerts) then
-		--	PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Vanish.mp3")
-			DEFAULT_CHAT_FRAME:AddMessage("["..sourceName.."]: Casts \124cff71d5ff\124Hspell:1856\124h[Vanish]\124h\124r - Cooldown: 2 minutes", 1.0, 0.25, 0.25);
-		end
+	--	if (spellName == "Vanish" and SOUNDALERTERdb.vanish) then -- and (SOUNDALERTERdb.chatalerts or not SOUNDALERTERdb.vanishalert)
+	--		PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Vanish.mp3")
+	--	end
+	--	if (spellName == "Vanish" and SOUNDALERTERdb.vanish and SOUNDALERTERdb.vanishalert and not SOUNDALERTERdb.chatalerts) then
+		--	DEFAULT_CHAT_FRAME:AddMessage("["..sourceName.."]: Casts \124cff71d5ff\124Hspell:1856\124h[Vanish]\124h\124r - Cooldown: 2 minutes", 1.0, 0.25, 0.25);
+	--	end
 		if (spellName == "Blade Flurry" and SOUNDALERTERdb.bladeflurry) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Blade Flurry.mp3")
 		end
-		if (spellName == "Stealth" and SOUNDALERTERdb.stealth and (SOUNDALERTERdb.chatalerts or not SOUNDALERTERdb.stealthalert)) then
+		--if (spellName == "Stealth" and SOUNDALERTERdb.stealth and (SOUNDALERTERdb.chatalerts or not SOUNDALERTERdb.stealthalert)) then
+		--	PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Stealth.mp3")
+		--end
+		if (spellName == "Stealth" and SOUNDALERTERdb.stealth) then
+			if not SOUNDALERTERdb.chatalerts then
+					if SOUNDALERTERdb.stealthalert then
+							if SOUNDALERTERdb.party then
+							SendChatMessage("["..sourceName.."]: "..SOUNDALERTERdb.spelltext.." \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "PARTY", nil, nil)
+							end
+							if SOUNDALERTERdb.clientonly then
+							DEFAULT_CHAT_FRAME:AddMessage("["..sourceName.."]: "..SOUNDALERTERdb.spelltext.." \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", 1.0, 0.25, 0.25);
+							end
+							if SOUNDALERTERdb.say then
+							SendChatMessage("["..sourceName.."]: "..SOUNDALERTERdb.spelltext.." \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "SAY", nil, nil)
+							end
+							if SOUNDALERTERdb.bgchat then
+							SendChatMessage("["..sourceName.."]: "..SOUNDALERTERdb.spelltext.." \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "BATTLEGROUND", nil, nil)
+							end
+					PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Stealth.mp3")
+					end
+				if not SOUNDALERTERdb.stealthalert then
+				PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Stealth.mp3")
+				end
+			end
+			if SOUNDALERTERdb.chatalerts then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Stealth.mp3")
-			
-		end
-		if (spellName == "Stealth" and SOUNDALERTERdb.stealth and SOUNDALERTERdb.stealthalert and not SOUNDALERTERdb.chatalerts) then
-			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Stealth.mp3")
-			DEFAULT_CHAT_FRAME:AddMessage("["..sourceName.."]: Casted \124cff71d5ff\124Hspell:1784\124h[Stealth]\124h\124r", 1.0, 0.25, 0.25);
+			end
 		end
 		--warrior
 		if (spellName == "Disarm" and SOUNDALERTERdb.disarm) then
@@ -2342,8 +2442,38 @@ enddebug]]
 		end
 	end
 	if (event == "SPELL_INTERRUPT" and toEnemy and not SOUNDALERTERdb.interrupt) then
-		if ((spellName == "Deep Freeze" or spellName == "Counterspell" or spellName == "Arcane Torrent" or spellName == "Kick" or spellName == "Wind Shear" or spellName == "Shield Bash" or spellName == "Mind Freeze" ) and SOUNDALERTERdb.lockout) then
-			PlaySoundFile("Interface\\Addons\\SoundAlerter\\Voice\\lockout.mp3");
+		if ((spellName == "Deep Freeze" or spellName == "Counterspell" or spellName == "Arcane Torrent" or spellName == "Kick" or spellName == "Wind Shear" or spellName == "Shield Bash" or spellName == "Mind Freeze" ) and SOUNDALERTERdb.lockout and ((SOUNDALERTERdb.myself and fromTarget) or SOUNDALERTERdb.enemyinrange)) then
+			if not SOUNDALERTERdb.chatalerts and SOUNDALERTERdb.interruptalert then
+				if SOUNDALERTERdb.party then
+					if sourceName == playerName then
+					SendChatMessage(""..SOUNDALERTERdb.InterruptText.." ["..destName.."]: with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "PARTY", nil, nil)
+					else
+					SendChatMessage("["..sourceName.."]: "..SOUNDALERTERdb.InterruptText.." ["..destName.."]:  with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "PARTY", nil, nil)
+					end
+				end
+				if SOUNDALERTERdb.clientonly then
+					if sourceName == playerName then
+					DEFAULT_CHAT_FRAME:AddMessage(""..SOUNDALERTERdb.InterruptText.." ["..destName.."]: with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", 1.0, 0.25, 0.25);
+					else
+					DEFAULT_CHAT_FRAME:AddMessage("["..sourceName.."]: has "..SOUNDALERTERdb.InterruptText.." ["..destName.."]:  with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", 1.0, 0.25, 0.25);
+					end
+				end
+				if SOUNDALERTERdb.say then
+					if sourceName == playerName then
+					SendChatMessage(""..SOUNDALERTERdb.InterruptText.." ["..destName.."]: with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "SAY", nil, nil)
+					else
+					SendChatMessage("["..sourceName.."]: "..SOUNDALERTERdb.InterruptText.." ["..destName.."]:  with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "SAY", nil, nil)
+					end
+				end
+				if SOUNDALERTERdb.bgchat then
+					if sourceName == playerName then
+					SendChatMessage(""..SOUNDALERTERdb.InterruptText.." ["..destName.."]: with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "BATTLEGROUND", nil, nil)
+					else
+					SendChatMessage("["..sourceName.."]: "..SOUNDALERTERdb.InterruptText.." ["..destName.."]:  with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "BATTLEGROUND", nil, nil)
+					end
+				end
+			end
+		PlaySoundFile("Interface\\Addons\\SoundAlerter\\Voice\\lockout.mp3");
 		end
 	end
 end
