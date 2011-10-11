@@ -14,8 +14,8 @@ SA_sponsors = {
 	
 --contributers
 	--Warsong
-	["Shaquetta	"] = { ["Realm"] = "Warsong (Pure PvP)", ["Type"] = "C" },
-	["Hotslock	"] = { ["Realm"] = "Warsong (Pure PvP)", ["Type"] = "C" },
+	["Shaquetta"] = { ["Realm"] = "Warsong (Pure PvP)", ["Type"] = "C" },
+	["Hotslock"] = { ["Realm"] = "Warsong (Pure PvP)", ["Type"] = "C" },
 	--Neltharion
 	["Drterror"] = { ["Realm"] = "Neltharion x12", ["Type"] = "C" },
 	["Horrorshaman"] = { ["Realm"] = "Neltharion x12", ["Type"] = "C" },
