@@ -156,6 +156,7 @@ local dbDefaults = {
 --Rogue
 		disarm2 = true,
 		blind = true,
+		blindonenemy = false,
 		kick = true,
 		preparation = true,
 --Warrior
@@ -200,6 +201,8 @@ local dbDefaults = {
 		say = false,
 		clientonly = true,
 		bgchat = false,
+		blindonenemychat = true,
+		blindonselfchat = true,
 		InterruptText = "INTERRUPTED:",
 		spelltext = "Casted",
 
@@ -1405,6 +1408,12 @@ function SoundAlerter:OnOptionsCreate()
 								descStyle = "custom",
 								order = 2,
 							},
+							blindonenemy = {
+								type = 'toggle',
+								name = "Blind On Enemy",
+								desc = "Sound alerts for blind on enemy",
+								order = 3,
+							},
 							kick = {
 								type = 'toggle',
 								name = GetSpellInfo(1766),
@@ -1412,7 +1421,7 @@ function SoundAlerter:OnOptionsCreate()
 									GameTooltip:SetHyperlink(GetSpellLink(1766));
 								end,
 								descStyle = "custom",
-								order = 3,
+								order = 4,
 							},
 							preparation = {
 								type = 'toggle',
@@ -1421,7 +1430,7 @@ function SoundAlerter:OnOptionsCreate()
 									GameTooltip:SetHyperlink(GetSpellLink(14185));
 								end,
 								descStyle = "custom",
-								order = 4,
+								order = 5,
 							},
 							vanish = {
 								type = 'toggle',
@@ -1430,7 +1439,7 @@ function SoundAlerter:OnOptionsCreate()
 									GameTooltip:SetHyperlink(GetSpellLink(1856));
 								end,
 								descStyle = "custom",
-								order = 5,
+								order = 6,
 							},
 							bladeflurry = {
 								type = 'toggle',
@@ -1439,7 +1448,7 @@ function SoundAlerter:OnOptionsCreate()
 									GameTooltip:SetHyperlink(GetSpellLink(13877));
 								end,
 								descStyle = "custom",
-								order = 6,
+								order = 7,
 							},
 							stealth = {
 								type = 'toggle',
@@ -1448,7 +1457,7 @@ function SoundAlerter:OnOptionsCreate()
 									GameTooltip:SetHyperlink(GetSpellLink(1784));
 								end,
 								descStyle = "custom",
-								order = 7,
+								order = 8,
 							},
 						}
 					},
@@ -1788,6 +1797,62 @@ function SoundAlerter:OnOptionsCreate()
 					},
 				},
 			},
+		enemydebuff = {
+				type = 'group',
+				--inline = true,
+				name = "Enemy Debuff",
+				disabled = function() return SOUNDALERTERdb.enemydebuff end,
+				set = setOption,
+				get = getOption,
+				order = 4,
+				args = {
+						rogue = {
+						type = 'group',
+						inline = true,
+						name = "|cffFFF569Rogue|r",
+						order = 1,
+						args = {
+							blindup = {
+								type = 'toggle',
+								name = GetSpellInfo(2094),
+								desc = function ()
+									GameTooltip:SetHyperlink(GetSpellLink(2094));
+								end,
+								descStyle = "custom",
+								order = 1,
+							},
+						},
+					}
+				},
+			},
+			enemydebuffdown = {
+				type = 'group',
+				--inline = true,
+				name = "Enemy Debuff Down",
+				disabled = function() return SOUNDALERTERdb.enemydebuffdown end,
+				set = setOption,
+				get = getOption,
+				order = 5,
+				args = {
+						rogue = {
+						type = 'group',
+						inline = true,
+						name = "|cffFFF569Rogue|r",
+						order = 1,
+						args = {
+							blinddown = {
+								type = 'toggle',
+								name = GetSpellInfo(2094),
+								desc = function ()
+									GameTooltip:SetHyperlink(GetSpellLink(2094));
+								end,
+								descStyle = "custom",
+								order = 1,
+							},
+						},
+					}
+				},
+			},
 			chatalerter = {
 				type = 'group',
 				--inline = true,
@@ -1845,6 +1910,18 @@ function SoundAlerter:OnOptionsCreate()
 								descStyle = "custom",
 								order = 2,
 							},
+							blindonenemychat = {
+								type = 'toggle',
+								name = "Blind on Enemy",
+								desc = "Enemies that have been blinded will be alerted",
+								order = 3,
+							},
+							blindonselfchat = {
+								type = 'toggle',
+								name = "Blind on Self",
+								desc = "Enemies that have blinded you will be alerted",
+								order = 3,
+							},
 						},
 					},
 					general = {
@@ -1894,7 +1971,7 @@ function SoundAlerter:OnOptionsCreate()
 				disabled = function() return SOUNDALERTERdb.interrupt end,
 				set = setOption,
 				get = getOption,
-				order = 5,
+				order = 6,
 				args = {
 					lockout = {
 						type = 'toggle',
@@ -1958,6 +2035,9 @@ function SoundAlerter:COMBAT_LOG_EVENT_UNFILTERED(event , ...)
 	--I cannot implement Feign death, as it isn't recorded by combat log, It's counted as a 'death'
 	--To do this, remove the "--[[debug and enddebug]]--" and insert the spell ID
 	--To get the Spell ID, go to wowhead, search for a spell, click on the page, and your URL will show the ID at the end
+		if (spellName == "Blind") then
+		print (toTarget,fromEnemy,toEnemy,sourceName,destName,event,spellName,spellID)
+	end
 --[[debug
 	if (spellID == 23989) then
 		print (sourceName,destName,event,spellName,spellID)
@@ -2268,9 +2348,6 @@ enddebug]]
 		if (spellName == "Dismantle" and SOUNDALERTERdb.disarm2) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Disarm2.mp3")
 		end
-		if (spellName == "Blind" and SOUNDALERTERdb.blind) then
-			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Blind.mp3")
-		end
 		if (spellName == "Kick" and SOUNDALERTERdb.kick) then
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\kick.mp3")
 		end
@@ -2455,6 +2532,95 @@ enddebug]]
 			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\hammer of justice.mp3");
 		end
 	end
+	if	(spellName == "Blind") then
+			if (event == "SPELL_AURA_APPLIED" and (SOUNDALERTERdb.myself or SOUNDALERTERdb.enemyinrange) and not SOUNDALERTERdb.castSuccess) then
+				if SOUNDALERTERdb.blindonenemychat and toEnemy and SOUNDALERTERdb.blindup then
+					if SOUNDALERTERdb.party then
+						if sourceName == playerName and (SOUNDALERTERdb.myself or SOUNDALERTERdb.enemyinrange) then
+						SendChatMessage("I have casted \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r on ["..destName.."]", "PARTY", nil, nil)
+						else
+						SendChatMessage("["..sourceName.."]: has casted \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r on ["..destName.."]", "PARTY", nil, nil)
+						end
+					end
+					if SOUNDALERTERdb.clientonly then
+						if sourceName == playerName and (SOUNDALERTERdb.myself or SOUNDALERTERdb.enemyinrange) then
+						DEFAULT_CHAT_FRAME:AddMessage("I have casted \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r on ["..destName.."]", 1.0, 0.25, 0.25);
+						else
+						DEFAULT_CHAT_FRAME:AddMessage("["..sourceName.."]: has casted \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r on ["..destName.."]", 1.0, 0.25, 0.25);
+						end
+					end
+					if SOUNDALERTERdb.say then
+						if sourceName == playerName and (SOUNDALERTERdb.myself or SOUNDALERTERdb.enemyinrange) then
+						SendChatMessage("I have casted \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r on ["..destName.."]", "SAY", nil, nil)
+						else
+						SendChatMessage("["..sourceName.."]: has casted \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r on ["..destName.."]", "SAY", nil, nil)
+						end
+					end
+					if SOUNDALERTERdb.bgchat then
+						if sourceName == playerName and (SOUNDALERTERdb.myself or SOUNDALERTERdb.enemyinrange) then
+						SendChatMessage("I have casted \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r on ["..destName.."]", "BATTLEGROUND", nil, nil)
+						else
+						SendChatMessage("["..sourceName.."]: has casted \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r on ["..destName.."]", "BATTLEGROUND", nil, nil)
+						end
+					end
+				end
+			if (SOUNDALERTERdb.blindonselfchat and fromEnemy) then 
+							if destName == playerName and SOUNDALERTERdb.party and (SOUNDALERTERdb.myself or SOUNDALERTERdb.enemyinrange) then
+							SendChatMessage("\124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r has been cast on me", "PARTY", nil, nil)
+							end
+							if destName == playerName and SOUNDALERTERdb.clientonly and (SOUNDALERTERdb.myself or SOUNDALERTERdb.enemyinrange) then
+							DEFAULT_CHAT_FRAME:AddMessage("\124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r has been cast on me", 1.0, 0.25, 0.25);
+							end
+							if destName == playerName and SOUNDALERTERdb.say and (SOUNDALERTERdb.myself or SOUNDALERTERdb.enemyinrange) then
+							SendChatMessage("\124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r has been cast on me", "SAY", nil, nil)
+							end
+							if destName == playerName and SOUNDALERTERdb.bgchat and(SOUNDALERTERdb.myself or SOUNDALERTERdb.enemyinrange) then
+							SendChatMessage("\124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r has been cast on me", "BATTLEGROUND", nil, nil)
+							end
+					end
+					if ((SOUNDALERTERdb.blindonenemy and toEnemy) or SOUNDALERTERdb.blind or SOUNDALERTERdb.blindup) then
+					PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Blind.mp3")	
+					end
+			end
+		if (event == "SPELL_AURA_REMOVED" and (SOUNDALERTERdb.myself or SOUNDALERTERdb.enemyinrange)) then
+				if SOUNDALERTERdb.blindonenemychat then
+					if SOUNDALERTERdb.party then
+						if destName == playerName then
+						return
+						else
+						SendChatMessage("\124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r down on ["..destName.."]", "PARTY", nil, nil)
+						end
+					end
+					if SOUNDALERTERdb.clientonly then
+						if destName == playerName then
+						return
+						else
+						DEFAULT_CHAT_FRAME:AddMessage("\124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r down on ["..destName.."]", 1.0, 0.25, 0.25);
+						end
+					end
+					if SOUNDALERTERdb.say then
+						if destName == playerName then
+						return
+						else
+						SendChatMessage("\124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r down on ["..destName.."]", "SAY", nil, nil)
+						end
+					end
+					if SOUNDALERTERdb.bgchat then
+						if destName == playerName then
+						return
+						else
+						SendChatMessage("\124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r down on ["..destName.."]", "BATTLEGROUND", nil, nil)
+						end
+					end
+				end
+			if SOUNDALERTERdb.blinddown and toEnemy then
+			PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\BlindDown.mp3")	
+			end
+		end
+	end
+	end
+
+	if (event == "SPELL_CAST_SUCCESS" and (SOUNDALERTERdb.myself or SOUNDALERTERdb.enemyinrange) and not SOUNDALERTERdb.castSuccess) then
 	if (event == "SPELL_INTERRUPT" and toEnemy and not SOUNDALERTERdb.interrupt) then
 		if (spellName == "Deep Freeze" or spellName == "Counterspell" or spellName == "Arcane Torrent" or spellName == "Kick" or spellName == "Wind Shear" or spellName == "Shield Bash" or spellName == "Mind Freeze" ) then
 					if not SOUNDALERTERdb.lockout then
