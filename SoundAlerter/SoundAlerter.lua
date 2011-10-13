@@ -113,8 +113,6 @@ local dbDefaults = {
 		iceBlockDown = true,
 		lichborneDown = false,
 		iceboundFortitudeDown = false,
-
-		onlySelf = false,
 --General Heals
 		bigHeal = true,
 		resurrection = true,
