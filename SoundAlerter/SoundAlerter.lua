@@ -2028,9 +2028,6 @@ function SoundAlerter:COMBAT_LOG_EVENT_UNFILTERED(event , ...)
 	--I cannot implement Feign death, as it isn't recorded by combat log, It's counted as a 'death'
 	--To do this, remove the "--[[debug and enddebug]]--" and insert the spell ID
 	--To get the Spell ID, go to wowhead, search for a spell, click on the page, and your URL will show the ID at the end
-		if (spellName == "Blind") then
-		print (toTarget,fromEnemy,toEnemy,sourceName,destName,event,spellName,spellID)
-	end
 --[[debug
 	if (spellID == 23989) then
 		print (sourceName,destName,event,spellName,spellID)
