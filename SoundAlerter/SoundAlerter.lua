@@ -2608,8 +2608,6 @@ enddebug]]
 			end
 		end
 	end
-
-	if (event == "SPELL_CAST_SUCCESS" and (SOUNDALERTERdb.myself or SOUNDALERTERdb.enemyinrange) and not SOUNDALERTERdb.castSuccess) then
 	if (event == "SPELL_INTERRUPT" and toEnemy and not SOUNDALERTERdb.interrupt) then
 		if (spellName == "Deep Freeze" or spellName == "Counterspell" or spellName == "Arcane Torrent" or spellName == "Kick" or spellName == "Wind Shear" or spellName == "Shield Bash" or spellName == "Mind Freeze" ) then
 					if not SOUNDALERTERdb.lockout then
@@ -2679,7 +2677,6 @@ enddebug]]
 		end
 		end
 	end
-end
 end
 
 
