@@ -2608,7 +2608,6 @@ enddebug]]
 			end
 		end
 	end
-	end
 
 	if (event == "SPELL_CAST_SUCCESS" and (SOUNDALERTERdb.myself or SOUNDALERTERdb.enemyinrange) and not SOUNDALERTERdb.castSuccess) then
 	if (event == "SPELL_INTERRUPT" and toEnemy and not SOUNDALERTERdb.interrupt) then
@@ -2680,6 +2679,7 @@ enddebug]]
 		end
 		end
 	end
+end
 end
 
 
