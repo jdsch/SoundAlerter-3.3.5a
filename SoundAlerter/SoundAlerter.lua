@@ -156,7 +156,6 @@ local dbDefaults = {
 --Rogue
 		disarm2 = true,
 		blind = true,
-		blindonenemy = false,
 		kick = true,
 		preparation = true,
 --Warrior
@@ -1408,12 +1407,6 @@ function SoundAlerter:OnOptionsCreate()
 								descStyle = "custom",
 								order = 2,
 							},
-							blindonenemy = {
-								type = 'toggle',
-								name = "Blind On Enemy",
-								desc = "Sound alerts for blind on enemy",
-								order = 3,
-							},
 							kick = {
 								type = 'toggle',
 								name = GetSpellInfo(1766),
@@ -1421,7 +1414,7 @@ function SoundAlerter:OnOptionsCreate()
 									GameTooltip:SetHyperlink(GetSpellLink(1766));
 								end,
 								descStyle = "custom",
-								order = 4,
+								order = 3,
 							},
 							preparation = {
 								type = 'toggle',
@@ -1430,7 +1423,7 @@ function SoundAlerter:OnOptionsCreate()
 									GameTooltip:SetHyperlink(GetSpellLink(14185));
 								end,
 								descStyle = "custom",
-								order = 5,
+								order = 4,
 							},
 							vanish = {
 								type = 'toggle',
@@ -1439,7 +1432,7 @@ function SoundAlerter:OnOptionsCreate()
 									GameTooltip:SetHyperlink(GetSpellLink(1856));
 								end,
 								descStyle = "custom",
-								order = 6,
+								order = 5,
 							},
 							bladeflurry = {
 								type = 'toggle',
@@ -1448,7 +1441,7 @@ function SoundAlerter:OnOptionsCreate()
 									GameTooltip:SetHyperlink(GetSpellLink(13877));
 								end,
 								descStyle = "custom",
-								order = 7,
+								order = 6,
 							},
 							stealth = {
 								type = 'toggle',
@@ -1457,7 +1450,7 @@ function SoundAlerter:OnOptionsCreate()
 									GameTooltip:SetHyperlink(GetSpellLink(1784));
 								end,
 								descStyle = "custom",
-								order = 8,
+								order = 7,
 							},
 						}
 					},
@@ -2578,7 +2571,7 @@ enddebug]]
 							SendChatMessage("\124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r has been cast on me", "BATTLEGROUND", nil, nil)
 							end
 					end
-					if ((SOUNDALERTERdb.blindonenemy and toEnemy) or SOUNDALERTERdb.blind or SOUNDALERTERdb.blindup) then
+					if ((SOUNDALERTERdb.blindup and toEnemy) or SOUNDALERTERdb.blind) then
 					PlaySoundFile("Interface\\Addons\\SoundAlerter\\voice\\Blind.mp3")	
 					end
 			end
