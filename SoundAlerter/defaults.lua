@@ -29,6 +29,7 @@ dbDefaults = {
 		desh = false,
 		starfall = true,
 		sfalldown = true,
+		berserk = true,
 --Paladin
 		auraMastery = true,
 		handOfProtection = true,

@@ -5,7 +5,7 @@ local self , SoundAlerter = SoundAlerter , SoundAlerter
 local SOUNDALERTER_TEXT="|cffFF7D0ASoundAlerter|r"
 local SOUNDALERTER_VERSION= " r335.01"
 local SOUNDALERTER_AUTHOR=" updated by |cff0070DETrolollolol|r - Sargeras - Molten-WoW.com"
-local SOUNDALERTERdb
+local sadb
 local PlaySoundFile = PlaySoundFile
 local SendChatMessage = SendChatMessage
 local playerName = UnitName("player")
@@ -20,7 +20,7 @@ DEFAULT_CHAT_FRAME:AddMessage("|cffFF7D0ASoundAlerter|r Currently only works on 
 end
 
 function SoundAlerter:OnInitialize()
-	self.db1 = LibStub("AceDB-3.0"):New("SoundAlerterDB",dbDefaults, "Default");
+	self.db1 = LibStub("AceDB-3.0"):New("sadb",dbDefaults, "Default");
 	DEFAULT_CHAT_FRAME:AddMessage(SOUNDALERTER_TEXT .. SOUNDALERTER_VERSION .. SOUNDALERTER_AUTHOR .."  - /SOUNDALERTER ");
 	--LibStub("AceConfig-3.0"):RegisterOptionsTable("SoundAlerter", SoundAlerter.Options, {"SoundAlerter", "SS"})
 	self:RegisterChatCommand("SoundAlerter", "ShowConfig")
@@ -28,7 +28,7 @@ function SoundAlerter:OnInitialize()
 	self.db1.RegisterCallback(self, "OnProfileChanged", "ChangeProfile")
 	self.db1.RegisterCallback(self, "OnProfileCopied", "ChangeProfile")
 	self.db1.RegisterCallback(self, "OnProfileReset", "ChangeProfile")
-	SOUNDALERTERdb = self.db1.profile
+	sadb = self.db1.profile
 	SoundAlerter.options = {
 		name = "SoundAlerter",
 		desc = "Voice prompts from enemy used spells",
@@ -74,7 +74,7 @@ function SoundAlerter:ShowConfig()
 	AceConfigDialog:Open("SoundAlerter")
 end
 function SoundAlerter:ChangeProfile()
-	SOUNDALERTERdb = self.db1.profile
+	sadb = self.db1.profile
 	for k,v in SoundAlerter:IterateModules() do
 		if type(v.ChangeProfile) == 'function' then
 			v:ChangeProfile()
@@ -87,20 +87,17 @@ end
 
 local function setOption(info, value)
 	local name = info[#info]
-	SOUNDALERTERdb[name] = value
+	sadb[name] = value
 end
 local function getOption(info)
 	local name = info[#info]
-	return SOUNDALERTERdb[name]
+	return sadb[name]
 end
 	GameTooltip:HookScript("OnTooltipSetUnit", function(tip)
         local name, server = tip:GetUnit()
 		local Realm = GetRealmName()
-	--  if (name == "Trollolloll" and Realm == "Warsong (Pure PvP)") or ((name == "Trolollolol" or name == "Trollollollo" or name == "Trollololool" or name == "Troolololol" or name == "Ammonia" or name == "Lockmepls") and Realm == "Sargeras x20") then
         if (SA_sponsors[name] ) then if ( SA_sponsors[name]["Realm"] == Realm ) then
-	--	tip:AddLine("Developer of SoundAlerter", 1, 0, 0 ) --red, green, blue
 		tip:AddLine(SA_sponsors[SA_sponsors[name].Type], 1, 0, 0 ) end; end
-       -- tip:Show() 
     end)
 
 function SoundAlerter:OnOptionsCreate()
@@ -129,27 +126,27 @@ function SoundAlerter:OnOptionsCreate()
 						type = 'toggle',
 						name = "Arena",
 						desc = "Enabled in the arena",
-						disabled = function() return SOUNDALERTERdb.all end,
+						disabled = function() return sadb.all end,
 						order = 2,
 					},
 					battleground = {
 						type = 'toggle',
 						name = "Battleground",
 						desc = "Enable Battleground",
-						disabled = function() return SOUNDALERTERdb.all end,
+						disabled = function() return sadb.all end,
 						order = 3,
 					},
 					field = {
 						type = 'toggle',
 						name = "World",
 						desc = "Enabled outside Battlegrounds and arenas",
-						disabled = function() return SOUNDALERTERdb.all end,
+						disabled = function() return sadb.all end,
 						order = 4,
 					},
 					myself = {
 						type = 'toggle',
-						name = "Enemy Target abilities only",
-						disabled = function() return SOUNDALERTERdb.enemyinrange end,
+						name = "Target and Focus only",
+						disabled = function() return sadb.enemyinrange end,
 						desc = "Alert works only when your current target casts a spell, or an enemy casts a spell on you",
 						order = 5,
 					},
@@ -157,8 +154,19 @@ function SoundAlerter:OnOptionsCreate()
 						type = 'toggle',
 						name = "All Enemies in Range",
 						desc = "Alerts are enabled for all enemies in range",
-						disabled = function() return SOUNDALERTERdb.myself end,
+						disabled = function() return sadb.myself end,
 						order = 6,
+					},
+					volumn = {
+						type = 'range',
+						max = 1,
+						min = 0,
+						step = 0.1,
+						name = "Master Volume",
+						desc = "Sets the master volume so sound alerts can be louder/softer",
+						set = function (info, value) SetCVar ("Sound_MasterVolume",tostring (value)) end,
+						get = function () return tonumber (GetCVar ("Sound_MasterVolume")) end,
+						order = 7,
 					}
 				},
 			},
@@ -173,7 +181,7 @@ function SoundAlerter:OnOptionsCreate()
 			spellGeneral = {
 				type = 'group',
 				name = "Spell module control",
-				desc = "Customise enabling and disabling of certain spells",  --Skills of each module to disable options
+				desc = "Customise enabling and disabling of certain spells",
 				inline = true,
 				set = setOption,
 				get = getOption,
@@ -181,7 +189,7 @@ function SoundAlerter:OnOptionsCreate()
 				args = {
 					auraApplied = {
 						type = 'toggle',
-						name = "Disable buff applied", --Disable Enemy spell notifications
+						name = "Disable buff applied",
 						desc = "Disables sound notifications of buffs applied",
 						order = 1,
 					},
@@ -223,7 +231,7 @@ function SoundAlerter:OnOptionsCreate()
 				name = "Buffs",
 				set = setOption,
 				get = getOption,
-				disabled = function() return SOUNDALERTERdb.auraApplied end,
+				disabled = function() return sadb.auraApplied end,
 				order = 1,
 				args = {
 					class = {
@@ -320,6 +328,15 @@ function SoundAlerter:OnOptionsCreate()
 								name = GetSpellInfo(48505),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(48505));
+								end,
+								descStyle = "custom",
+								order = 8,
+							},
+							berserk = {
+								type = 'toggle',
+								name = GetSpellInfo(50334),
+								desc = function ()
+									GameTooltip:SetHyperlink(GetSpellLink(50334));
 								end,
 								descStyle = "custom",
 								order = 8,
@@ -828,7 +845,7 @@ function SoundAlerter:OnOptionsCreate()
 				name = "Buff Down",
 				set = setOption,
 				get = getOption,
-				disabled = function() return SOUNDALERTERdb.auraRemoved end,
+				disabled = function() return sadb.auraRemoved end,
 				order = 2,
 				args = {
 					paladin = {
@@ -992,7 +1009,7 @@ function SoundAlerter:OnOptionsCreate()
 				type = 'group',
 				--inline = true,
 				name = "Spell Casting",
-				disabled = function() return SOUNDALERTERdb.castStart end,
+				disabled = function() return sadb.castStart end,
 				set = setOption,
 				get = getOption,
 				order = 2,
@@ -1197,7 +1214,7 @@ function SoundAlerter:OnOptionsCreate()
 				type = 'group',
 				--inline = true,
 				name = "Special Abilities",
-				disabled = function() return SOUNDALERTERdb.castSuccess end,
+				disabled = function() return sadb.castSuccess end,
 				set = setOption,
 				get = getOption,
 				order = 3,
@@ -1613,7 +1630,7 @@ function SoundAlerter:OnOptionsCreate()
 				type = 'group',
 				--inline = true,
 				name = "Enemy Debuff",
-				disabled = function() return SOUNDALERTERdb.enemydebuff end,
+				disabled = function() return sadb.enemydebuff end,
 				set = setOption,
 				get = getOption,
 				order = 4,
@@ -1641,7 +1658,7 @@ function SoundAlerter:OnOptionsCreate()
 				type = 'group',
 				--inline = true,
 				name = "Enemy Debuff Down",
-				disabled = function() return SOUNDALERTERdb.enemydebuffdown end,
+				disabled = function() return sadb.enemydebuffdown end,
 				set = setOption,
 				get = getOption,
 				order = 5,
@@ -1669,7 +1686,7 @@ function SoundAlerter:OnOptionsCreate()
 				type = 'group',
 				--inline = true,
 				name = "Chat Alerts",
-				disabled = function() return SOUNDALERTERdb.chatalerts end,
+				disabled = function() return sadb.chatalerts end,
 				set = setOption,
 				get = getOption,
 				order = 4,
@@ -1780,7 +1797,7 @@ function SoundAlerter:OnOptionsCreate()
 				type = 'group',
 				--inline = true,
 				name = "Friendly Interrupts",
-				disabled = function() return SOUNDALERTERdb.interrupt end,
+				disabled = function() return sadb.interrupt end,
 				set = setOption,
 				get = getOption,
 				order = 6,
@@ -1813,9 +1830,7 @@ end
 function SoundAlerter:COMBAT_LOG_EVENT_UNFILTERED(event , ...)
 
 	local pvpType, isFFA, faction = GetZonePVPInfo();
-	--if (not ((currentZoneType == "none" and SOUNDALERTERdb.field) or (currentZoneType == "pvp" and SOUNDALERTERdb.battleground) or (currentZoneType == "arena" and SOUNDALERTERdb.arena) or SOUNDALERTERdb.all)) then
-	if (not ((pvpType == "contested" and SOUNDALERTERdb.field) or (pvpType == "hostile" and SOUNDALERTERdb.field) or (pvpType == "friendly" and SOUNDALERTERdb.field) or (currentZoneType == "pvp" and SOUNDALERTERdb.battleground) or (currentZoneType == "arena" and SOUNDALERTERdb.arena) or SOUNDALERTERdb.all)) then
-		--print (currentZoneType,SOUNDALERTERdb.field,SOUNDALERTERdb.battleground,SOUNDALERTERdb.arena,SOUNDALERTERdb.all)
+	if (not ((pvpType == "contested" and sadb.field) or (pvpType == "hostile" and sadb.field) or (pvpType == "friendly" and sadb.field) or (currentZoneType == "pvp" and sadb.battleground) or (currentZoneType == "arena" and sadb.arena) or sadb.all)) then
 		return
 	end
 	 timestamp,event,sourceGUID,sourceName,sourceFlags,destGUID,destName,destFlags,spellID,spellName= select ( 1 , ... );
@@ -1851,273 +1866,276 @@ enddebug]]
 	--Event Spell_AURA_APPLIED works with enemies with buffs on them from used cooldowns
 
 
-if (event == "SPELL_AURA_APPLIED" and toEnemy and ((SOUNDALERTERdb.myself and fromTarget) or SOUNDALERTERdb.enemyinrange) and not SOUNDALERTERdb.auraApplied) then --(not SOUNDALERTERdb.onlyTarget or toTarget)
+if (event == "SPELL_AURA_APPLIED" and toEnemy and ((sadb.myself and (fromTarget or fromFocus)) or sadb.enemyinrange) and not sadb.auraApplied) then --(not sadb.onlyTarget or toTarget)
 
 		--Night Elves
-		if (spellName == "Shadowmeld" and SOUNDALERTERdb.Shadowmeld) then
+		if (spellName == "Shadowmeld" and sadb.Shadowmeld) then
 			PlaySoundFile(""..sapath.."Shadowmeld.mp3");
 		end
 		--Trolls
-		if (spellName == "Berserking" and SOUNDALERTERdb.berserking) then
+		if (spellName == "Berserking" and sadb.berserking) then
 			PlaySoundFile(""..sapath.."Beserk.mp3");
 		end
 		--Orcs
-		if (spellName == "Blood Fury" and SOUNDALERTERdb.BloodFury) then
+		if (spellName == "Blood Fury" and sadb.BloodFury) then
 			PlaySoundFile(""..sapath.."BloodFury.mp3");
 		end
 		--dranei
-		if (spellName == "Gift of the Naaru" and SOUNDALERTERdb.giftofthenaaru) then
+		if (spellName == "Gift of the Naaru" and sadb.giftofthenaaru) then
 			PlaySoundFile(""..sapath.."giftofthenaaru.mp3");
 		end
 		--druid
-		if (spellName == "Survival Instincts" and SOUNDALERTERdb.survivalInstincts) then
+		if (spellName == "Survival Instincts" and sadb.survivalInstincts) then
 			PlaySoundFile(""..sapath.."Survival Instincts.mp3");
 		end
-		if (spellName == "Innervate" and SOUNDALERTERdb.innervate) then
+		if (spellName == "Innervate" and sadb.innervate) then
 			PlaySoundFile(""..sapath.."Innervate.mp3");
 		end
-		if (spellName == "Barkskin" and SOUNDALERTERdb.barkskin) then
+		if (spellName == "Barkskin" and sadb.barkskin) then
 			PlaySoundFile(""..sapath.."barkskin.mp3");
 		end
-		if (spellName == "Natures Swiftness" and SOUNDALERTERdb.naturesSwiftness) then
+		if (spellName == "Natures Swiftness" and sadb.naturesSwiftness) then
 			PlaySoundFile(""..sapath.."Natures Swiftness.mp3");
 		end
-		if (spellName == "Natures Grasp" and SOUNDALERTERdb.naturesGrasp) then
+		if (spellName == "Natures Grasp" and sadb.naturesGrasp) then
 			PlaySoundFile(""..sapath.."Natures Grasp.mp3");
 		end
-		if (spellName == "Frenzied Regeneration" and SOUNDALERTERdb.frenziedRegeneration) then
+		if (spellName == "Frenzied Regeneration" and sadb.frenziedRegeneration) then
 			PlaySoundFile(""..sapath.."Frenzied Regeneration.mp3");
 		end
-		if (spellName == "Starfall" and SOUNDALERTERdb.starfall) then
+		if (spellName == "Starfall" and sadb.starfall) then
 			PlaySoundFile(""..sapath.."Starfall.mp3");
 		end
+		if (spellName == "Berserk" and sadb.beserk) then
+			PlaySoundFile(""..sapath.."Beserk.mp3");
+		end
 		--paladin
-		if (spellName == "Aura Mastery" and SOUNDALERTERdb.auraMastery) then
+		if (spellName == "Aura Mastery" and sadb.auraMastery) then
 			PlaySoundFile(""..sapath.."Aura Mastery.mp3");
 		end
-		if (spellName == "Hand of Protection" and SOUNDALERTERdb.handOfProtection) then
+		if (spellName == "Hand of Protection" and sadb.handOfProtection) then
 			PlaySoundFile(""..sapath.."Hand of Protection.mp3");
 		end
-		if (spellName == "Hand of Freedom" and SOUNDALERTERdb.handOfFreedom) then
+		if (spellName == "Hand of Freedom" and sadb.handOfFreedom) then
 			PlaySoundFile(""..sapath.."Hand of Freedom.mp3");
 		end
-		if (spellName == "Divine Shield" and SOUNDALERTERdb.divineShield) then
+		if (spellName == "Divine Shield" and sadb.divineShield) then
 			PlaySoundFile(""..sapath.."divine shield.mp3");
 		end
-		if (spellName == "Hand of Sacrifice" and SOUNDALERTERdb.sacrifice) then
+		if (spellName == "Hand of Sacrifice" and sadb.sacrifice) then
 			PlaySoundFile(""..sapath.."Sacrifice.mp3");
 		end
-		if (spellName == "Divine Guardian" and SOUNDALERTERdb.divineGuardian) then
+		if (spellName == "Divine Guardian" and sadb.divineGuardian) then
 			PlaySoundFile(""..sapath.."Divine Guardian.mp3");
 		end
-		if (spellName == "Divine Plea" and SOUNDALERTERdb.divinePlea) then
+		if (spellName == "Divine Plea" and sadb.divinePlea) then
 			PlaySoundFile(""..sapath.."Divine Plea.mp3");
 		end
 		--rogue
-		if (spellName == "Shadow Dance" and SOUNDALERTERdb.shadowDance) then
+		if (spellName == "Shadow Dance" and sadb.shadowDance) then
 			PlaySoundFile(""..sapath.."Shadow Dance.mp3");
 		end
-		if (spellName == "Cloak of Shadows" and SOUNDALERTERdb.cloakOfShadows) then
+		if (spellName == "Cloak of Shadows" and sadb.cloakOfShadows) then
 			PlaySoundFile(""..sapath.."Cloak of Shadows.mp3");
 		end
-		if (spellName == "Adrenaline Rush" and SOUNDALERTERdb.adrenalineRush) then
+		if (spellName == "Adrenaline Rush" and sadb.adrenalineRush) then
 			PlaySoundFile(""..sapath.."Adrenaline Rush.mp3");
 		end
-		if (spellName == "Evasion" and SOUNDALERTERdb.evasion) then
+		if (spellName == "Evasion" and sadb.evasion) then
 			PlaySoundFile(""..sapath.."Evasion.mp3");
 		end
-		if (spellName == "Cheat Death" and SOUNDALERTERdb.cheatdeath) then
+		if (spellName == "Cheat Death" and sadb.cheatdeath) then
 			PlaySoundFile(""..sapath.."Cheatdeath.mp3");
 		end
 		--warrior
-		if (spellName == "Shield Wall" and SOUNDALERTERdb.shieldWall) then
+		if (spellName == "Shield Wall" and sadb.shieldWall) then
 			PlaySoundFile(""..sapath.."Shield Wall.mp3")
 		end
-		if (spellName == "Last Stand" and SOUNDALERTERdb.laststand) then
+		if (spellName == "Last Stand" and sadb.laststand) then
 			PlaySoundFile(""..sapath.."Shield Wall.mp3")
 		end
-		if (spellName == "Berserker Rage" and SOUNDALERTERdb.berserkerRage) then
+		if (spellName == "Berserker Rage" and sadb.berserkerRage) then
 			PlaySoundFile(""..sapath.."Berserker Rage.mp3");
 		end
-		if (spellName == "Retaliation" and SOUNDALERTERdb.retaliation) then
+		if (spellName == "Retaliation" and sadb.retaliation) then
 			PlaySoundFile(""..sapath.."Retaliation.mp3")
 		end
-		if (spellName == "Spell Reflection" and SOUNDALERTERdb.spellReflection) then
+		if (spellName == "Spell Reflection" and sadb.spellReflection) then
 			PlaySoundFile(""..sapath.."Spell Reflection.mp3")
 		end
-		if (spellName == "Sweeping Strikes" and SOUNDALERTERdb.sweepingStrikes) then
+		if (spellName == "Sweeping Strikes" and sadb.sweepingStrikes) then
 			PlaySoundFile(""..sapath.."Sweeping Strikes.mp3");
 		end
-		if (spellName == "Bladestorm" and SOUNDALERTERdb.bladestorm) then
+		if (spellName == "Bladestorm" and sadb.bladestorm) then
 			PlaySoundFile(""..sapath.."Bladestorm.mp3");
 		end
-		if (spellName == "Death Wish" and SOUNDALERTERdb.deathWish) then
+		if (spellName == "Death Wish" and sadb.deathWish) then
 			PlaySoundFile(""..sapath.."Death Wish.mp3");
 		end
 		--priest
-		if (spellName == "Pain Suppression" and SOUNDALERTERdb.painSuppression) then
+		if (spellName == "Pain Suppression" and sadb.painSuppression) then
 			PlaySoundFile(""..sapath.."pain suppression.mp3");
 		end
-		if (spellName == "Power Infusion" and SOUNDALERTERdb.powerInfusion) then
+		if (spellName == "Power Infusion" and sadb.powerInfusion) then
 			PlaySoundFile(""..sapath.."Power Infusion.mp3");
 		end
-		if (spellName == "Fear Ward" and SOUNDALERTERdb.fearWard) then
+		if (spellName == "Fear Ward" and sadb.fearWard) then
 			PlaySoundFile(""..sapath.."Fear Ward.mp3");
 		end
-		if (spellName == "Dispersion" and SOUNDALERTERdb.dispersion) then
+		if (spellName == "Dispersion" and sadb.dispersion) then
 			PlaySoundFile(""..sapath.."Dispersion.mp3");
 		end
 		--shaman
-		if (spellName == "Water Shield" and SOUNDALERTERdb.waterShield) then
+		if (spellName == "Water Shield" and sadb.waterShield) then
 			PlaySoundFile(""..sapath.."water shield.mp3");
 		end
-		if (spellID == 16166 and SOUNDALERTERdb.ElementalMastery) then
+		if (spellID == 16166 and sadb.ElementalMastery) then
 			PlaySoundFile(""..sapath.."ElementalMastery.mp3");
 		end
-		if (spellName == "Shamanistic Rage" and SOUNDALERTERdb.shamanisticRage) then
+		if (spellName == "Shamanistic Rage" and sadb.shamanisticRage) then
 			PlaySoundFile(""..sapath.."Shamanistic Rage.mp3")
 		end
-		if (spellName == "Earth Shield" and SOUNDALERTERdb.earthShield) then
+		if (spellName == "Earth Shield" and sadb.earthShield) then
 			PlaySoundFile(""..sapath.."Earth shield.mp3");
 		end
 		--mage
-		if (spellName == "Ice Block" and SOUNDALERTERdb.iceBlock) then
+		if (spellName == "Ice Block" and sadb.iceBlock) then
 			PlaySoundFile(""..sapath.."ice block.mp3");
 		end
-		if (spellName == "Arcane Power" and SOUNDALERTERdb.arcanePower) then
+		if (spellName == "Arcane Power" and sadb.arcanePower) then
 			PlaySoundFile(""..sapath.."Arcane Power.mp3");
 		end
-		if (spellName == "Evocation" and SOUNDALERTERdb.evocation) then
+		if (spellName == "Evocation" and sadb.evocation) then
 			PlaySoundFile(""..sapath.."Evocation.mp3");
 		end
-		if (spellName == "Hot Streak" and SOUNDALERTERdb.HotStreak) then
+		if (spellName == "Hot Streak" and sadb.HotStreak) then
 			PlaySoundFile(""..sapath.."Hot Streak.MP3");
 		end
 		--dk
-		if (spellName == "Lichborne" and SOUNDALERTERdb.lichborne) then
+		if (spellName == "Lichborne" and sadb.lichborne) then
 			PlaySoundFile(""..sapath.."Lichborne.mp3");
 		end
-		if (spellName == "Icebound Fortitude" and SOUNDALERTERdb.iceboundFortitude) then
+		if (spellName == "Icebound Fortitude" and sadb.iceboundFortitude) then
 			PlaySoundFile(""..sapath.."Icebound Fortitude.mp3");
 		end
-		if (spellName == "Vampiric Blood" and SOUNDALERTERdb.vampiricBlood) then
+		if (spellName == "Vampiric Blood" and sadb.vampiricBlood) then
 			PlaySoundFile(""..sapath.."Vampiric Blood.mp3");
 		end
-		if (spellName == "Anti-Magic Shell" and SOUNDALERTERdb.antimagicshell) then
+		if (spellName == "Anti-Magic Shell" and sadb.antimagicshell) then
 			PlaySoundFile(""..sapath.."Anti Magic Shell.mp3");
 		end
-		if (spellName == "Bone Shield" and SOUNDALERTERdb.boneshield) then
+		if (spellName == "Bone Shield" and sadb.boneshield) then
 			PlaySoundFile(""..sapath.."Bone Shield.mp3");
 		end
-		if (spellName == "Unholy Frenzy" and SOUNDALERTERdb.hysteria) then
+		if (spellName == "Unholy Frenzy" and sadb.hysteria) then
 			PlaySoundFile(""..sapath.."hysteria.mp3");
 		end
 		--hunter. NOTE: Feign Death cannot be detected in combat log, it is counted as a 'death' and cannot be introduced :(
-		if (spellName == "Deterrence" and SOUNDALERTERdb.deterrence) then
+		if (spellName == "Deterrence" and sadb.deterrence) then
 			PlaySoundFile(""..sapath.."Deterrence.mp3");
 		end
-		if (spellName == "The Beast Within" and SOUNDALERTERdb.theBeastWithin) then
+		if (spellName == "The Beast Within" and sadb.theBeastWithin) then
 			PlaySoundFile(""..sapath.."The Beast Within.mp3")
 		end
 		--warlock
-		if (spellName == "Shadow Trance" and SOUNDALERTERdb.shadowtrance) then
+		if (spellName == "Shadow Trance" and sadb.shadowtrance) then
 			PlaySoundFile(""..sapath.."Shadowtrance.mp3")
 		end
 	end
 	--Event SPELL_AURA_REMOVED is when enemies have lost the buff provided by SPELL_AURA_APPLIED (eg. Bubble down)
-	if (event == "SPELL_AURA_REMOVED" and toEnemy and ((SOUNDALERTERdb.myself and fromTarget) or SOUNDALERTERdb.enemyinrange) and not SOUNDALERTERdb.auraRemoved) then
-		if (spellName == "Deterrence" and SOUNDALERTERdb.deterdown) then
+	if (event == "SPELL_AURA_REMOVED" and toEnemy and ((sadb.myself and (fromTarget or fromFocus)) or sadb.enemyinrange) and not sadb.auraRemoved) then
+		if (spellName == "Deterrence" and sadb.deterdown) then
 			PlaySoundFile(""..sapath.."Deterrencedown.mp3");
 		end
-		if (spellName == "Starfall" and SOUNDALERTERdb.sfalldown) then
+		if (spellName == "Starfall" and sadb.sfalldown) then
 			PlaySoundFile(""..sapath.."Starfalldown.mp3");
 		end
-		if (spellName == "Divine Shield" and SOUNDALERTERdb.bubbleDown) then
+		if (spellName == "Divine Shield" and sadb.bubbleDown) then
 		   PlaySoundFile(""..sapath.."Bubble down.mp3")
 		end
-		if (spellName == "Dispersion" and SOUNDALERTERdb.dispersionDown) then
+		if (spellName == "Dispersion" and sadb.dispersionDown) then
 		   PlaySoundFile(""..sapath.."Dispersion down.mp3")
 		end
-		if (spellName == "Hand of Protection" and SOUNDALERTERdb.protectionDown) then
+		if (spellName == "Hand of Protection" and sadb.protectionDown) then
 		   PlaySoundFile(""..sapath.."Protection down.mp3")
 		end
-		if (spellName == "Cloak of Shadows" and SOUNDALERTERdb.cloakDown) then
+		if (spellName == "Cloak of Shadows" and sadb.cloakDown) then
 		   PlaySoundFile(""..sapath.."Cloak down.mp3")
 		end
-		if (spellName == "Pain Suppression" and SOUNDALERTERdb.PSDown) then
+		if (spellName == "Pain Suppression" and sadb.PSDown) then
 		   PlaySoundFile(""..sapath.."PS down.mp3")
 		end
-		if (spellName == "Evasion" and SOUNDALERTERdb.evasionDown) then
+		if (spellName == "Evasion" and sadb.evasionDown) then
 		   PlaySoundFile(""..sapath.."Evasion down.mp3")
 		end
-		if (spellName == "Ice Block" and SOUNDALERTERdb.iceBlockDown) then
+		if (spellName == "Ice Block" and sadb.iceBlockDown) then
 		   PlaySoundFile(""..sapath.."Ice Block down.mp3")
 		end
-		if (spellName == "Lichborne" and SOUNDALERTERdb.lichborneDown) then
+		if (spellName == "Lichborne" and sadb.lichborneDown) then
 		   PlaySoundFile(""..sapath.."lichborne Down.mp3")
 		end
-		if (spellName == "Icebound Fortitude" and SOUNDALERTERdb.iceboundFortitudeDown) then
+		if (spellName == "Icebound Fortitude" and sadb.iceboundFortitudeDown) then
 		   PlaySoundFile(""..sapath.."Icebound Fortitude Down.mp3")
 		end
 	end
-	if (event == "SPELL_CAST_START" and fromEnemy and ((SOUNDALERTERdb.myself and fromTarget) or SOUNDALERTERdb.enemyinrange) and not SOUNDALERTERdb.castStart) then--or not (SOUNDALERTERdb.myself or SOUNDALERTERdb.enemyinrange) and not SOUNDALERTERdb.castStart) then
+	if (event == "SPELL_CAST_START" and fromEnemy and ((sadb.myself and (fromTarget or fromFocus)) or sadb.enemyinrange) and not sadb.castStart) then--or not (sadb.myself or sadb.enemyinrange) and not sadb.castStart) then
 	--general
-		if ((spellName == "Heal" or spellName == "Holy Light" or spellName == "Healing Wave" or spellName == "Healing Touch") and SOUNDALERTERdb.bigHeal) then
+		if ((spellName == "Heal" or spellName == "Holy Light" or spellName == "Healing Wave" or spellName == "Healing Touch") and sadb.bigHeal) then
 			PlaySoundFile(""..sapath.."big heal.mp3");
 		end
-		if ((spellName == "Resurrection" or spellName == "Ancestral Spirit" or spellName == "Redemption" or spellName == "Revive") and SOUNDALERTERdb.resurrection) then
+		if ((spellName == "Resurrection" or spellName == "Ancestral Spirit" or spellName == "Redemption" or spellName == "Revive") and sadb.resurrection) then
 			PlaySoundFile(""..sapath.."Resurrection.mp3");
 		end
 	--hunter
-		if (spellName == "Revive Pet" and SOUNDALERTERdb.revivePet) then
+		if (spellName == "Revive Pet" and sadb.revivePet) then
 			PlaySoundFile(""..sapath.."Revive Pet.mp3");
 		end
 		--druid
-		if (spellName == "Cyclone" and SOUNDALERTERdb.cyclone) then
+		if (spellName == "Cyclone" and sadb.cyclone) then
 			PlaySoundFile(""..sapath.."cyclone.mp3");
 		end
-		if (spellName == "Hibernate" and SOUNDALERTERdb.hibernate) then
+		if (spellName == "Hibernate" and sadb.hibernate) then
 			PlaySoundFile(""..sapath.."hibernate.mp3");
 		end
-		if (spellName == "Mana Burn" and SOUNDALERTERdb.manaBurn) then
+		if (spellName == "Mana Burn" and sadb.manaBurn) then
 			PlaySoundFile(""..sapath.."Mana Burn.mp3");
 		end
-		if (spellName == "Shackle Undead" and SOUNDALERTERdb.shackleUndead) then
+		if (spellName == "Shackle Undead" and sadb.shackleUndead) then
 			PlaySoundFile(""..sapath.."Shackle Undead.mp3");
 		end
-		if (spellName == "Mind Control" and SOUNDALERTERdb.mindControl) then
+		if (spellName == "Mind Control" and sadb.mindControl) then
 			PlaySoundFile(""..sapath.."Mind Control.mp3");
 		end
 		--shaman
-		if (spellName == "Hex" and SOUNDALERTERdb.hex) then
+		if (spellName == "Hex" and sadb.hex) then
 			PlaySoundFile(""..sapath.."Hex.mp3");
 		end
 		--mage
-		if (spellName == "Polymorph" and SOUNDALERTERdb.polymorph) then
+		if (spellName == "Polymorph" and sadb.polymorph) then
 			PlaySoundFile(""..sapath.."polymorph.mp3");
 		end
 		--dk
 		--hunter
-		if (spellName == "Scare Beast" and SOUNDALERTERdb.scareBeast) then
+		if (spellName == "Scare Beast" and sadb.scareBeast) then
 			PlaySoundFile(""..sapath.."Scare Beast.mp3");
 		end
 		--warlock
-		if (spellName == "Banish" and SOUNDALERTERdb.banish) then
+		if (spellName == "Banish" and sadb.banish) then
 			PlaySoundFile(""..sapath.."Banish.mp3");
 		end
-		if (spellName == "Fear" and SOUNDALERTERdb.fear) then
+		if (spellName == "Fear" and sadb.fear) then
 			PlaySoundFile(""..sapath.."fear.mp3");
 		end
-		if (spellName == "Howl of Terror" and SOUNDALERTERdb.fear2) then
+		if (spellName == "Howl of Terror" and sadb.fear2) then
 			PlaySoundFile(""..sapath.."fear2.mp3");
 		end
 	end
 	--SPELL_CAST_SUCCESS only applies when the enemy has casted a spell
 	--TODO: Add seperate LUA File for spell list
-	if (event == "SPELL_CAST_SUCCESS" and fromEnemy and ((SOUNDALERTERdb.myself and fromTarget) or SOUNDALERTERdb.enemyinrange) and not SOUNDALERTERdb.castSuccess) then
+	if (event == "SPELL_CAST_SUCCESS" and fromEnemy and ((sadb.myself and (fromTarget or fromFocus)) or sadb.enemyinrange) and not sadb.castSuccess) then
 	--General
-		if ( (spellName == "Every Man for Himself" or spellName == "PvP Trinket") and SOUNDALERTERdb.trinket) then
-			if (SOUNDALERTERdb.class and currentZoneType == "arena" ) then
+		if ( (spellName == "Every Man for Himself" or spellName == "PvP Trinket") and sadb.trinket) then
+			if (sadb.class and currentZoneType == "arena" ) then
 				local c = self:ArenaClass(sourceGUID)--destguid
 				if c then
 				PlaySoundFile(""..sapath..""..c..".mp3");
@@ -2127,20 +2145,20 @@ if (event == "SPELL_AURA_APPLIED" and toEnemy and ((SOUNDALERTERdb.myself and fr
 				self:PlayTrinket()
 				end
 			end
-	--	if ((spellName == "Every Man for Himself" or spellName == "PvP Trinket") and SOUNDALERTERdb.trinketalert and not SOUNDALERTERdb.chatalerts) then
+	--	if ((spellName == "Every Man for Himself" or spellName == "PvP Trinket") and sadb.trinketalert and not sadb.chatalerts) then
 	--	DEFAULT_CHAT_FRAME:AddMessage("["..sourceName.."]: Trinketted - Cooldown: 2 minutes", 1.0, 0.25, 0.25);
 	--	end
-		if ((spellName == "Every Man for Himself" or spellName == "PvP Trinket") and SOUNDALERTERdb.trinketalert and not SOUNDALERTERdb.chatalerts) then
-							if SOUNDALERTERdb.party then
+		if ((spellName == "Every Man for Himself" or spellName == "PvP Trinket") and sadb.trinketalert and not sadb.chatalerts) then
+							if sadb.party then
 							SendChatMessage("["..sourceName.."]: Trinketted - Cooldown: 2 minutes", "PARTY", nil, nil)
 							end
-							if SOUNDALERTERdb.clientonly then
+							if sadb.clientonly then
 							DEFAULT_CHAT_FRAME:AddMessage("["..sourceName.."]: Trinketted - Cooldown: 2 minutes", 1.0, 0.25, 0.25);
 							end
-							if SOUNDALERTERdb.say then
+							if sadb.say then
 							SendChatMessage("["..sourceName.."]: Trinketted - Cooldown: 2 minutes", "SAY", nil, nil)
 							end
-							if SOUNDALERTERdb.bgchat then
+							if sadb.bgchat then
 							SendChatMessage("["..sourceName.."]: Trinketted - Cooldown: 2 minutes", "BATTLEGROUND", nil, nil)
 							end
 		end
@@ -2148,249 +2166,249 @@ if (event == "SPELL_AURA_APPLIED" and toEnemy and ((SOUNDALERTERdb.myself and fr
 		--paladin
 		--rogue
 		--Undead
-		if (spellName == "Will of the Forsaken" and SOUNDALERTERdb.willoftheforsaken) then
+		if (spellName == "Will of the Forsaken" and sadb.willoftheforsaken) then
 			PlaySoundFile(""..sapath.."Will Of The Forsaken.mp3");
 		end
-		if (spellName == "Dismantle" and SOUNDALERTERdb.disarm2) then
+		if (spellName == "Dismantle" and sadb.disarm2) then
 			PlaySoundFile(""..sapath.."Disarm2.mp3")
 		end
-		if (spellName == "Kick" and SOUNDALERTERdb.kick) then
+		if (spellName == "Kick" and sadb.kick) then
 			PlaySoundFile(""..sapath.."kick.mp3")
 		end
-		if (spellName == "Preparation" and SOUNDALERTERdb.kick) then
+		if (spellName == "Preparation" and sadb.kick) then
 			PlaySoundFile(""..sapath.."preparation.mp3")
 		end
-		if (spellName == "Vanish" and SOUNDALERTERdb.stealth) then
-				if not SOUNDALERTERdb.chatalerts then
-					if SOUNDALERTERdb.vanishalert then
-							if SOUNDALERTERdb.party then
-							SendChatMessage("["..sourceName.."]: "..SOUNDALERTERdb.spelltext.." \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "PARTY", nil, nil)
+		if (spellName == "Vanish" and sadb.stealth) then
+				if not sadb.chatalerts then
+					if sadb.vanishalert then
+							if sadb.party then
+							SendChatMessage("["..sourceName.."]: "..sadb.spelltext.." \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "PARTY", nil, nil)
 							end
-							if SOUNDALERTERdb.clientonly then
-							DEFAULT_CHAT_FRAME:AddMessage("["..sourceName.."]: "..SOUNDALERTERdb.spelltext.." \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", 1.0, 0.25, 0.25);
+							if sadb.clientonly then
+							DEFAULT_CHAT_FRAME:AddMessage("["..sourceName.."]: "..sadb.spelltext.." \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", 1.0, 0.25, 0.25);
 							end
-							if SOUNDALERTERdb.say then
-							SendChatMessage("["..sourceName.."]: "..SOUNDALERTERdb.spelltext.." \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "SAY", nil, nil)
+							if sadb.say then
+							SendChatMessage("["..sourceName.."]: "..sadb.spelltext.." \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "SAY", nil, nil)
 							end
-							if SOUNDALERTERdb.bgchat then
-							SendChatMessage("["..sourceName.."]: "..SOUNDALERTERdb.spelltext.." \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "BATTLEGROUND", nil, nil)
+							if sadb.bgchat then
+							SendChatMessage("["..sourceName.."]: "..sadb.spelltext.." \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "BATTLEGROUND", nil, nil)
 							end
 					PlaySoundFile(""..sapath.."Vanish.mp3")
 					end
-					if not SOUNDALERTERdb.vanishalert then
+					if not sadb.vanishalert then
 					PlaySoundFile(""..sapath.."Vanish.mp3")
 					end
 				end
-			if SOUNDALERTERdb.chatalerts then
+			if sadb.chatalerts then
 			PlaySoundFile(""..sapath.."Vanish.mp3")
 			end
 		end
-	--	if (spellName == "Vanish" and SOUNDALERTERdb.vanish) then -- and (SOUNDALERTERdb.chatalerts or not SOUNDALERTERdb.vanishalert)
+	--	if (spellName == "Vanish" and sadb.vanish) then -- and (sadb.chatalerts or not sadb.vanishalert)
 	--		PlaySoundFile(""..sapath.."Vanish.mp3")
 	--	end
-	--	if (spellName == "Vanish" and SOUNDALERTERdb.vanish and SOUNDALERTERdb.vanishalert and not SOUNDALERTERdb.chatalerts) then
+	--	if (spellName == "Vanish" and sadb.vanish and sadb.vanishalert and not sadb.chatalerts) then
 		--	DEFAULT_CHAT_FRAME:AddMessage("["..sourceName.."]: Casts \124cff71d5ff\124Hspell:1856\124h[Vanish]\124h\124r - Cooldown: 2 minutes", 1.0, 0.25, 0.25);
 	--	end
-		if (spellName == "Blade Flurry" and SOUNDALERTERdb.bladeflurry) then
+		if (spellName == "Blade Flurry" and sadb.bladeflurry) then
 			PlaySoundFile(""..sapath.."Blade Flurry.mp3")
 		end
-		--if (spellName == "Stealth" and SOUNDALERTERdb.stealth and (SOUNDALERTERdb.chatalerts or not SOUNDALERTERdb.stealthalert)) then
+		--if (spellName == "Stealth" and sadb.stealth and (sadb.chatalerts or not sadb.stealthalert)) then
 		--	PlaySoundFile(""..sapath.."Stealth.mp3")
 		--end
 		if (spellName == "Stealth") then
-			if not SOUNDALERTERdb.chatalerts then
-					if SOUNDALERTERdb.stealthalert and SOUNDALERTERdb.stealth then
-							if SOUNDALERTERdb.party then
-							SendChatMessage("["..sourceName.."]: "..SOUNDALERTERdb.spelltext.." \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "PARTY", nil, nil)
+			if not sadb.chatalerts then
+					if sadb.stealthalert and sadb.stealth then
+							if sadb.party then
+							SendChatMessage("["..sourceName.."]: "..sadb.spelltext.." \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "PARTY", nil, nil)
 							end
-							if SOUNDALERTERdb.clientonly then
-							DEFAULT_CHAT_FRAME:AddMessage("["..sourceName.."]: "..SOUNDALERTERdb.spelltext.." \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", 1.0, 0.25, 0.25);
+							if sadb.clientonly then
+							DEFAULT_CHAT_FRAME:AddMessage("["..sourceName.."]: "..sadb.spelltext.." \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", 1.0, 0.25, 0.25);
 							end
-							if SOUNDALERTERdb.say then
-							SendChatMessage("["..sourceName.."]: "..SOUNDALERTERdb.spelltext.." \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "SAY", nil, nil)
+							if sadb.say then
+							SendChatMessage("["..sourceName.."]: "..sadb.spelltext.." \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "SAY", nil, nil)
 							end
-							if SOUNDALERTERdb.bgchat then
-							SendChatMessage("["..sourceName.."]: "..SOUNDALERTERdb.spelltext.." \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "BATTLEGROUND", nil, nil)
+							if sadb.bgchat then
+							SendChatMessage("["..sourceName.."]: "..sadb.spelltext.." \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "BATTLEGROUND", nil, nil)
 							end
 					PlaySoundFile(""..sapath.."Stealth.mp3")
 					end
-					if SOUNDALERTERdb.stealthalert and not SOUNDALERTERdb.stealth then
-							if SOUNDALERTERdb.party then
-							SendChatMessage("["..sourceName.."]: "..SOUNDALERTERdb.spelltext.." \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "PARTY", nil, nil)
+					if sadb.stealthalert and not sadb.stealth then
+							if sadb.party then
+							SendChatMessage("["..sourceName.."]: "..sadb.spelltext.." \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "PARTY", nil, nil)
 							end
-							if SOUNDALERTERdb.clientonly then
-							DEFAULT_CHAT_FRAME:AddMessage("["..sourceName.."]: "..SOUNDALERTERdb.spelltext.." \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", 1.0, 0.25, 0.25);
+							if sadb.clientonly then
+							DEFAULT_CHAT_FRAME:AddMessage("["..sourceName.."]: "..sadb.spelltext.." \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", 1.0, 0.25, 0.25);
 							end
-							if SOUNDALERTERdb.say then
-							SendChatMessage("["..sourceName.."]: "..SOUNDALERTERdb.spelltext.." \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "SAY", nil, nil)
+							if sadb.say then
+							SendChatMessage("["..sourceName.."]: "..sadb.spelltext.." \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "SAY", nil, nil)
 							end
-							if SOUNDALERTERdb.bgchat then
-							SendChatMessage("["..sourceName.."]: "..SOUNDALERTERdb.spelltext.." \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "BATTLEGROUND", nil, nil)
+							if sadb.bgchat then
+							SendChatMessage("["..sourceName.."]: "..sadb.spelltext.." \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "BATTLEGROUND", nil, nil)
 							end
 					end
-				if not SOUNDALERTERdb.stealthalert and SOUNDALERTERdb.stealth then
+				if not sadb.stealthalert and sadb.stealth then
 				PlaySoundFile(""..sapath.."Stealth.mp3")
 				end
 			end
-			if SOUNDALERTERdb.chatalerts and SOUNDALERTERdb.stealth then
+			if sadb.chatalerts and sadb.stealth then
 			PlaySoundFile(""..sapath.."Stealth.mp3")
 			end
 		end
 		--warrior
-		if (spellName == "Disarm" and SOUNDALERTERdb.disarm) then
+		if (spellName == "Disarm" and sadb.disarm) then
 			PlaySoundFile(""..sapath.."Disarm.mp3")
 		end
-		if (spellName == "Intimidating Shout" and SOUNDALERTERdb.fear3) then
+		if (spellName == "Intimidating Shout" and sadb.fear3) then
 			PlaySoundFile(""..sapath.."Fear3.mp3");
 		end
-		if (spellName == "Pummel" and SOUNDALERTERdb.pummel) then
+		if (spellName == "Pummel" and sadb.pummel) then
 			PlaySoundFile(""..sapath.."pummel.mp3")
 		end
-		if (spellName == "Shield Bash" and SOUNDALERTERdb.shieldBash) then
+		if (spellName == "Shield Bash" and sadb.shieldBash) then
 			PlaySoundFile(""..sapath.."Shield Bash.mp3")
 		end
 		--priest
-		if (spellName == "Psychic Scream" and SOUNDALERTERdb.fear4) then
+		if (spellName == "Psychic Scream" and sadb.fear4) then
 			PlaySoundFile(""..sapath.."Fear4.mp3");
 		end
-		if (spellName == "Shadowfiend" and SOUNDALERTERdb.shadowFiend) then
+		if (spellName == "Shadowfiend" and sadb.shadowFiend) then
 			PlaySoundFile(""..sapath.."Shadowfiend.mp3")
 		end
-		if (spellName == "Psychic Horror" and SOUNDALERTERdb.disarm3) then
+		if (spellName == "Psychic Horror" and sadb.disarm3) then
 			PlaySoundFile(""..sapath.."disarm3.mp3")
 		end
 		--shaman
-		if (spellName == "Grounding Totem" and SOUNDALERTERdb.grounding) then
+		if (spellName == "Grounding Totem" and sadb.grounding) then
 			PlaySoundFile(""..sapath.."Grounding.mp3")
 		end
-		if (spellName == "Mana Tide Totem" and SOUNDALERTERdb.manaTide) then
+		if (spellName == "Mana Tide Totem" and sadb.manaTide) then
 			PlaySoundFile(""..sapath.."Mana Tide.mp3");
 		end
-		if (spellName == "Tremor Totem" and SOUNDALERTERdb.tremorTotem) then
+		if (spellName == "Tremor Totem" and sadb.tremorTotem) then
 			PlaySoundFile(""..sapath.."Tremor Totem.mp3");
 		end
 		--mage
-		if (spellName == "Deep Freeze" and SOUNDALERTERdb.deepFreeze) then
+		if (spellName == "Deep Freeze" and sadb.deepFreeze) then
 			PlaySoundFile(""..sapath.."Deep Freeze.mp3");
 		end
-		if (spellName == "Counterspell" and SOUNDALERTERdb.counterspell) then
+		if (spellName == "Counterspell" and sadb.counterspell) then
 			PlaySoundFile(""..sapath.."Counterspell.mp3");
 		end
-		if (spellName == "Cold Snap" and SOUNDALERTERdb.ColdSnap) then
+		if (spellName == "Cold Snap" and sadb.ColdSnap) then
 			PlaySoundFile(""..sapath.."cold snap.mp3");
 		end
-		if (spellName == "Invisibility" and SOUNDALERTERdb.invisibility) then
+		if (spellName == "Invisibility" and sadb.invisibility) then
 			PlaySoundFile(""..sapath.."Invisibility.mp3");
 		end
 		--dk
-		if (spellName == "Mind Freeze" and SOUNDALERTERdb.mindFreeze) then
+		if (spellName == "Mind Freeze" and sadb.mindFreeze) then
 			PlaySoundFile(""..sapath.."Mind Freeze.mp3")
 		end
-		if (spellName == "Strangulate" and SOUNDALERTERdb.strangulate) then
+		if (spellName == "Strangulate" and sadb.strangulate) then
 			PlaySoundFile(""..sapath.."Strangulate.mp3");
 		end
-		if (spellName == "Dancing Rune Weapon" and SOUNDALERTERdb.runeWeapon) then
+		if (spellName == "Dancing Rune Weapon" and sadb.runeWeapon) then
 			PlaySoundFile(""..sapath.."Rune Weapon.mp3");
 		end
-		if (spellName == "Summon Gargoyle" and SOUNDALERTERdb.gargoyle) then
+		if (spellName == "Summon Gargoyle" and sadb.gargoyle) then
 			PlaySoundFile(""..sapath.."gargoyle.mp3");
 		end
-		if (spellName == "Hungering Cold" and SOUNDALERTERdb.hungeringCold) then
+		if (spellName == "Hungering Cold" and sadb.hungeringCold) then
 			PlaySoundFile(""..sapath.."Hungering cold.mp3");
 		end
-		if (spellName == "Mark of Blood" and SOUNDALERTERdb.markofblood) then
+		if (spellName == "Mark of Blood" and sadb.markofblood) then
 			PlaySoundFile(""..sapath.."Mark of Blood.mp3");
 		end
 		--hunter
-		if (spellName == "Wyvern Sting" and SOUNDALERTERdb.wyvernSting) then
+		if (spellName == "Wyvern Sting" and sadb.wyvernSting) then
 			PlaySoundFile(""..sapath.."Wyvern Sting.mp3");
 		end
-		if (spellName == "Silencing Shot" and SOUNDALERTERdb.silencingshot) then
+		if (spellName == "Silencing Shot" and sadb.silencingshot) then
 			PlaySoundFile(""..sapath.."silencingshot.mp3");
 		end
-		if (spellName == "Aimed Shot" and SOUNDALERTERdb.aimedshot) then
+		if (spellName == "Aimed Shot" and sadb.aimedshot) then
 			PlaySoundFile(""..sapath.."Aimed Shot.MP3");
 		end
-		if (spellName == "Readiness" and SOUNDALERTERdb.readiness) then
+		if (spellName == "Readiness" and sadb.readiness) then
 			PlaySoundFile(""..sapath.."Readiness.mp3");
 		end
-		if (spellName == "Freezing Trap" and SOUNDALERTERdb.freezingtrap) then
+		if (spellName == "Freezing Trap" and sadb.freezingtrap) then
 			PlaySoundFile(""..sapath.."FreezingTrap.mp3");
 		end
 		--warlock
-		if (spellName == "Howl of Terror" and SOUNDALERTERdb.fear2) then
+		if (spellName == "Howl of Terror" and sadb.fear2) then
 			PlaySoundFile(""..sapath.."fear2.mp3");
 		end
-		if (spellName == "Spell Lock" and SOUNDALERTERdb.spellLock) then
+		if (spellName == "Spell Lock" and sadb.spellLock) then
 			PlaySoundFile(""..sapath.."Spell Lock.mp3");
 		end
-		if (spellName == "Demonic Circle: Teleport" and SOUNDALERTERdb.demonicCircleTeleport) then
+		if (spellName == "Demonic Circle: Teleport" and sadb.demonicCircleTeleport) then
 			PlaySoundFile(""..sapath.."Demonic Circle Teleport.mp3");
 		end
-		if (spellName == "Death Coil" and SOUNDALERTERdb.deathcoil) then
+		if (spellName == "Death Coil" and sadb.deathcoil) then
 			PlaySoundFile(""..sapath.."DeathCoil.mp3");
 		end
 		--paladin
-		if (spellName == "Repentance" and SOUNDALERTERdb.repentance) then
+		if (spellName == "Repentance" and sadb.repentance) then
 			PlaySoundFile(""..sapath.."Repentance.mp3");
 		end
-		if (spellName == "Hammer of Justice" and SOUNDALERTERdb.hammerofjustice) then
+		if (spellName == "Hammer of Justice" and sadb.hammerofjustice) then
 			PlaySoundFile(""..sapath.."hammer of justice.mp3");
 		end
 	end
 	if	(spellName == "Blind") then
-			if (event == "SPELL_AURA_APPLIED" and (SOUNDALERTERdb.myself or SOUNDALERTERdb.enemyinrange) and not SOUNDALERTERdb.castSuccess) then
-				if SOUNDALERTERdb.blindonenemychat and toEnemy and SOUNDALERTERdb.blindup then
-					if SOUNDALERTERdb.party then
-						if sourceName == playerName and (SOUNDALERTERdb.myself or SOUNDALERTERdb.enemyinrange) then
+			if (event == "SPELL_AURA_APPLIED" and (sadb.myself or sadb.enemyinrange) and not sadb.castSuccess) then
+				if sadb.blindonenemychat and toEnemy and sadb.blindup then
+					if sadb.party then
+						if sourceName == playerName and (sadb.myself or sadb.enemyinrange) then
 						SendChatMessage("I have casted \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r on ["..destName.."]", "PARTY", nil, nil)
 						else
 						SendChatMessage("["..sourceName.."]: has casted \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r on ["..destName.."]", "PARTY", nil, nil)
 						end
 					end
-					if SOUNDALERTERdb.clientonly then
-						if sourceName == playerName and (SOUNDALERTERdb.myself or SOUNDALERTERdb.enemyinrange) then
+					if sadb.clientonly then
+						if sourceName == playerName and (sadb.myself or sadb.enemyinrange) then
 						DEFAULT_CHAT_FRAME:AddMessage("I have casted \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r on ["..destName.."]", 1.0, 0.25, 0.25);
 						else
 						DEFAULT_CHAT_FRAME:AddMessage("["..sourceName.."]: has casted \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r on ["..destName.."]", 1.0, 0.25, 0.25);
 						end
 					end
-					if SOUNDALERTERdb.say then
-						if sourceName == playerName and (SOUNDALERTERdb.myself or SOUNDALERTERdb.enemyinrange) then
+					if sadb.say then
+						if sourceName == playerName and (sadb.myself or sadb.enemyinrange) then
 						SendChatMessage("I have casted \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r on ["..destName.."]", "SAY", nil, nil)
 						else
 						SendChatMessage("["..sourceName.."]: has casted \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r on ["..destName.."]", "SAY", nil, nil)
 						end
 					end
-					if SOUNDALERTERdb.bgchat then
-						if sourceName == playerName and (SOUNDALERTERdb.myself or SOUNDALERTERdb.enemyinrange) then
+					if sadb.bgchat then
+						if sourceName == playerName and (sadb.myself or sadb.enemyinrange) then
 						SendChatMessage("I have casted \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r on ["..destName.."]", "BATTLEGROUND", nil, nil)
 						else
 						SendChatMessage("["..sourceName.."]: has casted \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r on ["..destName.."]", "BATTLEGROUND", nil, nil)
 						end
 					end
 				end
-					if (SOUNDALERTERdb.blindonselfchat and fromEnemy) then 
-							if destName == playerName and SOUNDALERTERdb.party and (SOUNDALERTERdb.myself or SOUNDALERTERdb.enemyinrange) then
+					if (sadb.blindonselfchat and fromEnemy) then 
+							if destName == playerName and sadb.party and (sadb.myself or sadb.enemyinrange) then
 							SendChatMessage("\124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r has been cast on me", "PARTY", nil, nil)
 							end
-							if destName == playerName and SOUNDALERTERdb.clientonly and (SOUNDALERTERdb.myself or SOUNDALERTERdb.enemyinrange) then
+							if destName == playerName and sadb.clientonly and (sadb.myself or sadb.enemyinrange) then
 							DEFAULT_CHAT_FRAME:AddMessage("\124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r has been cast on me", 1.0, 0.25, 0.25);
 							end
-							if destName == playerName and SOUNDALERTERdb.say and (SOUNDALERTERdb.myself or SOUNDALERTERdb.enemyinrange) then
+							if destName == playerName and sadb.say and (sadb.myself or sadb.enemyinrange) then
 							SendChatMessage("\124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r has been cast on me", "SAY", nil, nil)
 							end
-							if destName == playerName and SOUNDALERTERdb.bgchat and(SOUNDALERTERdb.myself or SOUNDALERTERdb.enemyinrange) then
+							if destName == playerName and sadb.bgchat and(sadb.myself or sadb.enemyinrange) then
 							SendChatMessage("\124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r has been cast on me", "BATTLEGROUND", nil, nil)
 							end
 					end
-					if ((SOUNDALERTERdb.blindup and toEnemy) or SOUNDALERTERdb.blind) then
+					if ((sadb.blindup and toEnemy) or sadb.blind) then
 					PlaySoundFile(""..sapath.."Blind.mp3")	
 					end
 			end
-		if (event == "SPELL_AURA_REMOVED" and (SOUNDALERTERdb.myself or SOUNDALERTERdb.enemyinrange)) then
-				if SOUNDALERTERdb.blindonenemychat then
-					if SOUNDALERTERdb.party then
+		if (event == "SPELL_AURA_REMOVED" and (sadb.myself or sadb.enemyinrange)) then
+				if sadb.blindonenemychat then
+					if sadb.party then
 						if destName == playerName then
 						return
 						else
@@ -2399,7 +2417,7 @@ if (event == "SPELL_AURA_APPLIED" and toEnemy and ((SOUNDALERTERdb.myself and fr
 						end
 						end
 					end
-					if SOUNDALERTERdb.clientonly then
+					if sadb.clientonly then
 						if destName == playerName then
 						return
 						else
@@ -2408,7 +2426,7 @@ if (event == "SPELL_AURA_APPLIED" and toEnemy and ((SOUNDALERTERdb.myself and fr
 						end
 						end
 					end
-					if SOUNDALERTERdb.say then
+					if sadb.say then
 						if destName == playerName then
 						return
 						else
@@ -2417,7 +2435,7 @@ if (event == "SPELL_AURA_APPLIED" and toEnemy and ((SOUNDALERTERdb.myself and fr
 						end
 						end
 					end
-					if SOUNDALERTERdb.bgchat then
+					if sadb.bgchat then
 						if destName == playerName then
 						return
 						else
@@ -2427,73 +2445,73 @@ if (event == "SPELL_AURA_APPLIED" and toEnemy and ((SOUNDALERTERdb.myself and fr
 						end
 					end
 				end
-			if SOUNDALERTERdb.blinddown and toEnemy then
+			if sadb.blinddown and toEnemy then
 			PlaySoundFile(""..sapath.."BlindDown.mp3")	
 			end
 		end
 	end
-	if (event == "SPELL_INTERRUPT" and toEnemy and not SOUNDALERTERdb.interrupt) then
+	if (event == "SPELL_INTERRUPT" and toEnemy and not sadb.interrupt) then
 		if (spellName == "Deep Freeze" or spellName == "Counterspell" or spellName == "Arcane Torrent" or spellName == "Kick" or spellName == "Wind Shear" or spellName == "Shield Bash" or spellName == "Mind Freeze" ) then
-					if not SOUNDALERTERdb.lockout then
-								if not SOUNDALERTERdb.chatalerts and SOUNDALERTERdb.interruptalert then
-											if SOUNDALERTERdb.party then
-												if sourceName == playerName and (SOUNDALERTERdb.myself or SOUNDALERTERdb.enemyinrange) then
-													SendChatMessage(""..SOUNDALERTERdb.InterruptText.." ["..destName.."]: with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "PARTY", nil, nil)
+					if not sadb.lockout then
+								if not sadb.chatalerts and sadb.interruptalert then
+											if sadb.party then
+												if sourceName == playerName and ((sadb.myself and (toTarget or toFocus)) or sadb.enemyinrange) then
+													SendChatMessage(""..sadb.InterruptText.." ["..destName.."]: with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "PARTY", nil, nil)
 													else
-													SendChatMessage("["..sourceName.."]: "..SOUNDALERTERdb.InterruptText.." ["..destName.."]:  with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "PARTY", nil, nil)
+													SendChatMessage("["..sourceName.."]: "..sadb.InterruptText.." ["..destName.."]:  with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "PARTY", nil, nil)
 												end
 											end
-											if SOUNDALERTERdb.clientonly then
-												if sourceName == playerName and (SOUNDALERTERdb.myself or SOUNDALERTERdb.enemyinrange) then
-												DEFAULT_CHAT_FRAME:AddMessage(""..SOUNDALERTERdb.InterruptText.." ["..destName.."]: with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", 1.0, 0.25, 0.25);
+											if sadb.clientonly then
+												if sourceName == playerName and ((sadb.myself and (toTarget or toFocus)) or sadb.enemyinrange) then
+												DEFAULT_CHAT_FRAME:AddMessage(""..sadb.InterruptText.." ["..destName.."]: with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", 1.0, 0.25, 0.25);
 												else
-												DEFAULT_CHAT_FRAME:AddMessage("["..sourceName.."]: has "..SOUNDALERTERdb.InterruptText.." ["..destName.."]:  with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", 1.0, 0.25, 0.25);
+												DEFAULT_CHAT_FRAME:AddMessage("["..sourceName.."]: has "..sadb.InterruptText.." ["..destName.."]:  with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", 1.0, 0.25, 0.25);
 												end
 											end
-											if SOUNDALERTERdb.say then
-												if sourceName == playerName and (SOUNDALERTERdb.myself or SOUNDALERTERdb.enemyinrange) then
-												SendChatMessage(""..SOUNDALERTERdb.InterruptText.." ["..destName.."]: with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "SAY", nil, nil)
+											if sadb.say then
+												if sourceName == playerName and ((sadb.myself and (toTarget or toFocus)) or sadb.enemyinrange) then
+												SendChatMessage(""..sadb.InterruptText.." ["..destName.."]: with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "SAY", nil, nil)
 												else
-												SendChatMessage("["..sourceName.."]: "..SOUNDALERTERdb.InterruptText.." ["..destName.."]:  with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "SAY", nil, nil)
+												SendChatMessage("["..sourceName.."]: "..sadb.InterruptText.." ["..destName.."]:  with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "SAY", nil, nil)
 												end
 											end
-											if SOUNDALERTERdb.bgchat then
-												if sourceName == playerName  and (SOUNDALERTERdb.myself or SOUNDALERTERdb.enemyinrange) then
-												SendChatMessage(""..SOUNDALERTERdb.InterruptText.." ["..destName.."]: with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "BATTLEGROUND", nil, nil)
+											if sadb.bgchat then
+												if sourceName == playerName  and ((sadb.myself and (toTarget or toFocus)) or sadb.enemyinrange) then
+												SendChatMessage(""..sadb.InterruptText.." ["..destName.."]: with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "BATTLEGROUND", nil, nil)
 												else
-												SendChatMessage("["..sourceName.."]: "..SOUNDALERTERdb.InterruptText.." ["..destName.."]:  with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "BATTLEGROUND", nil, nil)
+												SendChatMessage("["..sourceName.."]: "..sadb.InterruptText.." ["..destName.."]:  with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "BATTLEGROUND", nil, nil)
 												end
 											end		
 								end
 					end
-		if SOUNDALERTERdb.lockout then
-				if not SOUNDALERTERdb.chatalerts and SOUNDALERTERdb.interruptalert then
-					if SOUNDALERTERdb.party then
-						if sourceName == playerName and (SOUNDALERTERdb.myself or SOUNDALERTERdb.enemyinrange) then
-						SendChatMessage(""..SOUNDALERTERdb.InterruptText.." ["..destName.."]: with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "PARTY", nil, nil)
+		if sadb.lockout then
+				if not sadb.chatalerts and sadb.interruptalert then
+					if sadb.party then
+						if sourceName == playerName and (sadb.myself or sadb.enemyinrange) then
+						SendChatMessage(""..sadb.InterruptText.." ["..destName.."]: with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "PARTY", nil, nil)
 						else
-						SendChatMessage("["..sourceName.."]: "..SOUNDALERTERdb.InterruptText.." ["..destName.."]:  with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "PARTY", nil, nil)
+						SendChatMessage("["..sourceName.."]: "..sadb.InterruptText.." ["..destName.."]:  with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "PARTY", nil, nil)
 						end
 					end
-					if SOUNDALERTERdb.clientonly then
-						if sourceName == playerName and (SOUNDALERTERdb.myself or SOUNDALERTERdb.enemyinrange) then
-						DEFAULT_CHAT_FRAME:AddMessage(""..SOUNDALERTERdb.InterruptText.." ["..destName.."]: with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", 1.0, 0.25, 0.25);
+					if sadb.clientonly then
+						if sourceName == playerName and (sadb.myself or sadb.enemyinrange) then
+						DEFAULT_CHAT_FRAME:AddMessage(""..sadb.InterruptText.." ["..destName.."]: with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", 1.0, 0.25, 0.25);
 						else
-						DEFAULT_CHAT_FRAME:AddMessage("["..sourceName.."]: has "..SOUNDALERTERdb.InterruptText.." ["..destName.."]:  with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", 1.0, 0.25, 0.25);
+						DEFAULT_CHAT_FRAME:AddMessage("["..sourceName.."]: has "..sadb.InterruptText.." ["..destName.."]:  with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", 1.0, 0.25, 0.25);
 						end
 					end
-					if SOUNDALERTERdb.say then
-						if sourceName == playerName and (SOUNDALERTERdb.myself or SOUNDALERTERdb.enemyinrange) then
-						SendChatMessage(""..SOUNDALERTERdb.InterruptText.." ["..destName.."]: with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "SAY", nil, nil)
+					if sadb.say then
+						if sourceName == playerName and (sadb.myself or sadb.enemyinrange) then
+						SendChatMessage(""..sadb.InterruptText.." ["..destName.."]: with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "SAY", nil, nil)
 						else
-						SendChatMessage("["..sourceName.."]: "..SOUNDALERTERdb.InterruptText.." ["..destName.."]:  with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "SAY", nil, nil)
+						SendChatMessage("["..sourceName.."]: "..sadb.InterruptText.." ["..destName.."]:  with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "SAY", nil, nil)
 						end
 					end
-					if SOUNDALERTERdb.bgchat then
-						if sourceName == playerName and (SOUNDALERTERdb.myself or SOUNDALERTERdb.enemyinrange) then
-						SendChatMessage(""..SOUNDALERTERdb.InterruptText.." ["..destName.."]: with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "BATTLEGROUND", nil, nil)
+					if sadb.bgchat then
+						if sourceName == playerName and (sadb.myself or sadb.enemyinrange) then
+						SendChatMessage(""..sadb.InterruptText.." ["..destName.."]: with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "BATTLEGROUND", nil, nil)
 						else
-						SendChatMessage("["..sourceName.."]: "..SOUNDALERTERdb.InterruptText.." ["..destName.."]:  with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "BATTLEGROUND", nil, nil)
+						SendChatMessage("["..sourceName.."]: "..sadb.InterruptText.." ["..destName.."]:  with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "BATTLEGROUND", nil, nil)
 						end
 					end
 				end
@@ -2503,10 +2521,9 @@ if (event == "SPELL_AURA_APPLIED" and toEnemy and ((SOUNDALERTERdb.myself and fr
 	end
 end
 function SoundAlerter:UNIT_AURA(event,uid)
-	if (currentZoneType == "arena" and SOUNDALERTERdb.drinking and toEnemy and ((SOUNDALERTERdb.myself and fromTarget) or SOUNDALERTERdb.enemyinrange)) then
+	if (currentZoneType == "arena" and sadb.drinking and toEnemy and ((sadb.myself and fromTarget) or sadb.enemyinrange)) then
 		if UnitAura (uid,DRINK_SPELL) then
 			PlaySoundFile(""..sapath.."drinking.mp3");
 		end
 	end
 end
-
