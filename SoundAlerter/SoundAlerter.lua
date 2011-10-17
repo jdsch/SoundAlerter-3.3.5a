@@ -10,6 +10,7 @@ local PlaySoundFile = PlaySoundFile
 local SendChatMessage = SendChatMessage
 local playerName = UnitName("player")
 local _,currentZoneType = IsInInstance()
+local DRINK_SPELL = GetSpellInfo(57073)
 local sapath = "Interface\\Addons\\SoundAlerter\\voice\\"
 
 
@@ -1808,25 +1809,18 @@ end
 function SoundAlerter:PLAYER_ENTERING_WORLD()
 	CombatLogClearEntries()
 end
-local DRINK_SPELL = GetSpellInfo(57073)
-function SoundAlerter:UNIT_AURA(event,uid)
-	if currentZoneType == "arena" and SOUNDALERTERdb.drinking then
-		if UnitAura (uid,DRINK_SPELL) then
-			PlaySoundFile(""..sapath.."drinking.mp3");
-		end
-	end
-end
 
 function SoundAlerter:COMBAT_LOG_EVENT_UNFILTERED(event , ...)
 
 	local pvpType, isFFA, faction = GetZonePVPInfo();
+	--if (not ((currentZoneType == "none" and SOUNDALERTERdb.field) or (currentZoneType == "pvp" and SOUNDALERTERdb.battleground) or (currentZoneType == "arena" and SOUNDALERTERdb.arena) or SOUNDALERTERdb.all)) then
 	if (not ((pvpType == "contested" and SOUNDALERTERdb.field) or (pvpType == "hostile" and SOUNDALERTERdb.field) or (pvpType == "friendly" and SOUNDALERTERdb.field) or (currentZoneType == "pvp" and SOUNDALERTERdb.battleground) or (currentZoneType == "arena" and SOUNDALERTERdb.arena) or SOUNDALERTERdb.all)) then
 		--print (currentZoneType,SOUNDALERTERdb.field,SOUNDALERTERdb.battleground,SOUNDALERTERdb.arena,SOUNDALERTERdb.all)
 		return
 	end
-	local timestamp,event,sourceGUID,sourceName,sourceFlags,destGUID,destName,destFlags,spellID,spellName= select ( 1 , ... );
+	 timestamp,event,sourceGUID,sourceName,sourceFlags,destGUID,destName,destFlags,spellID,spellName= select ( 1 , ... );
 	--print (sourceName,destName,event,spellName,spellID);
-	local toEnemy,fromEnemy,toSelf,toTarget,fromFocus = false , false , false , false , false
+	 toEnemy,fromEnemy,toSelf,toTarget,fromFocus = false , false , false , false , false
 	if (destName and not CombatLog_Object_IsA(destFlags, COMBATLOG_OBJECT_NONE) ) then
 		toEnemy = CombatLog_Object_IsA(destFlags, COMBATLOG_FILTER_HOSTILE_PLAYERS)
 	end
@@ -1855,6 +1849,7 @@ function SoundAlerter:COMBAT_LOG_EVENT_UNFILTERED(event , ...)
 	end
 enddebug]]
 	--Event Spell_AURA_APPLIED works with enemies with buffs on them from used cooldowns
+
 
 if (event == "SPELL_AURA_APPLIED" and toEnemy and ((SOUNDALERTERdb.myself and fromTarget) or SOUNDALERTERdb.enemyinrange) and not SOUNDALERTERdb.auraApplied) then --(not SOUNDALERTERdb.onlyTarget or toTarget)
 
@@ -2507,5 +2502,11 @@ if (event == "SPELL_AURA_APPLIED" and toEnemy and ((SOUNDALERTERdb.myself and fr
 		end
 	end
 end
-
+function SoundAlerter:UNIT_AURA(event,uid)
+	if (currentZoneType == "arena" and SOUNDALERTERdb.drinking and toEnemy and ((SOUNDALERTERdb.myself and fromTarget) or SOUNDALERTERdb.enemyinrange)) then
+		if UnitAura (uid,DRINK_SPELL) then
+			PlaySoundFile(""..sapath.."drinking.mp3");
+		end
+	end
+end
 
