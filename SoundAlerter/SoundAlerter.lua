@@ -1810,7 +1810,7 @@ function SoundAlerter:PLAYER_ENTERING_WORLD()
 end
 local DRINK_SPELL = GetSpellInfo(57073)
 function SoundAlerter:UNIT_AURA(event,uid)
-	if uid:find("arena") and SOUNDALERTERdb.drinking then
+	if currentZoneType == "arena" and SOUNDALERTERdb.drinking then
 		if UnitAura (uid,DRINK_SPELL) then
 			PlaySoundFile(""..sapath.."drinking.mp3");
 		end
