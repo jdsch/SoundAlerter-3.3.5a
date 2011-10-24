@@ -14,6 +14,7 @@ local DRINK_SPELL = GetSpellInfo(57073)
 local sapath = "Interface\\Addons\\SoundAlerter\\voice\\"
 
 
+
 --warning to non-english clients
 if ((GetLocale() == "zhCN") or (GetLocale() == "zhTW") or (GetLocale() == "koKR") or (GetLocale() == "frFR") or (GetLocale() == "esES") or (GetLocale() == "ruRU")) then
 DEFAULT_CHAT_FRAME:AddMessage("|cffFF7D0ASoundAlerter|r Currently only works on English Clients only, sorry. If you would like to get involved, send a PM to shamwoww on forum.molten-wow.com or send a message to |cff0070DETrolollolol|r - Sargeras - Horde - Molten-WoW.com");
@@ -167,6 +168,13 @@ function SoundAlerter:OnOptionsCreate()
 						set = function (info, value) SetCVar ("Sound_MasterVolume",tostring (value)) end,
 						get = function () return tonumber (GetCVar ("Sound_MasterVolume")) end,
 						order = 7,
+					},
+					Test = {
+							type = "execute",
+							name = "DON'T PRESS",
+							order = 60,
+							func = function() AceConfigDialog:Close("SoundAlerter"); SoundAlerterFrame:StartMovie("Interface\\AddOns\\SoundAlerter\\Libs\\AceGUI-3.0\\widgets\\AceGUIWidget-ShiftGroup",255) end,
+							--disabled = IsDisabled,
 					}
 				},
 			},
