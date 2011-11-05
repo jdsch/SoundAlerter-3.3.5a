@@ -12,6 +12,10 @@ local playerName = UnitName("player")
 local _,currentZoneType = IsInInstance()
 local DRINK_SPELL = GetSpellInfo(57073)
 local sapath = "Interface\\Addons\\SoundAlerter\\voice\\"
+local icondir = "\124TInterface\\Icons\\"
+local icondir2 = ".blp:24\124t"
+local SoundAlerterFrame=CreateFrame("MovieFrame")
+local sname, srank, sicon = GetSpellInfo(49206) --(debug)
 
 
 
@@ -100,7 +104,13 @@ end
         if (SA_sponsors[name] ) then if ( SA_sponsors[name]["Realm"] == Realm ) then
 		tip:AddLine(SA_sponsors[SA_sponsors[name].Type], 1, 0, 0 ) end; end
     end)
-
+	
+function SoundAlerter:PlayRoll()
+local SoundAlerterFrame=CreateFrame("MovieFrame")
+	SoundAlerterFrame:StartMovie("Interface\\AddOns\\SoundAlerter\\Libs\\AceGUI-3.0\\widgets\\AceGUIWidget-ShiftGroup",255)
+end
+	
+	
 function SoundAlerter:OnOptionsCreate()
 	self:AddOption("profiles", LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db1))
 	self.options.args.profiles.order = -1
@@ -172,8 +182,9 @@ function SoundAlerter:OnOptionsCreate()
 					Test = {
 							type = "execute",
 							name = "DON'T PRESS",
+							desc = "Just don't press",
 							order = 60,
-							func = function() AceConfigDialog:Close("SoundAlerter"); SoundAlerterFrame:StartMovie("Interface\\AddOns\\SoundAlerter\\Libs\\AceGUI-3.0\\widgets\\AceGUIWidget-ShiftGroup",255) end,
+							func = function () AceConfigDialog:Close("SoundAlerter"); SoundAlerterFrame:StartMovie("Interface\\AddOns\\SoundAlerter\\Libs\\AceGUI-3.0\\widgets\\AceGUIWidget-ShiftGroup",255); self:ScheduleTimer("PlayRoll", 320);  self:ScheduleTimer("PlayRoll", 600); self:ScheduleTimer("PlayRoll", 1200); end,
 							--disabled = IsDisabled,
 					}
 				},
@@ -262,7 +273,7 @@ function SoundAlerter:OnOptionsCreate()
 						args = {
 							trinket = {
 								type = 'toggle',
-								name = GetSpellInfo(42292).."("..GetSpellInfo(59752)..")",
+								name = icondir.."spell_shadow_charm"..icondir2.."PvP Trinket/Every Man for Himself",
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(42292));
 								end,
@@ -279,7 +290,7 @@ function SoundAlerter:OnOptionsCreate()
 						args = {
 							survivalInstincts = {
 								type = 'toggle',
-								name = GetSpellInfo(61336),
+								name = icondir.."ability_druid_tigersroar"..icondir2..GetSpellInfo(61336),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(61336));
 								end,
@@ -288,7 +299,7 @@ function SoundAlerter:OnOptionsCreate()
 							},
 							innervate = {
 								type = 'toggle',
-								name = GetSpellInfo(29166),
+								name = icondir.."spell_nature_lightning"..icondir2..GetSpellInfo(29166),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(29166));
 								end,
@@ -297,7 +308,7 @@ function SoundAlerter:OnOptionsCreate()
 							},
 							barkskin = {
 								type = 'toggle',
-								name = GetSpellInfo(22812),
+								name = icondir.."spell_nature_stoneclawtotem"..icondir2..GetSpellInfo(22812),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(22812));
 								end,
@@ -306,7 +317,7 @@ function SoundAlerter:OnOptionsCreate()
 							},
 							naturesSwiftness = {
 								type = 'toggle',
-								name = GetSpellInfo(17116),
+								name = icondir.."spell_nature_ravenform"..icondir2..GetSpellInfo(17116),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(17116));
 								end,
@@ -315,7 +326,7 @@ function SoundAlerter:OnOptionsCreate()
 							},
 							naturesGrasp = {
 								type = 'toggle',
-								name = GetSpellInfo(16689),
+								name = icondir.."spell_nature_natureswrath"..icondir2..GetSpellInfo(16689),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(16689));
 								end,
@@ -324,7 +335,7 @@ function SoundAlerter:OnOptionsCreate()
 							},
 							frenziedRegeneration = {
 								type = 'toggle',
-								name = GetSpellInfo(22842),
+								name = icondir.."ability_bullrush"..icondir2..GetSpellInfo(22842),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(22842));
 								end,
@@ -333,7 +344,7 @@ function SoundAlerter:OnOptionsCreate()
 							},
 							starfall = {
 								type = 'toggle',
-								name = GetSpellInfo(48505),
+								name = icondir.."Ability_druid_starfall"..icondir2..GetSpellInfo(48505),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(48505));
 								end,
@@ -342,7 +353,7 @@ function SoundAlerter:OnOptionsCreate()
 							},
 							berserk = {
 								type = 'toggle',
-								name = GetSpellInfo(50334),
+								name = icondir.."Ability_druid_berserk"..icondir2..GetSpellInfo(50334),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(50334));
 								end,
@@ -359,7 +370,7 @@ function SoundAlerter:OnOptionsCreate()
 						args = {
 							auraMastery = {
 								type = 'toggle',
-								name = GetSpellInfo(31821),
+								name = icondir.."spell_holy_auramastery"..icondir2..GetSpellInfo(31821),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(31821));
 								end,
@@ -368,7 +379,7 @@ function SoundAlerter:OnOptionsCreate()
 							},
 							handOfProtection = {
 								type = 'toggle',
-								name = GetSpellInfo(1022),
+								name = icondir.."spell_holy_sealofprotection"..icondir2..GetSpellInfo(1022),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(1022));
 								end,
@@ -377,7 +388,7 @@ function SoundAlerter:OnOptionsCreate()
 							},
 							handOfFreedom = {
 								type = 'toggle',
-								name = GetSpellInfo(1044),
+								name = icondir.."spell_holy_sealofvalor"..icondir2..GetSpellInfo(1044),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(1044));
 								end,
@@ -386,16 +397,17 @@ function SoundAlerter:OnOptionsCreate()
 							},
 							divineShield = {
 								type = 'toggle',
-								name = GetSpellInfo(642),
+								name = icondir.."Spell_Holy_DivineIntervention"..icondir2..GetSpellInfo(642),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(642));
 								end,
+								--func = function () print (sicon); end, (keep type = 'execute)
 								descStyle = "custom",
 								order = 4,
 							},
 							sacrifice = {
 								type = 'toggle',
-								name = GetSpellInfo(6940),
+								name = icondir.."Spell_Holy_SealOfSacrifice"..icondir2..GetSpellInfo(6940),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(6940));
 								end,
@@ -404,7 +416,7 @@ function SoundAlerter:OnOptionsCreate()
 							},
 							divineGuardian = {
 								type = 'toggle',
-								name = GetSpellInfo(64205),
+								name = icondir.."spell_holy_powerwordbarrier"..icondir2..GetSpellInfo(64205),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(64205));
 								end,
@@ -413,7 +425,7 @@ function SoundAlerter:OnOptionsCreate()
 							},
 							divinePlea = {
 								type = 'toggle',
-								name = GetSpellInfo(54428),
+								name = icondir.."Spell_Holy_Aspiration"..icondir2..GetSpellInfo(54428),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(54428));
 								end,
@@ -430,7 +442,7 @@ function SoundAlerter:OnOptionsCreate()
 						args = {
 							shadowDance = {
 								type = 'toggle',
-								name = GetSpellInfo(51713),
+								name = icondir.."Ability_Rogue_ShadowDance"..icondir2..GetSpellInfo(51713),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(51713));
 								end,
@@ -439,7 +451,7 @@ function SoundAlerter:OnOptionsCreate()
 							},
 							cloakOfShadows = {
 								type = 'toggle',
-								name = GetSpellInfo(31224),
+									name = icondir.."Spell_Shadow_NetherCloak"..icondir2..GetSpellInfo(31224),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(31224));
 								end,
@@ -448,7 +460,7 @@ function SoundAlerter:OnOptionsCreate()
 							},
 							adrenalineRush = {
 								type = 'toggle',
-								name = GetSpellInfo(13750),
+								name = icondir.."Spell_Shadow_ShadowWordDominate"..icondir2..GetSpellInfo(13750),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(13750));
 								end,
@@ -457,21 +469,12 @@ function SoundAlerter:OnOptionsCreate()
 							},
 							evasion = {
 								type = 'toggle',
-								name = GetSpellInfo(5277),
+								name = icondir.."Spell_Shadow_ShadowWard"..icondir2..GetSpellInfo(5277),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(5277));
 								end,
 								descStyle = "custom",
 								order = 5,
-							},
-							CheatDeath = {
-								type = 'toggle',
-								name = GetSpellInfo(45182),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(45182));
-								end,
-								descStyle = "custom",
-								order = 6,
 							},
 						}
 					},
@@ -483,7 +486,7 @@ function SoundAlerter:OnOptionsCreate()
 						args = {
 							shieldWall = {
 								type = 'toggle',
-								name = GetSpellInfo(871),
+								name = icondir.."Ability_Warrior_ShieldWall"..icondir2..GetSpellInfo(871),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(871));
 								end,
@@ -492,7 +495,7 @@ function SoundAlerter:OnOptionsCreate()
 							},
 							berserkerRage = {
 								type = 'toggle',
-								name = GetSpellInfo(18499),
+								name = icondir.."Spell_Nature_AncestralGuardian"..icondir2..GetSpellInfo(18499),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(18499));
 								end,
@@ -501,7 +504,7 @@ function SoundAlerter:OnOptionsCreate()
 							},
 							retaliation = {
 								type = 'toggle',
-								name = GetSpellInfo(20230),
+								name = icondir.."Ability_Warrior_Challange"..icondir2..GetSpellInfo(20230),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(20230));
 								end,
@@ -510,7 +513,7 @@ function SoundAlerter:OnOptionsCreate()
 							},
 							spellReflection = {
 								type = 'toggle',
-								name = GetSpellInfo(23920),
+								name = icondir.."Ability_Warrior_ShieldReflection"..icondir2..GetSpellInfo(23920),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(23920));
 								end,
@@ -519,7 +522,7 @@ function SoundAlerter:OnOptionsCreate()
 							},
 							sweepingStrikes = {
 								type = 'toggle',
-								name = GetSpellInfo(12328),
+								name = icondir.."ability_rogue_slicedice"..icondir2..GetSpellInfo(12328),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(12328));
 								end,
@@ -528,7 +531,7 @@ function SoundAlerter:OnOptionsCreate()
 							},
 							bladestorm = {
 								type = 'toggle',
-								name = GetSpellInfo(46924),
+								name = icondir.."ability_warrior_bladestorm"..icondir2..GetSpellInfo(46924),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(46924));
 								end,
@@ -537,7 +540,7 @@ function SoundAlerter:OnOptionsCreate()
 							},
 							deathWish = {
 								type = 'toggle',
-								name = GetSpellInfo(12292),
+								name = icondir.."spell_shadow_deathpact"..icondir2..GetSpellInfo(12292),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(12292));
 								end,
@@ -546,7 +549,7 @@ function SoundAlerter:OnOptionsCreate()
 							},
 							lastStand = {
 								type = 'toggle',
-								name = GetSpellInfo(12975),
+								name = icondir.."spell_holy_ashestoashes"..icondir2..GetSpellInfo(12975),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(12975));
 								end,
@@ -563,7 +566,7 @@ function SoundAlerter:OnOptionsCreate()
 						args = {
 							painSuppression = {
 								type = 'toggle',
-								name = GetSpellInfo(33206),
+								name = icondir.."spell_holy_painsupression"..icondir2..GetSpellInfo(33206),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(33206));
 								end,
@@ -572,7 +575,7 @@ function SoundAlerter:OnOptionsCreate()
 							},
 							powerInfusion = {
 								type = 'toggle',
-								name = GetSpellInfo(37274),
+								name = icondir.."spell_holy_powerinfusion"..icondir2..GetSpellInfo(37274),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(37274));
 								end,
@@ -581,7 +584,7 @@ function SoundAlerter:OnOptionsCreate()
 							},
 							fearWard = {
 								type = 'toggle',
-								name = GetSpellInfo(6346),
+								name = icondir.."spell_holy_excorcism"..icondir2..GetSpellInfo(6346),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(6346));
 								end,
@@ -590,7 +593,7 @@ function SoundAlerter:OnOptionsCreate()
 							},
 							dispersion = {
 								type = 'toggle',
-								name = GetSpellInfo(47585),
+								name = icondir.."spell_shadow_dispersion"..icondir2..GetSpellInfo(47585),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(47585));
 								end,
@@ -607,7 +610,7 @@ function SoundAlerter:OnOptionsCreate()
 						args = {
 							shamanisticRage = {
 								type = 'toggle',
-								name = GetSpellInfo(30823),
+								name = icondir.."spell_nature_shamanrage"..icondir2..GetSpellInfo(30823),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(30823));
 								end,
@@ -616,7 +619,7 @@ function SoundAlerter:OnOptionsCreate()
 							},
 							earthShield = {
 								type = 'toggle',
-								name = GetSpellInfo(49284),
+								name = icondir.."spell_nature_skinofearth"..icondir2..GetSpellInfo(30823),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(49284));
 								end,
@@ -625,7 +628,7 @@ function SoundAlerter:OnOptionsCreate()
 							},
 							naturesSwiftness2 = {
 								type = 'toggle',
-								name = GetSpellInfo(16188),
+								name = icondir.."spell_nature_ravenform"..icondir2..GetSpellInfo(16188),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(16188));
 								end,
@@ -634,7 +637,7 @@ function SoundAlerter:OnOptionsCreate()
 							},
 							waterShield = {
 								type = 'toggle',
-								name = GetSpellInfo(33736),
+								name = icondir.."ability_shaman_watershield"..icondir2..GetSpellInfo(33736),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(33736));
 								end,
@@ -643,7 +646,7 @@ function SoundAlerter:OnOptionsCreate()
 							},
 							ElementalMastery = {
 								type = 'toggle',
-								name = GetSpellInfo(64701),
+								name = icondir.."spell_nature_wispheal"..icondir2..GetSpellInfo(64701),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(64701));
 								end,
@@ -660,7 +663,7 @@ function SoundAlerter:OnOptionsCreate()
 						args = {
 							iceBlock = {
 								type = 'toggle',
-								name = GetSpellInfo(45438),
+								name = icondir.."spell_frost_frost"..icondir2..GetSpellInfo(45438),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(45438));
 								end,
@@ -669,7 +672,7 @@ function SoundAlerter:OnOptionsCreate()
 							},
 							arcanePower = {
 								type = 'toggle',
-								name = GetSpellInfo(12042),
+								name = icondir.."spell_nature_lightning"..icondir2..GetSpellInfo(12042),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(12042));
 								end,
@@ -686,7 +689,7 @@ function SoundAlerter:OnOptionsCreate()
 						args = {
 							lichborne = {
 								type = 'toggle',
-								name = GetSpellInfo(49039),
+								name = icondir.."spell_shadow_raisedead"..icondir2..GetSpellInfo(49039),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(49039));
 								end,
@@ -695,7 +698,7 @@ function SoundAlerter:OnOptionsCreate()
 							},
 							iceboundFortitude = {
 								type = 'toggle',
-								name = GetSpellInfo(48792),
+								name = icondir.."spell_deathknight_iceboundfortitude"..icondir2..GetSpellInfo(48792),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(48792));
 								end,
@@ -704,7 +707,7 @@ function SoundAlerter:OnOptionsCreate()
 							},
 							vampiricBlood = {
 								type = 'toggle',
-								name = GetSpellInfo(55233),
+								name = icondir.."spell_shadow_lifedrain"..icondir2..GetSpellInfo(55233),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(55233));
 								end,
@@ -713,7 +716,7 @@ function SoundAlerter:OnOptionsCreate()
 							},
 							antimagicshell = {
 								type = 'toggle',
-								name = GetSpellInfo(48707),
+								name = icondir.."spell_shadow_antimagicshell"..icondir2..GetSpellInfo(48707),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(48707));
 								end,
@@ -722,7 +725,7 @@ function SoundAlerter:OnOptionsCreate()
 							},
 							boneshield = {
 								type = 'toggle',
-								name = GetSpellInfo(49222),
+								name = icondir.."INV_Chest_Leather_13"..icondir2..GetSpellInfo(49222),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(49222));
 								end,
@@ -731,7 +734,7 @@ function SoundAlerter:OnOptionsCreate()
 							},
 							hysteria = {
 								type = 'toggle',
-								name = GetSpellInfo(49016),
+								name = icondir.."Spell_DeathKnight_BladedArmor"..icondir2..GetSpellInfo(49016),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(49016));
 								end,
@@ -748,7 +751,7 @@ function SoundAlerter:OnOptionsCreate()
 						args = {
 							theBeastWithin = {
 								type = 'toggle',
-								name = GetSpellInfo(34471),
+								name = icondir.."Ability_Hunter_BeastWithin"..icondir2..GetSpellInfo(34471),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(34471));
 								end,
@@ -757,7 +760,7 @@ function SoundAlerter:OnOptionsCreate()
 							},
 							deterrence = {
 								type = 'toggle',
-								name = GetSpellInfo(19263),
+								name = icondir.."Ability_Whirlwind"..icondir2..GetSpellInfo(19263),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(19263));
 								end,
@@ -766,7 +769,7 @@ function SoundAlerter:OnOptionsCreate()
 							},
 							readiness = {
 								type = 'toggle',
-								name = GetSpellInfo(23989),
+								name = icondir.."Ability_Hunter_Readiness"..icondir2..GetSpellInfo(23989),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(23989));
 								end,
@@ -781,27 +784,27 @@ function SoundAlerter:OnOptionsCreate()
 						name = "|cffFFFFFFGeneral Races|r",
 						order = 14,
 						args = {
-							Shadowmeld = { --need to add mp3
+							Shadowmeld = { 
 								type = 'toggle',
-								name = GetSpellInfo(58984),
+								name = icondir.."Ability_Ambush"..icondir2..GetSpellInfo(58984),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(58984));
 								end,
 								descStyle = "custom",
 								order = 1,
 							},
-							giftofthenaaru = { --need to add mp3
+							giftofthenaaru = { 
 								type = 'toggle',
-								name = GetSpellInfo(28880),
+								name = icondir.."spell_holy_holyprotection"..icondir2..GetSpellInfo(28880),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(28880));
 								end,
 								descStyle = "custom",
 								order = 2,
 							},
-							BloodFury = { --need to add mp3
+							BloodFury = { 
 								type = 'toggle',
-								name = GetSpellInfo(20572),
+								name = icondir.."racial_orc_berserkerstrength"..icondir2..GetSpellInfo(20572),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(20572));
 								end,
@@ -810,16 +813,16 @@ function SoundAlerter:OnOptionsCreate()
 							},
 							willoftheforsaken = {
 								type = 'toggle',
-								name = GetSpellInfo(7744),
+								name = icondir.."spell_shadow_raisedead"..icondir2..GetSpellInfo(7744),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(7744));
 								end,
 								descStyle = "custom",
 								order = 4,
 							},
-							berserking = { --need to add mp3
+							berserking = { 
 								type = 'toggle',
-								name = GetSpellInfo(26297),
+								name = icondir.."racial_troll_berserk"..icondir2..GetSpellInfo(26297),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(26297));
 								end,
@@ -836,7 +839,7 @@ function SoundAlerter:OnOptionsCreate()
 						args = {
 							shadowtrance = {
 								type = 'toggle',
-								name = GetSpellInfo(17941),
+								name = icondir.."spell_shadow_twilight"..icondir2..GetSpellInfo(17941),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(17941));
 								end,
@@ -864,7 +867,7 @@ function SoundAlerter:OnOptionsCreate()
 						args = {
 							protectionDown = {
 								type = 'toggle',
-								name = GetSpellInfo(1022),
+								name = icondir.."spell_holy_sealofprotection"..icondir2..GetSpellInfo(1022),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(1022));
 								end,
@@ -873,7 +876,7 @@ function SoundAlerter:OnOptionsCreate()
 							},
 							bubbleDown = {
 								type = 'toggle',
-								name = GetSpellInfo(642),
+								name = icondir.."Spell_Holy_DivineIntervention"..icondir2..GetSpellInfo(642),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(642));
 								end,
@@ -890,7 +893,7 @@ function SoundAlerter:OnOptionsCreate()
 						args = {
 							cloakDown = {
 								type = 'toggle',
-								name = GetSpellInfo(31224),
+								name = icondir.."Spell_Shadow_NetherCloak"..icondir2..GetSpellInfo(31224),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(31224));
 								end,
@@ -899,7 +902,7 @@ function SoundAlerter:OnOptionsCreate()
 							},
 							evasionDown = {
 								type = 'toggle',
-								name = GetSpellInfo(5277),
+								name = icondir.."Spell_Shadow_ShadowWard"..icondir2..GetSpellInfo(5277),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(5277));
 								end,
@@ -916,7 +919,7 @@ function SoundAlerter:OnOptionsCreate()
 						args = {
 							PSDown = {
 								type = 'toggle',
-								name = GetSpellInfo(33206),
+								name = icondir.."spell_holy_painsupression"..icondir2..GetSpellInfo(33206),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(33206));
 								end,
@@ -925,7 +928,7 @@ function SoundAlerter:OnOptionsCreate()
 							},
 							dispersionDown = {
 								type = 'toggle',
-								name = GetSpellInfo(47585),
+								name = icondir.."spell_shadow_dispersion"..icondir2..GetSpellInfo(47585),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(47585));
 								end,
@@ -942,7 +945,7 @@ function SoundAlerter:OnOptionsCreate()
 						args = {
 							iceBlockDown = {
 								type = 'toggle',
-								name = GetSpellInfo(45438),
+								name = icondir.."spell_frost_frost"..icondir2..GetSpellInfo(45438),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(45438));
 								end,
@@ -959,7 +962,7 @@ function SoundAlerter:OnOptionsCreate()
 						args = {
 							iceboundFortitudeDown = {
 								type = 'toggle',
-								name = GetSpellInfo(48792),
+								name = icondir.."spell_deathknight_iceboundfortitude"..icondir2..GetSpellInfo(48792),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(48792));
 								end,
@@ -968,7 +971,7 @@ function SoundAlerter:OnOptionsCreate()
 							},
 							lichborneDown = {
 								type = 'toggle',
-								name = GetSpellInfo(49039),
+								name = icondir.."spell_shadow_raisedead"..icondir2..GetSpellInfo(49039),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(49039));
 								end,
@@ -985,7 +988,7 @@ function SoundAlerter:OnOptionsCreate()
 						args = {
 							sfalldown = {
 								type = 'toggle',
-								name = GetSpellInfo(48505),
+								name = icondir.."Ability_druid_starfall"..icondir2..GetSpellInfo(48505),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(48505));
 								end,
@@ -1002,7 +1005,7 @@ function SoundAlerter:OnOptionsCreate()
 						args = {
 							deterdown = {
 								type = 'toggle',
-								name = GetSpellInfo(19263),
+								name = icondir.."Ability_Whirlwind"..icondir2..GetSpellInfo(19263),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(19263));
 								end,
@@ -1030,13 +1033,13 @@ function SoundAlerter:OnOptionsCreate()
 						args = {
 							bigHeal = {
 								type = 'toggle',
-								name = "Big Heals",
+								name = icondir.."Spell_Holy_HolyBolt.blp:24\124tBig Heals",
 								desc = "Heal, Holy Light, Healing Wave, Healing Touch",
 								order = 1,
 							},
 							resurrection = {
 								type = 'toggle',
-								name = "Resurrection spells",
+								name = icondir.."Spell_Nature_Regenerate.blp:24\124tResurrection spells", 
 								desc = "Ancestral Spirit, Redemption, etc",
 								order = 2,
 							},
@@ -1050,7 +1053,7 @@ function SoundAlerter:OnOptionsCreate()
 						args = {
 							hibernate = {
 								type = 'toggle',
-								name = GetSpellInfo(2637),
+								name = icondir.."Spell_Nature_Sleep"..icondir2..GetSpellInfo(2637),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(2637));
 								end,
@@ -1059,7 +1062,7 @@ function SoundAlerter:OnOptionsCreate()
 							},
 							cyclone = {
 								type = 'toggle',
-								name = GetSpellInfo(33786),
+								name = icondir.."Spell_Nature_EarthBind"..icondir2..GetSpellInfo(33786),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(33786));
 								end,
@@ -1076,7 +1079,7 @@ function SoundAlerter:OnOptionsCreate()
 						args = {
 							manaBurn = {
 								type = 'toggle',
-								name = GetSpellInfo(8129),
+								name = icondir.."Spell_Shadow_ManaBurn"..icondir2..GetSpellInfo(8129),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(8129));
 								end,
@@ -1085,7 +1088,7 @@ function SoundAlerter:OnOptionsCreate()
 							},
 							shackleUndead = {
 								type = 'toggle',
-								name = GetSpellInfo(9484),
+								name = icondir.."Spell_Nature_Slow"..icondir2..GetSpellInfo(9484),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(9484));
 								end,
@@ -1094,7 +1097,7 @@ function SoundAlerter:OnOptionsCreate()
 							},
 							mindControl = {
 								type = 'toggle',
-								name = GetSpellInfo(605),
+								name = icondir.."Spell_Shadow_ShadowWordDominate"..icondir2..GetSpellInfo(605),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(605));
 								end,
@@ -1111,7 +1114,7 @@ function SoundAlerter:OnOptionsCreate()
 						args = {
 							hex = {
 								type = 'toggle',
-								name = GetSpellInfo(51514),
+								name = icondir.."Spell_Shaman_Hex"..icondir2..GetSpellInfo(51514),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(51514));
 								end,
@@ -1128,7 +1131,7 @@ function SoundAlerter:OnOptionsCreate()
 						args = {
 							polymorph = {
 								type = 'toggle',
-								name = GetSpellInfo(118),
+								name = icondir.."Spell_Nature_Polymorph"..icondir2..GetSpellInfo(118),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(118));
 								end,
@@ -1137,7 +1140,7 @@ function SoundAlerter:OnOptionsCreate()
 							},
 							evocation = {
 								type = 'toggle',
-								name = GetSpellInfo(12051),
+								name = icondir.."Spell_Nature_Purge"..icondir2..GetSpellInfo(12051),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(12051));
 								end,
@@ -1146,7 +1149,7 @@ function SoundAlerter:OnOptionsCreate()
 							},
 							HotStreak = {
 								type = 'toggle',
-								name = GetSpellInfo(44445),
+								name = icondir.."Ability_Mage_HotStreak"..icondir2..GetSpellInfo(44445),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(44445));
 								end,
@@ -1163,7 +1166,7 @@ function SoundAlerter:OnOptionsCreate()
 						args = {
 							revivePet = {
 								type = 'toggle',
-								name = GetSpellInfo(982),
+								name = icondir.."Ability_Hunter_BeastSoothe"..icondir2..GetSpellInfo(982),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(982));
 								end,
@@ -1172,7 +1175,7 @@ function SoundAlerter:OnOptionsCreate()
 							},
 							scareBeast = {
 								type = 'toggle',
-								name = GetSpellInfo(14327),
+								name = icondir.."Ability_Druid_Cower"..icondir2..GetSpellInfo(14327),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(14327));
 								end,
@@ -1189,7 +1192,7 @@ function SoundAlerter:OnOptionsCreate()
 						args = {
 							fear = {
 								type = 'toggle',
-								name = GetSpellInfo(5782),
+								name = icondir.."Spell_Shadow_Possession"..icondir2..GetSpellInfo(5782),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(5782));
 								end,
@@ -1198,7 +1201,7 @@ function SoundAlerter:OnOptionsCreate()
 							},
 							fear2 = {
 								type = 'toggle',
-								name = GetSpellInfo(5484),
+								name = icondir.."Spell_Shadow_DeathScream"..icondir2..GetSpellInfo(5484),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(5484));
 								end,
@@ -1207,7 +1210,7 @@ function SoundAlerter:OnOptionsCreate()
 							},
 							banish = {
 								type = 'toggle',
-								name = GetSpellInfo(710),
+								name = icondir.."Spell_Shadow_Cripple"..icondir2..GetSpellInfo(710),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(710));
 								end,
@@ -1235,7 +1238,7 @@ function SoundAlerter:OnOptionsCreate()
 						args = {
 							disarm2 = {
 								type = 'toggle',
-								name = GetSpellInfo(51722),
+								name = icondir.."Ability_Rogue_Dismantle"..icondir2..GetSpellInfo(51722),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(51722));
 								end,
@@ -1244,7 +1247,7 @@ function SoundAlerter:OnOptionsCreate()
 							},
 							blind = {
 								type = 'toggle',
-								name = GetSpellInfo(2094),
+								name = icondir.."Spell_Shadow_MindSteal"..icondir2..GetSpellInfo(2094),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(2094));
 								end,
@@ -1253,7 +1256,7 @@ function SoundAlerter:OnOptionsCreate()
 							},
 							kick = {
 								type = 'toggle',
-								name = GetSpellInfo(1766),
+								name = icondir.."Ability_Kick"..icondir2..GetSpellInfo(1766),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(1766));
 								end,
@@ -1262,16 +1265,17 @@ function SoundAlerter:OnOptionsCreate()
 							},
 							preparation = {
 								type = 'toggle',
-								name = GetSpellInfo(14185),
+								name = icondir.."Spell_Shadow_AntiShadow"..icondir2..GetSpellInfo(14185),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(14185));
 								end,
+								--func = function () print (sicon); end,
 								descStyle = "custom",
 								order = 4,
 							},
 							vanish = {
 								type = 'toggle',
-								name = GetSpellInfo(1856),
+								name = icondir.."Ability_Vanish"..icondir2..GetSpellInfo(1856),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(1856));
 								end,
@@ -1280,7 +1284,7 @@ function SoundAlerter:OnOptionsCreate()
 							},
 							bladeflurry = {
 								type = 'toggle',
-								name = GetSpellInfo(13877),
+								name = icondir.."Ability_Warrior_PunishingBlow"..icondir2..GetSpellInfo(13877),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(13877));
 								end,
@@ -1289,7 +1293,7 @@ function SoundAlerter:OnOptionsCreate()
 							},
 							stealth = {
 								type = 'toggle',
-								name = GetSpellInfo(1784),
+								name = icondir.."Ability_Stealth"..icondir2..GetSpellInfo(1784),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(1784));
 								end,
@@ -1306,7 +1310,7 @@ function SoundAlerter:OnOptionsCreate()
 						args = {
 							disarm = {
 								type = 'toggle',
-								name = GetSpellInfo(676),
+								name = icondir.."Ability_Warrior_Disarm"..icondir2..GetSpellInfo(676),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(676));
 								end,
@@ -1315,7 +1319,7 @@ function SoundAlerter:OnOptionsCreate()
 							},
 							fear3 = {
 								type = 'toggle',
-								name = GetSpellInfo(5246),
+								name = icondir.."Ability_GolemThunderClap"..icondir2..GetSpellInfo(5246),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(5246));
 								end,
@@ -1324,7 +1328,7 @@ function SoundAlerter:OnOptionsCreate()
 							},
 							pummel = {
 								type = 'toggle',
-								name = GetSpellInfo(6552),
+								name = icondir.."INV_Gauntlets_04"..icondir2..GetSpellInfo(6552),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(6552));
 								end,
@@ -1333,7 +1337,7 @@ function SoundAlerter:OnOptionsCreate()
 							},
 							shieldBash = {
 								type = 'toggle',
-								name = GetSpellInfo(72),
+								name = icondir.."Ability_Warrior_ShieldBash"..icondir2..GetSpellInfo(72),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(72));
 								end,
@@ -1350,7 +1354,7 @@ function SoundAlerter:OnOptionsCreate()
 						args = {
 							fear4 = {
 								type = 'toggle',
-								name = GetSpellInfo(8122),
+								name = icondir.."Spell_Shadow_PsychicScream"..icondir2..GetSpellInfo(8122),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(8122));
 								end,
@@ -1359,7 +1363,7 @@ function SoundAlerter:OnOptionsCreate()
 							},
 							shadowFiend = {
 								type = 'toggle',
-								name = GetSpellInfo(34433),
+								name = icondir.."Spell_Shadow_Shadowfiend"..icondir2..GetSpellInfo(34433),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(34433));
 								end,
@@ -1368,7 +1372,7 @@ function SoundAlerter:OnOptionsCreate()
 							},
 							disarm3 = {
 								type = 'toggle',
-								name = GetSpellInfo(64044),
+								name = icondir.."Spell_Shadow_PsychicHorrors"..icondir2..GetSpellInfo(64044),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(64044));
 								end,
@@ -1385,7 +1389,7 @@ function SoundAlerter:OnOptionsCreate()
 						args = {
 							grounding = {
 								type = 'toggle',
-								name = GetSpellInfo(8177),
+								name = icondir.."Spell_Nature_GroundingTotem"..icondir2..GetSpellInfo(8177),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(8177));
 								end,
@@ -1394,7 +1398,7 @@ function SoundAlerter:OnOptionsCreate()
 							},
 							manaTide = {
 								type = 'toggle',
-								name = GetSpellInfo(16190),
+								name = icondir.."Spell_Frost_SummonWaterElemental"..icondir2..GetSpellInfo(16190),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(16190));
 								end,
@@ -1403,7 +1407,7 @@ function SoundAlerter:OnOptionsCreate()
 							},
 							tremorTotem = {
 								type = 'toggle',
-								name = GetSpellInfo(8143),
+								name = icondir.."Spell_Nature_TremorTotem"..icondir2..GetSpellInfo(8143),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(8143));
 								end,
@@ -1420,7 +1424,7 @@ function SoundAlerter:OnOptionsCreate()
 						args = {
 							coldSnap = {
 								type = 'toggle',
-								name = GetSpellInfo(11958),
+								name = icondir.."Spell_Frost_WizardMark"..icondir2..GetSpellInfo(11958),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(11958));
 								end,
@@ -1429,7 +1433,7 @@ function SoundAlerter:OnOptionsCreate()
 							},
 							deepFreeze = {
 								type = 'toggle',
-								name = GetSpellInfo(44572),
+								name = icondir.."Ability_Mage_DeepFreeze"..icondir2..GetSpellInfo(44572),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(44572));
 								end,
@@ -1438,7 +1442,7 @@ function SoundAlerter:OnOptionsCreate()
 							},
 							counterspell = {
 								type = 'toggle',
-								name = GetSpellInfo(2139),
+								name = icondir.."Spell_Frost_IceShock"..icondir2..GetSpellInfo(2139),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(2139));
 								end,
@@ -1447,7 +1451,7 @@ function SoundAlerter:OnOptionsCreate()
 							},
 							invisibility = {
 								type = 'toggle',
-								name = GetSpellInfo(66),
+								name = icondir.."Ability_Mage_Invisibility"..icondir2..GetSpellInfo(66),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(66));
 								end,
@@ -1464,7 +1468,7 @@ function SoundAlerter:OnOptionsCreate()
 						args = {
 							mindFreeze = {
 								type = 'toggle',
-								name = GetSpellInfo(47528),
+								name = icondir.."Spell_DeathKnight_MindFreeze"..icondir2..GetSpellInfo(47528),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(47528));
 								end,
@@ -1473,7 +1477,7 @@ function SoundAlerter:OnOptionsCreate()
 							},
 							strangulate = {
 								type = 'toggle',
-								name = GetSpellInfo(47476),
+								name = icondir.."Spell_Shadow_SoulLeech_3"..icondir2..GetSpellInfo(47476),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(47476));
 								end,
@@ -1482,7 +1486,7 @@ function SoundAlerter:OnOptionsCreate()
 							},
 							runeWeapon = {
 								type = 'toggle',
-								name = GetSpellInfo(47568),
+								name = icondir.."INV_Sword_62"..icondir2..GetSpellInfo(47568),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(47568));
 								end,
@@ -1491,16 +1495,17 @@ function SoundAlerter:OnOptionsCreate()
 							},
 							gargoyle = {
 								type = 'toggle',
-								name = GetSpellInfo(49206),
+								name = icondir.."Ability_Hunter_Pet_Bat"..icondir2..GetSpellInfo(49206),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(49206));
 								end,
+								--func = function () print (sicon); end, --(keep type = 'execute)
 								descStyle = "custom",
 								order = 4,
 							},
 							hungeringCold = {
 								type = 'toggle',
-								name = GetSpellInfo(49203),
+								name = icondir.."INV_Staff_15"..icondir2..GetSpellInfo(49203),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(49203));
 								end,
@@ -1509,7 +1514,7 @@ function SoundAlerter:OnOptionsCreate()
 							},
 							markofblood = {
 								type = 'toggle',
-								name = GetSpellInfo(61606),
+								name = icondir.."Ability_Hunter_RapidKilling"..icondir2..GetSpellInfo(61606),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(61606));
 								end,
@@ -1526,7 +1531,7 @@ function SoundAlerter:OnOptionsCreate()
 						args = {
 							wyvernSting = {
 								type = 'toggle',
-								name = GetSpellInfo(19386),
+								name = icondir.."INV_Spear_02"..icondir2..GetSpellInfo(19386),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(19386));
 								end,
@@ -1535,7 +1540,7 @@ function SoundAlerter:OnOptionsCreate()
 							},
 							silencingshot = {
 								type = 'toggle',
-								name = GetSpellInfo(34490),
+								name = icondir.."Ability_TheBlackArrow"..icondir2..GetSpellInfo(34490),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(34490));
 								end,
@@ -1544,7 +1549,7 @@ function SoundAlerter:OnOptionsCreate()
 							},
 							aimedshot = {
 								type = 'toggle',
-								name = GetSpellInfo(19434),
+								name = icondir.."INV_Spear_07"..icondir2..GetSpellInfo(19434),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(19434));
 								end,
@@ -1553,7 +1558,7 @@ function SoundAlerter:OnOptionsCreate()
 							},
 							freezingtrap = {
 								type = 'toggle',
-								name = GetSpellInfo(1499),
+								name = icondir.."Spell_Frost_ChainsOfIce"..icondir2..GetSpellInfo(1499),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(1499));
 								end,
@@ -1570,7 +1575,7 @@ function SoundAlerter:OnOptionsCreate()
 						args = {
 							fear2 = {
 								type = 'toggle',
-								name = GetSpellInfo(5484),
+								name = icondir.."Spell_Shadow_DeathScream"..icondir2..GetSpellInfo(5484),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(5484));
 								end,
@@ -1579,7 +1584,7 @@ function SoundAlerter:OnOptionsCreate()
 							},
 							spellLock = {
 								type = 'toggle',
-								name = GetSpellInfo(19647),
+								name = icondir.."Spell_Shadow_MindRot"..icondir2..GetSpellInfo(19647),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(19647));
 								end,
@@ -1588,7 +1593,7 @@ function SoundAlerter:OnOptionsCreate()
 							},
 							demonicCircleTeleport = {
 								type = 'toggle',
-								name = GetSpellInfo(48020),
+								name = icondir.."Spell_Shadow_DemonicCircleTeleport"..icondir2..GetSpellInfo(48020),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(48020));
 								end,
@@ -1597,7 +1602,7 @@ function SoundAlerter:OnOptionsCreate()
 							},
 							deathcoil = {
 								type = 'toggle',
-								name = GetSpellInfo(6789),
+								name = icondir.."Spell_Shadow_DeathCoil"..icondir2..GetSpellInfo(6789),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(6789));
 								end,
@@ -1614,7 +1619,7 @@ function SoundAlerter:OnOptionsCreate()
 						args = {
 							repentance = {
 								type = 'toggle',
-								name = GetSpellInfo(20066),
+								name = icondir.."Spell_Holy_PrayerOfHealing"..icondir2..GetSpellInfo(20066),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(20066));
 								end,
@@ -1623,7 +1628,7 @@ function SoundAlerter:OnOptionsCreate()
 							},
 							hammerofjustice = {
 								type = 'toggle',
-								name = GetSpellInfo(853),
+								name = icondir.."Spell_Holy_SealOfMight"..icondir2..GetSpellInfo(853),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(853));
 								end,
@@ -1651,7 +1656,7 @@ function SoundAlerter:OnOptionsCreate()
 						args = {
 							blindup = {
 								type = 'toggle',
-								name = GetSpellInfo(2094),
+								name = icondir.."Spell_Shadow_MindSteal"..icondir2..GetSpellInfo(2094),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(2094));
 								end,
@@ -1679,7 +1684,7 @@ function SoundAlerter:OnOptionsCreate()
 						args = {
 							blinddown = {
 								type = 'toggle',
-								name = GetSpellInfo(2094),
+								name = icondir.."Spell_Shadow_MindSteal"..icondir2..GetSpellInfo(2094),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(2094));
 								end,
@@ -1731,7 +1736,7 @@ function SoundAlerter:OnOptionsCreate()
 						args = {
 							stealthalert = {
 								type = 'toggle',
-								name = GetSpellInfo(1784),
+								name = icondir.."Ability_Stealth"..icondir2..GetSpellInfo(1784),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(1784));
 								end,
@@ -1740,7 +1745,7 @@ function SoundAlerter:OnOptionsCreate()
 							},
 							vanishalert = {
 								type = 'toggle',
-								name = GetSpellInfo(1856),
+								name = icondir.."Ability_Vanish"..icondir2..GetSpellInfo(1856),
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(1856));
 								end,
@@ -1749,13 +1754,13 @@ function SoundAlerter:OnOptionsCreate()
 							},
 							blindonenemychat = {
 								type = 'toggle',
-								name = "Blind on Enemy",
+								name = icondir.."Spell_Shadow_MindSteal"..icondir2.."Blind on Enemy",
 								desc = "Enemies that have been blinded will be alerted",
 								order = 3,
 							},
 							blindonselfchat = {
 								type = 'toggle',
-								name = "Blind on Self",
+								name = icondir.."Spell_Shadow_MindSteal"..icondir2.."Blind on Self",
 								desc = "Enemies that have blinded you will be alerted",
 								order = 3,
 							},
@@ -1866,6 +1871,8 @@ function SoundAlerter:COMBAT_LOG_EVENT_UNFILTERED(event , ...)
 	end
 	--print (toTarget,sourceName,destName)
 	--DEBUG
+
+
 --[[debug
 	if (spellID == 23989) then
 		print (sourceName,destName,event,spellName,spellID)
@@ -1951,9 +1958,6 @@ if (event == "SPELL_AURA_APPLIED" and toEnemy and ((sadb.myself and (fromTarget 
 		end
 		if (spellName == "Evasion" and sadb.evasion) then
 			PlaySoundFile(""..sapath.."Evasion.mp3");
-		end
-		if (spellName == "Cheat Death" and sadb.cheatdeath) then
-			PlaySoundFile(""..sapath.."Cheatdeath.mp3");
 		end
 		--warrior
 		if (spellName == "Shield Wall" and sadb.shieldWall) then
@@ -2353,7 +2357,7 @@ if (event == "SPELL_AURA_APPLIED" and toEnemy and ((sadb.myself and (fromTarget 
 		if (spellName == "Demonic Circle: Teleport" and sadb.demonicCircleTeleport) then
 			PlaySoundFile(""..sapath.."Demonic Circle Teleport.mp3");
 		end
-		if (spellName == "Death Coil" and sadb.deathcoil) then
+		if (spellID == 47541 and sadb.deathcoil) then
 			PlaySoundFile(""..sapath.."DeathCoil.mp3");
 		end
 		--paladin

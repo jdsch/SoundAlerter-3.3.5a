@@ -44,7 +44,6 @@ dbDefaults = {
 		cloakOfShadows = true,
 		adrenalineRush = true,
 		evasion = true,
-		CheatDeath = true,
 		vanish = true,
 		bladeflurry = false,
 		stealth = true,
