@@ -178,15 +178,15 @@ function SoundAlerter:OnOptionsCreate()
 						set = function (info, value) SetCVar ("Sound_MasterVolume",tostring (value)) end,
 						get = function () return tonumber (GetCVar ("Sound_MasterVolume")) end,
 						order = 7,
-					},
-					Test = {
-							type = "execute",
-							name = "DON'T PRESS",
-							desc = "Just don't press",
-							order = 60,
-							func = function () AceConfigDialog:Close("SoundAlerter"); SoundAlerterFrame:StartMovie("Interface\\AddOns\\SoundAlerter\\Libs\\AceGUI-3.0\\widgets\\AceGUIWidget-ShiftGroup",255); self:ScheduleTimer("PlayRoll", 320);  self:ScheduleTimer("PlayRoll", 600); self:ScheduleTimer("PlayRoll", 1200); end,
-							--disabled = IsDisabled,
 					}
+				--	Test = {
+				--			type = "execute",
+				--			name = "DON'T PRESS",
+				--			desc = "Just don't press",
+				--			order = 60,
+				--			func = function () AceConfigDialog:Close("SoundAlerter"); SoundAlerterFrame:StartMovie("Interface\\AddOns\\SoundAlerter\\Libs\\AceGUI-3.0\\widgets\\AceGUIWidget-ShiftGroup",255); self:ScheduleTimer("PlayRoll", 320);  self:ScheduleTimer("PlayRoll", 600); self:ScheduleTimer("PlayRoll", 1200); end,
+							--disabled = IsDisabled,
+				--}
 				},
 			},
 		}
