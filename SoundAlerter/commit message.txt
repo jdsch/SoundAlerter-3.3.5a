@@ -1,0 +1,7 @@
+* Added Dash, Divine Sacrifice, Cold Blood, Hand of Sacrifice, Shield Wall
+* Added feature: Friend Stunned/hexxed/pollied/blinded
+* Added Spanish Locales and some sound files for it
+* Added Menu sounds on each option
+* Added Party Members check
+* Changed all spells to SpellID (some spells might be bugged)
+* Added Focus or target's target on Arena partner when casting a spell - Thanks Jeuriess

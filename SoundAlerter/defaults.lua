@@ -4,19 +4,25 @@ dbDefaults = {
 		arena = true,
 		battleground = true,
 		field = true,
-
+		sapath = SA_LOCALEPATH[GetLocale()] or "Interface\\Addons\\SoundAlerter\\voice\\",
 		auraApplied = false,
 		auraRemoved = false,
 		castStart = false,
 		castSuccess = false,
 		interrupt = false,
-
+		interruptfriendly = true,
+		stun = true,
+		hexfriend = true,
+		friendlydebuff = false,
+		friendpoly = true,
+		friendcyclone = true,
 		enemyinrange = true,
 		class = true,
 		drinking = true,
 		shadowmeld = true,
 		trinket = true,
 		myself = false,
+		Blindfriend = true,
 --Druid
 		thorns = true,
 		survivalInstincts = true,
@@ -26,20 +32,23 @@ dbDefaults = {
 		naturesGrasp = true,
 		frenziedRegeneration = true,
 		enrage = false,
-		desh = false,
+		dash = false,
 		starfall = true,
 		sfalldown = true,
 		berserk = true,
 --Paladin
 		auraMastery = true,
+		avengingWrath = true,
 		handOfProtection = true,
 		handOfFreedom = true,
 		divineShield = true,
-		sacrifice = true,
+		divineSacrifice = true,
+		handofsacrifice = true,
 		divineGuardian = true,
 		divinePlea = true,
 --Rogue
 		shadowDance = true,
+		coldBlood = false,
 		sprint = true,
 		cloakOfShadows = true,
 		adrenalineRush = true,
@@ -57,11 +66,16 @@ dbDefaults = {
 		sweepingStrikes = true,
 		bladestorm = true,
 		lastStand = false,
+		shieldWallDown = true,
 --Priest
 		painSuppression = true,
 		powerInfusion = true,
 		fearWard = true,
 		dispersion = true,
+		innerfocus = false,
+		icyveins = false,
+		desperatePrayer = true,
+		divineHymn = true,
 
 		waterShield = false,
 		shamanisticRage = true,
@@ -105,7 +119,7 @@ dbDefaults = {
 		giftofthenaaru = false,
 		BloodFury = false,
 		berserking = false,
-
+		stoneform = false,
 --Druid
 		hibernate = true,
 		cyclone = true,
@@ -115,6 +129,7 @@ dbDefaults = {
 		mindControl = true,
 --Shaman
 		hex = true,
+		earthbind = false,
 --Mage
 		polymorph = true,
 		evocation = true,
@@ -173,6 +188,7 @@ dbDefaults = {
 
 		lockout = true,
 --Chat Alerts
+		bubblealert = true,
 		stealthalert = true,
 		vanishalert = true,
 		trinketalert = false,

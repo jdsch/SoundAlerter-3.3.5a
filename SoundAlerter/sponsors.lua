@@ -6,7 +6,6 @@ SA_sponsors = {
 	--Warsong
 	["Trollolloll"] = { ["Realm"] = "Warsong (Pure PvP)", ["Type"] = "A" },
 	--Sargeras
-	["Lockmepls"] = { ["Realm"] = "Sargeras x20", ["Type"] = "A" },
 	["Trollollollo"] = { ["Realm"] = "Sargeras x20", ["Type"] = "A" },
 	["Trollololool"] = { ["Realm"] = "Sargeras x20", ["Type"] = "A" },
 	["Troolololol"] = { ["Realm"] = "Sargeras x20", ["Type"] = "A" },
@@ -23,5 +22,6 @@ SA_sponsors = {
 	["Cheaptrick"] = { ["Realm"] = "Neltharion x12", ["Type"] = "C" },
 	["Zerodeath"] = { ["Realm"] = "Neltharion x12", ["Type"] = "C" },
 	--Frostwolf
-	["Clov"] = { ["Realm"] = "Frostwolf x3", ["Type"] = "C" }
+	["Clov"] = { ["Realm"] = "Frostwolf x3", ["Type"] = "C" },
+	["Jeuriess"] = { ["Realm"] = "Deathwing x12", ["Type"] = "C" }
 	}
