@@ -2222,11 +2222,6 @@ enemyTarget2 = UnitName("targettarget")
 	--print (toTarget,sourceName,destName)
 	--DEBUG
 
-	if (  spellName == "Blind" or spellName == "Kick") then
-	--	if IsEnemy then
-	--	if ((destName == playerName) and fromEnemy) then
-		print (toTarget,isinparty,toEnemy,party1,sourceName,destName,event,fromEnemy,spellName,spellID)
-	end
 	--end
 --[[debug
 	if (spellID == 23989) then
