@@ -17,6 +17,11 @@ local SoundAlerterFrame=CreateFrame("MovieFrame")
 local sname, srank, sicon = GetSpellInfo(49206) --(debug)
 
 
+
+--if inparty > 0 then
+--isinparty = inparty
+--end
+
 --warning to non-english clients
 if ((GetLocale() == "zhCN") or (GetLocale() == "zhTW") or (GetLocale() == "koKR") or (GetLocale() == "frFR") or (GetLocale() == "ruRU")) then
 DEFAULT_CHAT_FRAME:AddMessage("|cffFF7D0ASoundAlerter|r Currently only works on English and Spanish Clients only, sorry. If you would like to get involved, send a PM to shamwoww on forum.molten-wow.com or send a message to |cff0070DETrolollolol|r - Sargeras - Horde - Molten-WoW.com");
@@ -635,6 +640,16 @@ function SoundAlerter:OnOptionsCreate()
 								confirm = function() PlaySoundFile(""..sadb.sapath.."Last Stand.MP3"); end,
 								descStyle = "custom",
 								order = 9,
+							},
+							recklessness = {
+								type = 'toggle',
+								name = icondir.."ability_criticalstrike"..icondir2..GetSpellInfo(1719),
+								desc = function ()
+									GameTooltip:SetHyperlink(GetSpellLink(1719));
+								end,
+								confirm = function() PlaySoundFile(""..sadb.sapath.."recklessness.mp3"); end,
+								descStyle = "custom",
+								order = 10,
 							},
 						}
 					},
@@ -1447,6 +1462,16 @@ function SoundAlerter:OnOptionsCreate()
 								descStyle = "custom",
 								order = 2,
 							},
+							sap = {
+								type = 'toggle',
+								name = icondir.."ability_sap"..icondir2..GetSpellInfo(51724),
+								desc = function ()
+									GameTooltip:SetHyperlink(GetSpellLink(51724));
+								end,
+								confirm = function() PlaySoundFile(""..sadb.sapath.."sap.mp3"); end,
+								descStyle = "custom",
+								order = 2,
+							},
 							kick = {
 								type = 'toggle',
 								name = icondir.."Ability_Kick"..icondir2..GetSpellInfo(1766),
@@ -2162,6 +2187,14 @@ function SoundAlerter:OnOptionsCreate()
 								descStyle = "custom",
 								order = 7,
 					},
+					friendsapped = {
+								type = 'toggle',
+								name = icondir.."ability_sap"..icondir2.."Sap on Arena Partner",
+								desc = "Sap on Arena Partner",
+								confirm = function() PlaySoundFile(""..sadb.sapath.."friendsapped.mp3"); end,
+								descStyle = "custom",
+								order = 8,
+					},
 				}
 			},
 		}
@@ -2318,6 +2351,9 @@ if (event == "SPELL_AURA_APPLIED" and toEnemy and ((sadb.myself and (fromTarget 
 		if (spellID == 12975 and sadb.laststand) then
 			PlaySoundFile(""..sadb.sapath.."Last Stand.MP3")
 		end
+		if (spellID == 1719 and sadb.recklessness) then
+			PlaySoundFile(""..sadb.sapath.."recklessness.mp3")
+		end
 		if (spellID == 18499 and sadb.berserkerRage) then
 			PlaySoundFile(""..sadb.sapath.."Berserker Rage.mp3");
 		end
@@ -2423,8 +2459,10 @@ if (event == "SPELL_AURA_APPLIED" and toEnemy and ((sadb.myself and (fromTarget 
 			PlaySoundFile(""..sadb.sapath.."friendcycloned.mp3");
 			end
 			if spellID == 51514 and sadb.hexfriend then 
-			print (enemyTarget, party1)
 			PlaySoundFile(""..sadb.sapath.."friendhexxed.mp3");
+			end
+			if spellID == 51724 and sadb.friendsapped then 
+			PlaySoundFile(""..sadb.sapath.."friendsapped.mp3");
 			end
 	end
 	--Event SPELL_AURA_REMOVED is when enemies have lost the buff provided by SPELL_AURA_APPLIED (eg. Bubble down)
@@ -2666,6 +2704,9 @@ if (event == "SPELL_AURA_APPLIED" and toEnemy and ((sadb.myself and (fromTarget 
 		if (spellID == 51722 and sadb.disarm2) then --dismantle
 			PlaySoundFile(""..sadb.sapath.."Disarm2.mp3")
 		end
+		if (spellID == 51724 and sadb.sap) then --dismantle
+			PlaySoundFile(""..sadb.sapath.."sap.mp3")
+		end
 		if (spellID == 1766 and sadb.kick) then --why was it under aura_applied?
 			PlaySoundFile(""..sadb.sapath.."kick.mp3")
 		end
@@ -2756,7 +2797,7 @@ if (event == "SPELL_AURA_APPLIED" and toEnemy and ((sadb.myself and (fromTarget 
 		if (spellID == 34490 and sadb.silencingshot) then
 			PlaySoundFile(""..sadb.sapath.."silencingshot.mp3");
 		end
-		if (spellID == 82928 and sadb.aimedshot) then
+		if (spellID == 19434 and sadb.aimedshot) then
 			PlaySoundFile(""..sadb.sapath.."Aimed Shot.MP3");
 		end
 		if (spellID == 23989 and sadb.readiness) then
