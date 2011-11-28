@@ -17,11 +17,6 @@ local SoundAlerterFrame=CreateFrame("MovieFrame")
 local sname, srank, sicon = GetSpellInfo(49206) --(debug)
 
 
-
---if inparty > 0 then
---isinparty = inparty
---end
-
 --warning to non-english clients
 if ((GetLocale() == "zhCN") or (GetLocale() == "zhTW") or (GetLocale() == "koKR") or (GetLocale() == "frFR") or (GetLocale() == "ruRU")) then
 DEFAULT_CHAT_FRAME:AddMessage("|cffFF7D0ASoundAlerter|r Currently only works on English and Spanish Clients only, sorry. If you would like to get involved, send a PM to shamwoww on forum.molten-wow.com or send a message to |cff0070DETrolollolol|r - Sargeras - Horde - Molten-WoW.com");
