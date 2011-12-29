@@ -23,7 +23,6 @@ local _,currentZoneType = IsInInstance()
 local DRINK_SPELL = GetSpellInfo(57073)
 local icondir = "\124TInterface\\Icons\\"
 local icondir2 = ".blp:24\124t"
-local SoundAlerterFrame=CreateFrame("MovieFrame")
 
 
 
@@ -151,11 +150,6 @@ end
         if (SA_sponsors[name] ) then if ( SA_sponsors[name]["Realm"] == Realm ) then
 		tip:AddLine(SA_sponsors[SA_sponsors[name].Type], 1, 0, 0 ) end; end
     end)
-	
-function SoundAlerter:PlayRoll()
-local SoundAlerterFrame=CreateFrame("MovieFrame")
-	SoundAlerterFrame:StartMovie("Interface\\AddOns\\SoundAlerter\\Libs\\AceGUI-3.0\\widgets\\AceGUIWidget-ShiftGroup",255)
-end
 function SoundAlerter:PlayTrinket()
 	PlaySoundFile(""..sadb.sapath.."Trinket.mp3");
 end
@@ -260,14 +254,6 @@ function SoundAlerter:OnOptionsCreate()
 						desc = "Enable Debugging",
 						order = 9,
 					}
-				--	Test = {
-				--			type = "execute",
-				--			name = "DON'T PRESS",
-				--			desc = "Just don't press",
-				--			order = 60,
-				--			func = function () AceConfigDialog:Close("SoundAlerter"); SoundAlerterFrame:StartMovie("Interface\\AddOns\\SoundAlerter\\Libs\\AceGUI-3.0\\widgets\\AceGUIWidget-ShiftGroup",255); self:ScheduleTimer("PlayRoll", 320);  self:ScheduleTimer("PlayRoll", 600); self:ScheduleTimer("PlayRoll", 1200); end,
-							--disabled = IsDisabled,
-			--		}
 				},
 			},
 		}
