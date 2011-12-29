@@ -1,4 +1,12 @@
-﻿SoundAlerter = LibStub("AceAddon-3.0"):NewAddon("SoundAlerter", "AceEvent-3.0","AceConsole-3.0","AceTimer-3.0")
+﻿--[[
+SoundAlerter by Trolollolol
+If you have any issues or concerns with the addon, Send me an ingame message at  Trolollol - Realm:Sargeras Server:Molten-WoW.com
+
+Known Bugs: HoJ is played twice - will fix
+chat alerts (trinket and interrupt ignore target/focus)
+]]
+
+SoundAlerter = LibStub("AceAddon-3.0"):NewAddon("SoundAlerter", "AceEvent-3.0","AceConsole-3.0","AceTimer-3.0")
 local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 local AceConfig = LibStub("AceConfig-3.0")
 local self , SoundAlerter = SoundAlerter , SoundAlerter
@@ -9,18 +17,15 @@ local sadb
 local PlaySoundFile = PlaySoundFile
 local SendChatMessage = SendChatMessage
 local playerName = UnitName("player")
+local targetName = UnitName("target")
+local focusName = UnitName("focus")
 local _,currentZoneType = IsInInstance()
 local DRINK_SPELL = GetSpellInfo(57073)
 local icondir = "\124TInterface\\Icons\\"
 local icondir2 = ".blp:24\124t"
 local SoundAlerterFrame=CreateFrame("MovieFrame")
-local sname, srank, sicon = GetSpellInfo(49206) --(debug)
 
 
-
---if inparty > 0 then
---isinparty = inparty
---end
 
 --warning to non-english clients
 if ((GetLocale() == "zhCN") or (GetLocale() == "zhTW") or (GetLocale() == "koKR") or (GetLocale() == "frFR") or (GetLocale() == "ruRU")) then
@@ -38,6 +43,14 @@ SA_LANGUAGE = {
 }
 
 function SoundAlerter:OnInitialize()
+	if not self.spellList then
+		self.spellList = self:GetSpellList()
+	end
+	for _,v in pairs(self.spellList) do
+		for _,spell in pairs(v) do
+			if dbDefaults.profile[spell] == nil then dbDefaults.profile[spell] = true end
+		end
+	end
 	self.db1 = LibStub("AceDB-3.0"):New("sadb",dbDefaults, "Default");
 	DEFAULT_CHAT_FRAME:AddMessage(SOUNDALERTER_TEXT .. SOUNDALERTER_VERSION .. SOUNDALERTER_AUTHOR .."  - /SOUNDALERTER ");
 	--LibStub("AceConfig-3.0"):RegisterOptionsTable("SoundAlerter", SoundAlerter.Options, {"SoundAlerter", "SS"})
@@ -75,15 +88,19 @@ function SoundAlerter:OnEnable()
 end
 function SoundAlerter:PARTY_MEMBERS_CHANGED()
  local partysize = GetNumPartyMembers()
- local player1p = UnitName("party1")
 	if event == "PARTY_MEMBERS_CHANGED" then
 	
 		if partysize == 0 then
+				if sadb.debugmode then
+				print("<SA> Debug: Party Members have changed")
+				end
 		isinparty = 0 else
 		party1 = nil
 			if partysize > 0 then
+				if sadb.debugmode then
+				print("<SA> Debug: Party Members have changed")
+				end
 			isinparty = 1
-		party1 = UnitName("party1")
 			end
 		end
 	end
@@ -142,7 +159,26 @@ end
 function SoundAlerter:PlayTrinket()
 	PlaySoundFile(""..sadb.sapath.."Trinket.mp3");
 end
-	
+ function spellOptions2(order, spellID, ...)
+	local spellname,_,icon = GetSpellInfo(spellID)
+	return {
+		type = 'toggle',
+		name = "\124T"..icon..":24\124t"..spellname,							
+		desc = function () 
+			GameTooltip:SetHyperlink(GetSpellLink(spellID));
+			--GameTooltip:Show();
+		end,
+		descStyle = "custom",
+		order = order,
+	}
+end
+ function listOptions(spellList, listType, ...)
+	local args = {}
+	for k,v in pairs(spellList) do
+		rawset (args, self.spellList[listType][v] ,spellOptions2(k, v))
+	end
+	return args
+end	
 function SoundAlerter:OnOptionsCreate()
 	self:AddOption("profiles", LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db1))
 	self.options.args.profiles.order = -1
@@ -217,6 +253,12 @@ function SoundAlerter:OnOptionsCreate()
 						desc = "Language of Sounds",
 						values = SA_LANGUAGE,
 						order = 8,
+					},
+					debugmode = {
+						type = 'toggle',
+						name = "Debug Mode",
+						desc = "Enable Debugging",
+						order = 9,
 					}
 				--	Test = {
 				--			type = "execute",
@@ -245,7 +287,7 @@ function SoundAlerter:OnOptionsCreate()
 				get = getOption,
 				order = -1,
 				args = {
-					auraApplied = {
+					aruaApplied = {
 						type = 'toggle',
 						name = "Disable buff applied",
 						desc = "Disables sound notifications of buffs applied",
@@ -277,14 +319,14 @@ function SoundAlerter:OnOptionsCreate()
 					},
 					interrupt = {
 						type = 'toggle',
-						name = "Disable friendly interrupted spells",
+						name = "Disable Interrupted Spells",
 						desc = "Check this option to disable notifications of friendly interrupted spells",
 						order = 6,
 					},
-					friendlydebuff = {
+					ArenaPartner = {
 						type = 'toggle',
-						name = "Disable friendly debuff alerts",
-						desc = "Check this option to disable notifications of friendly debuffs",
+						name = "Disable Arena Partner debuff/CC alerts",
+						desc = "Check this option to disable notifications of Arena Partner debuff/CC alerts",
 						order = 7,
 					}
 				},
@@ -295,7 +337,7 @@ function SoundAlerter:OnOptionsCreate()
 				name = "Buffs",
 				set = setOption,
 				get = getOption,
-				disabled = function() return sadb.auraApplied end,
+				disabled = function() return sadb.aruaApplied end,
 				order = 1,
 				args = {
 					class = {
@@ -335,679 +377,87 @@ function SoundAlerter:OnOptionsCreate()
 						inline = true,
 						name = "|cffFF7D0ADruid|r",
 						order = 4,
-						args = {
-							survivalInstincts = {
-								type = 'toggle',
-								name = icondir.."ability_druid_tigersroar"..icondir2..GetSpellInfo(61336),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(61336));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."Survival Instincts.mp3"); end,
-								descStyle = "custom",
-								order = 2,
-							},
-							innervate = {
-								type = 'toggle',
-								name = icondir.."spell_nature_lightning"..icondir2..GetSpellInfo(29166),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(29166));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."Innervate.mp3"); end,
-								descStyle = "custom",
-								order = 3,
-							},
-							barkskin = {
-								type = 'toggle',
-								name = icondir.."spell_nature_stoneclawtotem"..icondir2..GetSpellInfo(22812),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(22812));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."barkskin.mp3"); end,
-								descStyle = "custom",
-								order = 4,
-							},
-							naturesSwiftness = {
-								type = 'toggle',
-								name = icondir.."spell_nature_ravenform"..icondir2..GetSpellInfo(17116),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(17116));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."Natures Swiftness.mp3"); end,
-								descStyle = "custom",
-								order = 5,
-							},
-							naturesGrasp = {
-								type = 'toggle',
-								name = icondir.."spell_nature_natureswrath"..icondir2..GetSpellInfo(16689),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(16689));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."Natures Grasp.mp3"); end,
-								descStyle = "custom",
-								order = 6,
-							},
-							frenziedRegeneration = {
-								type = 'toggle',
-								name = icondir.."ability_bullrush"..icondir2..GetSpellInfo(22842),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(22842));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."Frenzied Regeneration.mp3"); end,
-								descStyle = "custom",
-								order = 7,
-							},
-							starfall = {
-								type = 'toggle',
-								name = icondir.."Ability_druid_starfall"..icondir2..GetSpellInfo(48505),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(48505));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."Starfall.mp3"); end,
-								descStyle = "custom",
-								order = 8,
-							},
-							berserk = {
-								type = 'toggle',
-								name = icondir.."Ability_druid_berserk"..icondir2..GetSpellInfo(50334),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(50334));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."Berserk.mp3"); end,
-								descStyle = "custom",
-								order = 8,
-							},
-							dash = {
-								type = 'toggle',
-								name = icondir.."ability_druid_dash"..icondir2..GetSpellInfo(1850),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(1850));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."dash.mp3"); end,
-								descStyle = "custom",
-								order = 8,
-							},
-						}
+						args = listOptions({61336,29166,22812,17116,53312,22842,48505,50334,1850},"auraApplied"),	
 					},
 					paladin = {
 						type = 'group',
 						inline = true,
 						name = "|cffF58CBAPaladin|r",
 						order = 5,
-						args = {
-							auraMastery = {
-								type = 'toggle',
-								name = icondir.."spell_holy_auramastery"..icondir2..GetSpellInfo(31821),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(31821));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."Aura Mastery.mp3"); end,
-								descStyle = "custom",
-								order = 1,
-							},
-							handOfProtection = {
-								type = 'toggle',
-								name = icondir.."spell_holy_sealofprotection"..icondir2..GetSpellInfo(1022),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(1022));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."Hand of Protection.mp3"); end,
-								descStyle = "custom",
-								order = 2,
-							},
-							handOfFreedom = {
-								type = 'toggle',
-								name = icondir.."spell_holy_sealofvalor"..icondir2..GetSpellInfo(1044),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(1044));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."Hand of Freedom.mp3"); end,
-								descStyle = "custom",
-								order = 3,
-							},
-							divineShield = {
-								type = 'toggle',
-								name = icondir.."Spell_Holy_DivineIntervention"..icondir2..GetSpellInfo(642),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(642));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."divine shield.mp3"); end,
-								--func = function () print (sicon); end, (keep type = 'execute)
-								descStyle = "custom",
-								order = 4,
-							},
-							handofsacrifice = {
-								type = 'toggle',
-								name = icondir.."Spell_Holy_SealOfSacrifice"..icondir2..GetSpellInfo(6940),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(6940));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."Sacrifice.mp3"); end,
-								descStyle = "custom",
-								order = 5,
-							},
-							divineSacrifice = {
-								type = 'toggle',
-								name = icondir.."spell_holy_powerwordbarrier"..icondir2..GetSpellInfo(64205),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(64205));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."Divine Sacrifice.mp3"); end,
-								descStyle = "custom",
-								order = 6,
-							},
-							divinePlea = {
-								type = 'toggle',
-								name = icondir.."Spell_Holy_Aspiration"..icondir2..GetSpellInfo(54428),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(54428));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."Divine Plea.mp3"); end,
-								descStyle = "custom",
-								order = 7,
-							},
-						}
+						args = listOptions({31821,10278,1044,642,6940,64205,54428},"auraApplied")
 					},
 					rogue = {
 						type = 'group',
 						inline = true,
 						name = "|cffFFF569Rogue|r",
 						order = 6,
-						args = {
-							shadowDance = {
-								type = 'toggle',
-								name = icondir.."Ability_Rogue_ShadowDance"..icondir2..GetSpellInfo(51713),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(51713));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."Shadow Dance.mp3"); end,
-								descStyle = "custom",
-								order = 1,
-							},
-							cloakOfShadows = {
-								type = 'toggle',
-									name = icondir.."Spell_Shadow_NetherCloak"..icondir2..GetSpellInfo(31224),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(31224));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."Cloak of Shadows.mp3"); end,
-								descStyle = "custom",
-								order = 3,
-							},
-							adrenalineRush = {
-								type = 'toggle',
-								name = icondir.."Spell_Shadow_ShadowWordDominate"..icondir2..GetSpellInfo(13750),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(13750));
-								end,
-								descStyle = "custom",
-								confirm = function() PlaySoundFile(""..sadb.sapath.."Adrenaline Rush.mp3"); end,
-								order = 4,
-							},
-							evasion = {
-								type = 'toggle',
-								name = icondir.."Spell_Shadow_ShadowWard"..icondir2..GetSpellInfo(5277),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(5277));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."Evasion.mp3"); end,
-								descStyle = "custom",
-								order = 5,
-							},
-						}
+						args = listOptions({51713,31224,13750,26669},"auraApplied")
 					},
 					warrior	= {
 						type = 'group',
 						inline = true,
 						name = "|cffC79C6EWarrior|r",
 						order = 7,
-						args = {
-							shieldWall = {
-								type = 'toggle',
-								name = icondir.."Ability_Warrior_ShieldWall"..icondir2..GetSpellInfo(871),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(871));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."Shield Wall.mp3"); end,
-								descStyle = "custom",
-								order = 2,
-							},
-							berserkerRage = {
-								type = 'toggle',
-								name = icondir.."Spell_Nature_AncestralGuardian"..icondir2..GetSpellInfo(18499),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(18499));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."Berserker Rage.mp3"); end,
-								descStyle = "custom",
-								order = 3,
-							},
-							retaliation = {
-								type = 'toggle',
-								name = icondir.."Ability_Warrior_Challange"..icondir2..GetSpellInfo(20230),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(20230));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."Retaliation.mp3"); end,
-								descStyle = "custom",
-								order = 4,
-							},
-							spellReflection = {
-								type = 'toggle',
-								name = icondir.."Ability_Warrior_ShieldReflection"..icondir2..GetSpellInfo(23920),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(23920));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."Spell Reflection.mp3"); end,
-								descStyle = "custom",
-								order = 5,
-							},
-							sweepingStrikes = {
-								type = 'toggle',
-								name = icondir.."ability_rogue_slicedice"..icondir2..GetSpellInfo(12328),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(12328));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."Sweeping Strikes.mp3"); end,
-								descStyle = "custom",
-								order = 6,
-							},
-							bladestorm = {
-								type = 'toggle',
-								name = icondir.."ability_warrior_bladestorm"..icondir2..GetSpellInfo(46924),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(46924));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."Bladestorm.mp3"); end,
-								descStyle = "custom",
-								order = 7,
-							},
-							deathWish = {
-								type = 'toggle',
-								name = icondir.."spell_shadow_deathpact"..icondir2..GetSpellInfo(12292),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(12292));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."Death Wish.mp3"); end,
-								descStyle = "custom",
-								order = 8,
-							},
-							lastStand = {
-								type = 'toggle',
-								name = icondir.."spell_holy_ashestoashes"..icondir2..GetSpellInfo(12975),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(12975));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."Last Stand.MP3"); end,
-								descStyle = "custom",
-								order = 9,
-							},
-							recklessness = {
-								type = 'toggle',
-								name = icondir.."ability_criticalstrike"..icondir2..GetSpellInfo(1719),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(1719));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."recklessness.mp3"); end,
-								descStyle = "custom",
-								order = 10,
-							},
-						}
+						args = listOptions({55694,871,12975,18499,20230,23920,12328,46924,12292},"auraApplied")
 					},
 					priest	= {
 						type = 'group',
 						inline = true,
 						name = "|cffFFFFFFPriest|r",
 						order = 8,
-						args = {
-							painSuppression = {
-								type = 'toggle',
-								name = icondir.."spell_holy_painsupression"..icondir2..GetSpellInfo(33206),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(33206));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."pain suppression.mp3"); end,
-								descStyle = "custom",
-								order = 1,
-							},
-							powerInfusion = {
-								type = 'toggle',
-								name = icondir.."spell_holy_powerinfusion"..icondir2..GetSpellInfo(37274),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(37274));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."Power Infusion.mp3"); end,
-								descStyle = "custom",
-								order = 2,
-							},
-							fearWard = {
-								type = 'toggle',
-								name = icondir.."spell_holy_excorcism"..icondir2..GetSpellInfo(6346),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(6346));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."Fear Ward.mp3"); end,
-								descStyle = "custom",
-								order = 3,
-							},
-							dispersion = {
-								type = 'toggle',
-								name = icondir.."spell_shadow_dispersion"..icondir2..GetSpellInfo(47585),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(47585));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."dispersion.mp3"); end,
-								descStyle = "custom",
-								order = 4,
-							},
-							desperatePrayer = {
-								type = 'toggle',
-								name = icondir.."spell_holy_restoration"..icondir2..GetSpellInfo(19236),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(19236));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."DesperatePrayer.mp3"); end,
-								descStyle = "custom",
-								order = 5,
-							},
-							innerfocus = {
-								type = 'toggle',
-								name = icondir.."spell_frost_windwalkon"..icondir2..GetSpellInfo(14751),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(14751));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."inner focus.mp3"); end,
-								descStyle = "custom",
-								order = 5,
-							},
-						}
+						args = listOptions({33206,10060,6346,47585,14751,47788},"auraApplied")
 					},
 					shaman	= {
 						type = 'group',
 						inline = true,
 						name = "|cff0070DEShaman|r",
 						order = 9,
-						args = {
-							shamanisticRage = {
-								type = 'toggle',
-								name = icondir.."spell_nature_shamanrage"..icondir2..GetSpellInfo(30823),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(30823));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."Shamanistic Rage.mp3"); end,
-								descStyle = "custom",
-								order = 1,
-							},
-							earthShield = {
-								type = 'toggle',
-								name = icondir.."spell_nature_skinofearth"..icondir2..GetSpellInfo(49284),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(49284));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."Earth shield.mp3"); end,
-								descStyle = "custom",
-								order = 2,
-							},
-							naturesSwiftness2 = {
-								type = 'toggle',
-								name = icondir.."spell_nature_ravenform"..icondir2..GetSpellInfo(16188),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(16188));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."Natures Swiftness.mp3"); end,
-								descStyle = "custom",
-								order = 3,
-							},
-							waterShield = {
-								type = 'toggle',
-								name = icondir.."ability_shaman_watershield"..icondir2..GetSpellInfo(33736),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(33736));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."water shield.mp3"); end,
-								descStyle = "custom",
-								order = 4,
-							},
-							ElementalMastery = {
-								type = 'toggle',
-								name = icondir.."spell_nature_wispheal"..icondir2..GetSpellInfo(64701),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(64701));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."ElementalMastery.mp3"); end,
-								descStyle = "custom",
-								order = 5,
-							},
-						}
+						args = listOptions({30823,974,16188,57960,16166},"auraApplied"),
 					},
 					mage = {
 						type = 'group',
 						inline = true,
 						name = "|cff69CCF0Mage|r",
 						order = 10,
-						args = {
-							iceBlock = {
-								type = 'toggle',
-								name = icondir.."spell_frost_frost"..icondir2..GetSpellInfo(45438),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(45438));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."ice block.mp3"); end,
-								descStyle = "custom",
-								order = 1,
-							},
-							arcanePower = {
-								type = 'toggle',
-								name = icondir.."spell_nature_lightning"..icondir2..GetSpellInfo(12042),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(12042));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."Arcane Power.mp3"); end,
-								descStyle = "custom",
-								order = 2,
-							},
-						}
+						args = listOptions({45438,12042,12472,12043},"auraApplied"),
 					},
 					dk	= {
 						type = 'group',
 						inline = true,
 						name = "|cffC41F3BDeath Knight|r",
 						order = 11,
-						args = {
-							lichborne = {
-								type = 'toggle',
-								name = icondir.."spell_shadow_raisedead"..icondir2..GetSpellInfo(49039),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(49039));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."Lichborne.mp3"); end,
-								descStyle = "custom",
-								order = 1,
-							},
-							iceboundFortitude = {
-								type = 'toggle',
-								name = icondir.."spell_deathknight_iceboundfortitude"..icondir2..GetSpellInfo(48792),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(48792));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."Icebound Fortitude.mp3"); end,
-								descStyle = "custom",
-								order = 2,
-							},
-							vampiricBlood = {
-								type = 'toggle',
-								name = icondir.."spell_shadow_lifedrain"..icondir2..GetSpellInfo(55233),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(55233));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."Vampiric Blood.mp3"); end,
-								descStyle = "custom",
-								order = 3,
-							},
-							antimagicshell = {
-								type = 'toggle',
-								name = icondir.."spell_shadow_antimagicshell"..icondir2..GetSpellInfo(48707),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(48707));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."Anti Magic Shell.mp3"); end,
-								descStyle = "custom",
-								order = 4,
-							},
-							boneshield = {
-								type = 'toggle',
-								name = icondir.."INV_Chest_Leather_13"..icondir2..GetSpellInfo(49222),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(49222));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."Bone Shield.mp3"); end,
-								descStyle = "custom",
-								order = 5,
-							},
-							hysteria = {
-								type = 'toggle',
-								name = icondir.."Spell_DeathKnight_BladedArmor"..icondir2..GetSpellInfo(49016),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(49016));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."hysteria.mp3"); end,
-								descStyle = "custom",
-								order = 5,
-							},
-						}
+						args = listOptions({49039,48792,55233,48707,49222,49016},"auraApplied"),
 					},
 					hunter = {
 						type = 'group',
 						inline = true,
 						name = "|cffABD473Hunter|r",
 						order = 12,
-						args = {
-							theBeastWithin = {
-								type = 'toggle',
-								name = icondir.."Ability_Hunter_BeastWithin"..icondir2..GetSpellInfo(34471),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(34471));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."The Beast Within.mp3"); end,
-								descStyle = "custom",
-								order = 1,
-							},
-							deterrence = {
-								type = 'toggle',
-								name = icondir.."Ability_Whirlwind"..icondir2..GetSpellInfo(19263),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(19263));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."deterrence.mp3"); end,
-								descStyle = "custom",
-								order = 2,
-							},
-							readiness = {
-								type = 'toggle',
-								name = icondir.."Ability_Hunter_Readiness"..icondir2..GetSpellInfo(23989),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(23989));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."readiness.mp3"); end,
-								descStyle = "custom",
-								order = 3,
-							},
-						}
+						args = listOptions({34471,19263,34471},"auraApplied"),
 					},
 					races = {
 						type = 'group',
 						inline = true,
 						name = "|cffFFFFFFGeneral Races|r",
 						order = 14,
-						args = {
-							Shadowmeld = { 
-								type = 'toggle',
-								name = icondir.."Ability_Ambush"..icondir2..GetSpellInfo(58984),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(58984));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."Shadowmeld.mp3"); end,
-								descStyle = "custom",
-								order = 1,
-							},
-							giftofthenaaru = { 
-								type = 'toggle',
-								name = icondir.."spell_holy_holyprotection"..icondir2..GetSpellInfo(28880),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(28880));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."giftofthenaaru.mp3"); end,
-								descStyle = "custom",
-								order = 2,
-							},
-							BloodFury = { 
-								type = 'toggle',
-								name = icondir.."racial_orc_berserkerstrength"..icondir2..GetSpellInfo(20572),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(20572));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."BloodFury.mp3"); end,
-								descStyle = "custom",
-								order = 3,
-							},
-							willoftheforsaken = {
-								type = 'toggle',
-								name = icondir.."spell_shadow_raisedead"..icondir2..GetSpellInfo(7744),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(7744));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."Will Of The Forsaken.mp3"); end,
-								descStyle = "custom",
-								order = 4,
-							},
-							berserking = { 
-								type = 'toggle',
-								name = icondir.."racial_troll_berserk"..icondir2..GetSpellInfo(26297),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(26297));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."Berserk.mp3"); end,
-								descStyle = "custom",
-								order = 5,
-							},
-							stoneform = { 
-								type = 'toggle',
-								name = icondir.."spell_shadow_unholystrength"..icondir2..GetSpellInfo(20594),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(20594));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."Stoneform.mp3"); end,
-								descStyle = "custom",
-								order = 6,
-							},
-						}
+						args = listOptions({58984,26297,20594,33702,7744,28880},"auraApplied"),
 					},
 					warlock	= {
 						type = 'group',
 						inline = true,
 						name = "|cff9482C9Warlock|r",
 						order = 13,
-						args = {
-							shadowtrance = {
-								type = 'toggle',
-								name = icondir.."spell_shadow_twilight"..icondir2..GetSpellInfo(17941),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(17941));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."Shadowtrance.mp3"); end,
-								descStyle = "custom",
-								order = 1,
-							},
-						}
-					},
+						args = listOptions({17941},"auraApplied"),
+						},
+					}
 				},
-			},
 			spellAuraRemoved = {
 				type = 'group',
 				--inline = true,
 				name = "Buff Down",
 				set = setOption,
 				get = getOption,
-				disabled = function() return sadb.auraRemoved end,
+				disabled = function() return sadb.aruaRemoved end,
 				order = 2,
 				args = {
 					warrior = {
@@ -1015,184 +465,56 @@ function SoundAlerter:OnOptionsCreate()
 						inline = true,
 						name = "|cffC79C6EWarrior|r",
 						order = 4,
-						args = {
-							shieldWallDown = {
-								type = 'toggle',
-								name = icondir.."Ability_Warrior_ShieldWall"..icondir2..GetSpellInfo(871),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(871));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."Shield Wall Down.mp3"); end,
-								descStyle = "custom",
-								order = 1,
-							},
-						}
+						args = listOptions({871},"auraRemoved"),
 					},
 					paladin = {
 						type = 'group',
 						inline = true,
 						name = "|cffF58CBAPaladin|r",
 						order = 4,
-						args = {
-							protectionDown = {
-								type = 'toggle',
-								name = icondir.."spell_holy_sealofprotection"..icondir2..GetSpellInfo(1022),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(1022));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."Protection down.mp3"); end,
-								descStyle = "custom",
-								order = 2,
-							},
-							bubbleDown = {
-								type = 'toggle',
-								name = icondir.."Spell_Holy_DivineIntervention"..icondir2..GetSpellInfo(642),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(642));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."Bubble down.mp3"); end,
-								descStyle = "custom",
-								order = 4,
-							},
-						}
+						args = listOptions({10278,642},"auraRemoved"),
 					},
 					rogue = {
 						type = 'group',
 						inline = true,
 						name = "|cffFFF569Rogue|r",
 						order = 5,
-						args = {
-							cloakDown = {
-								type = 'toggle',
-								name = icondir.."Spell_Shadow_NetherCloak"..icondir2..GetSpellInfo(31224),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(31224));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."Cloak down.mp3"); end,
-								descStyle = "custom",
-								order = 3,
-							},
-							evasionDown = {
-								type = 'toggle',
-								name = icondir.."Spell_Shadow_ShadowWard"..icondir2..GetSpellInfo(5277),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(5277));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."Evasion down.mp3"); end,
-								descStyle = "custom",
-								order = 5,
-							},
-						}
+						args = listOptions({31224,26669},"auraRemoved"),
 					},
 					priest	= {
 						type = 'group',
 						inline = true,
 						name = "|cffFFFFFFPriest|r",
 						order = 7,
-						args = {
-							PSDown = {
-								type = 'toggle',
-								name = icondir.."spell_holy_painsupression"..icondir2..GetSpellInfo(33206),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(33206));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."PS down.mp3"); end,
-								descStyle = "custom",
-								order = 1,
-							},
-							dispersionDown = {
-								type = 'toggle',
-								name = icondir.."spell_shadow_dispersion"..icondir2..GetSpellInfo(47585),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(47585));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."Dispersiondown.mp3"); end,
-								descStyle = "custom",
-								order = 2,
-							},
-						}
+						args = listOptions({47585,33206},"auraRemoved"),
 					},
 					mage = {
 						type = 'group',
 						inline = true,
 						name = "|cff69CCF0Mage|r",
 						order = 9,
-						args = {
-							iceBlockDown = {
-								type = 'toggle',
-								name = icondir.."spell_frost_frost"..icondir2..GetSpellInfo(45438),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(45438));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."Ice Block down.mp3"); end,
-								descStyle = "custom",
-								order = 1,
-							},
-						},
+						args = listOptions({45438},"auraRemoved"),
 					},
 					dk = {
 						type = 'group',
 						inline = true,
 						name = "|cffC41F3BDeath Knight|r",
 						order = 10,
-						args = {
-							iceboundFortitudeDown = {
-								type = 'toggle',
-								name = icondir.."spell_deathknight_iceboundfortitude"..icondir2..GetSpellInfo(48792),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(48792));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."Icebound Fortitude Down.mp3"); end,
-								descStyle = "custom",
-								order = 1,
-							},
-							lichborneDown = {
-								type = 'toggle',
-								name = icondir.."spell_shadow_raisedead"..icondir2..GetSpellInfo(49039),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(49039));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."lichborne Down.mp3"); end,
-								descStyle = "custom",
-								order = 2,
-							},
-						},
+						args = listOptions({48792,49039},"auraRemoved"),
 					},
 					druid = {
 						type = 'group',
 						inline = true,
 						name = "|cffFF7D0ADruid|r",
 						order = 11,
-						args = {
-							sfalldown = {
-								type = 'toggle',
-								name = icondir.."Ability_druid_starfall"..icondir2..GetSpellInfo(48505),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(48505));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."Starfalldown.mp3"); end,
-								descStyle = "custom",
-								order = 1,
-							},
-						},
+						args = listOptions({48505},"auraRemoved"),
 					},
 					hunter = {
 						type = 'group',
 						inline = true,
 						name = "|cffABD473Hunter|r",
 						order = 12,
-						args = {
-							deterdown = {
-								type = 'toggle',
-								name = icondir.."Ability_Whirlwind"..icondir2..GetSpellInfo(19263),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(19263));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."Deterrencedown.mp3"); end,
-								descStyle = "custom",
-								order = 1,
-							},
-						}
+						args = listOptions({19263},"auraRemoved"),
 					},
 				}
 			},
@@ -1215,14 +537,12 @@ function SoundAlerter:OnOptionsCreate()
 								type = 'toggle',
 								name = icondir.."Spell_Holy_HolyBolt.blp:24\124tBig Heals",
 								desc = "Heal, Holy Light, Healing Wave, Healing Touch",
-								confirm = function() PlaySoundFile(""..sadb.sapath.."big heal.mp3"); end,
 								order = 1,
 							},
 							resurrection = {
 								type = 'toggle',
 								name = icondir.."Spell_Nature_Regenerate.blp:24\124tResurrection spells", 
 								desc = "Ancestral Spirit, Redemption, etc",
-								confirm = function() PlaySoundFile(""..sadb.sapath.."Resurrection.mp3"); end,
 								order = 2,
 							},
 						}
@@ -1232,199 +552,44 @@ function SoundAlerter:OnOptionsCreate()
 						inline = true,
 						name = "|cffFF7D0ADruid|r",
 						order = 3,
-						args = {
-							hibernate = {
-								type = 'toggle',
-								name = icondir.."Spell_Nature_Sleep"..icondir2..GetSpellInfo(2637),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(2637));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."hibernate.mp3"); end,
-								descStyle = "custom",
-								order = 1,
-							},
-							cyclone = {
-								type = 'toggle',
-								name = icondir.."Spell_Nature_EarthBind"..icondir2..GetSpellInfo(33786),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(33786));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."cyclone.mp3"); end,
-								descStyle = "custom",
-								order = 2,
-							},
-						}
+						args = listOptions({2637,33786},"castStart"),
 					},
 					priest	= {
 						type = 'group',
 						inline = true,
 						name = "|cffFFFFFFPriest|r",
 						order = 6,
-						args = {
-							manaBurn = {
-								type = 'toggle',
-								name = icondir.."Spell_Shadow_ManaBurn"..icondir2..GetSpellInfo(8129),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(8129));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."Mana Burn.mp3"); end,
-								descStyle = "custom",
-								order = 1,
-							},
-							shackleUndead = {
-								type = 'toggle',
-								name = icondir.."Spell_Nature_Slow"..icondir2..GetSpellInfo(9484),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(9484));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."Shackle Undead.mp3"); end,
-								descStyle = "custom",
-								order = 2,
-							},
-							mindControl = {
-								type = 'toggle',
-								name = icondir.."Spell_Shadow_ShadowWordDominate"..icondir2..GetSpellInfo(605),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(605));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."Mind Control.mp3"); end,
-								descStyle = "custom",
-								order = 3,
-							},
-							divineHymn = {
-								type = 'toggle',
-								name = icondir.."spell_holy_divinehymn"..icondir2..GetSpellInfo(64843),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(64843));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."Divine Hymn.mp3"); end,
-								descStyle = "custom",
-								order = 6,
-							},
-						}
+						args = listOptions({8129,9484,64843,605},"castStart"),
 					},
 					shaman	= {
 						type = 'group',
 						inline = true,
 						name = "|cff0070DEShaman|r",
 						order = 7,
-						args = {
-							hex = {
-								type = 'toggle',
-								name = icondir.."Spell_Shaman_Hex"..icondir2..GetSpellInfo(51514),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(51514));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."Hex.mp3"); end,
-								descStyle = "custom",
-								order = 1,
-							},
-						}
+						args = listOptions({51514},"castStart"),
+						},
+					hunter = {
+						type = 'group',
+						inline = true,
+						name = "|cffABD473Hunter|r",
+						order = 10,
+						args = listOptions({982,14327},"castStart"),
+					},
+					warlock	= { --fear/howlofterror/banish
+						type = 'group',
+						inline = true,
+						name = "|cff9482C9Warlock|r",
+						order = 9,
+						args = listOptions({6215,17928,710,712},"castStart"),
 					},
 					mage = {
 						type = 'group',
 						inline = true,
 						name = "|cff69CCF0Mage|r",
 						order = 8,
-						args = {
-							polymorph = {
-								type = 'toggle',
-								name = icondir.."Spell_Nature_Polymorph"..icondir2..GetSpellInfo(118),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(118));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."polymorph.mp3"); end,
-								descStyle = "custom",
-								order = 1,
-							},
-							evocation = {
-								type = 'toggle',
-								name = icondir.."Spell_Nature_Purge"..icondir2..GetSpellInfo(12051),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(12051));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."evocation.mp3"); end,
-								descStyle = "custom",
-								order = 2,
-							},
-							HotStreak = {
-								type = 'toggle',
-								name = icondir.."Ability_Mage_HotStreak"..icondir2..GetSpellInfo(44445),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(44445));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."Hot Streak.MP3"); end,
-								descStyle = "custom",
-								order = 3,
-							},
-						}
+						args = listOptions({118},"castStart"),
 					},
-					hunter = {
-						type = 'group',
-						inline = true,
-						name = "|cffABD473Hunter|r",
-						order = 10,
-						args = {
-							revivePet = {
-								type = 'toggle',
-								name = icondir.."Ability_Hunter_BeastSoothe"..icondir2..GetSpellInfo(982),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(982));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."Revive Pet.mp3"); end,
-								descStyle = "custom",
-								order = 1,
-							},
-							scareBeast = {
-								type = 'toggle',
-								name = icondir.."Ability_Druid_Cower"..icondir2..GetSpellInfo(14327),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(14327));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."Scare Beast.mp3"); end,
-								descStyle = "custom",
-								order = 2,
-							},
-						}
-					},
-					warlock	= {
-						type = 'group',
-						inline = true,
-						name = "|cff9482C9Warlock|r",
-						order = 11,
-						args = {
-							fear = {
-								type = 'toggle',
-								name = icondir.."Spell_Shadow_Possession"..icondir2..GetSpellInfo(5782),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(5782));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."fear.mp3"); end,
-								descStyle = "custom",
-								order = 1,
-							},
-							fear2 = {
-								type = 'toggle',
-								name = icondir.."Spell_Shadow_DeathScream"..icondir2..GetSpellInfo(5484),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(5484));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."fear2.mp3"); end,
-								descStyle = "custom",
-								order = 2,
-							},
-							banish = {
-								type = 'toggle',
-								name = icondir.."Spell_Shadow_Cripple"..icondir2..GetSpellInfo(710),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(710));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."banish.mp3"); end,
-								descStyle = "custom",
-								order = 3,
-							},
-						}
-					},
+				
 				},
 			},
 			spellCastSuccess = {
@@ -1441,494 +606,63 @@ function SoundAlerter:OnOptionsCreate()
 						inline = true,
 						name = "|cffFFF569Rogue|r",
 						order = 4,
-						args = {
-							disarm2 = {
-								type = 'toggle',
-								name = icondir.."Ability_Rogue_Dismantle"..icondir2..GetSpellInfo(51722),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(51722));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."disarm2.mp3"); end,
-								descStyle = "custom",
-								order = 1,
-							},
-							blind = {
-								type = 'toggle',
-								name = icondir.."Spell_Shadow_MindSteal"..icondir2..GetSpellInfo(2094),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(2094));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."blind.mp3"); end,
-								descStyle = "custom",
-								order = 2,
-							},
-							sap = {
-								type = 'toggle',
-								name = icondir.."ability_sap"..icondir2..GetSpellInfo(51724),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(51724));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."sap.mp3"); end,
-								descStyle = "custom",
-								order = 2,
-							},
-							kick = {
-								type = 'toggle',
-								name = icondir.."Ability_Kick"..icondir2..GetSpellInfo(1766),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(1766));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."kick.mp3"); end,
-								descStyle = "custom",
-								order = 3,
-							},
-							coldBlood = {
-								type = 'toggle',
-								name = icondir.."spell_ice_lament"..icondir2..GetSpellInfo(14177),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(14177));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."coldblood.mp3"); end,
-								descStyle = "custom",
-								order = 4,
-							},
-							preparation = {
-								type = 'toggle',
-								name = icondir.."Spell_Shadow_AntiShadow"..icondir2..GetSpellInfo(14185),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(14185));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."preparation.mp3"); end,
-								--func = function () print (sicon); end,
-								descStyle = "custom",
-								order = 5,
-							},
-							vanish = {
-								type = 'toggle',
-								name = icondir.."Ability_Vanish"..icondir2..GetSpellInfo(1856),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(1856));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."vanish.mp3"); end,
-								descStyle = "custom",
-								order = 6,
-							},
-							bladeflurry = {
-								type = 'toggle',
-								name = icondir.."Ability_Warrior_PunishingBlow"..icondir2..GetSpellInfo(13877),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(13877));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."Blade Flurry.mp3"); end,
-								descStyle = "custom",
-								order = 7,
-							},
-							stealth = {
-								type = 'toggle',
-								name = icondir.."Ability_Stealth"..icondir2..GetSpellInfo(1784),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(1784));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."stealth.mp3"); end,
-								descStyle = "custom",
-								order = 8,
-							},
-						}
+						args = listOptions({51722,51724,2094,1766,14177,14185,26889,13877,1784},"castSuccess"),
 					},
 					warrior	= {
 						type = 'group',
 						inline = true,
 						name = "|cffC79C6EWarrior|r",
 						order = 5,
-						args = {
-							disarm = {
-								type = 'toggle',
-								name = icondir.."Ability_Warrior_Disarm"..icondir2..GetSpellInfo(676),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(676));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."disarm.mp3"); end,
-								descStyle = "custom",
-								order = 1,
-							},
-							fear3 = {
-								type = 'toggle',
-								name = icondir.."Ability_GolemThunderClap"..icondir2..GetSpellInfo(5246),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(5246));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."fear3.mp3"); end,
-								descStyle = "custom",
-								order = 2,
-							},
-							pummel = {
-								type = 'toggle',
-								name = icondir.."INV_Gauntlets_04"..icondir2..GetSpellInfo(6552),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(6552));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."pummel.mp3"); end,
-								descStyle = "custom",
-								order = 3,
-							},
-							shieldBash = {
-								type = 'toggle',
-								name = icondir.."Ability_Warrior_ShieldBash"..icondir2..GetSpellInfo(72),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(72));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."Shield Bash.mp3"); end,
-								descStyle = "custom",
-								order = 4,
-							},
-						}
+						args = listOptions({676,5246,6552,72},"castSuccess"),
 					},
 					priest	= {
 						type = 'group',
 						inline = true,
 						name = "|cffFFFFFFPriest|r",
 						order = 6,
-						args = {
-							fear4 = {
-								type = 'toggle',
-								name = icondir.."Spell_Shadow_PsychicScream"..icondir2..GetSpellInfo(8122),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(8122));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."fear4.mp3"); end,
-								descStyle = "custom",
-								order = 1,
-							},
-							shadowFiend = {
-								type = 'toggle',
-								name = icondir.."Spell_Shadow_Shadowfiend"..icondir2..GetSpellInfo(34433),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(34433));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."Shadowfiend.mp3"); end,
-								descStyle = "custom",
-								order = 2,
-							},
-							disarm3 = {
-								type = 'toggle',
-								name = icondir.."Spell_Shadow_PsychicHorrors"..icondir2..GetSpellInfo(64044),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(64044));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."disarm3.mp3"); end,
-								descStyle = "custom",
-								order = 3,
-							},
-						}
+						args = listOptions({10890,34433,64044,48173},"castSuccess"),
 					},
 					shaman	= {
 						type = 'group',
 						inline = true,
 						name = "|cff0070DEShaman|r",
 						order = 7,
-						args = {
-							grounding = {
-								type = 'toggle',
-								name = icondir.."Spell_Nature_GroundingTotem"..icondir2..GetSpellInfo(8177),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(8177));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."grounding.mp3"); end,
-								descStyle = "custom",
-								order = 1,
-							},
-							earthbind = {
-								type = 'toggle',
-								name = icondir.."spell_nature_strengthofearthtotem02"..icondir2..GetSpellInfo(2484),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(2484));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."Earthbind.mp3"); end,
-								descStyle = "custom",
-								order = 2,
-							},
-							manaTide = {
-								type = 'toggle',
-								name = icondir.."Spell_Frost_SummonWaterElemental"..icondir2..GetSpellInfo(16190),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(16190));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."mana Tide.mp3"); end,
-								descStyle = "custom",
-								order = 3,
-							},
-							tremorTotem = {
-								type = 'toggle',
-								name = icondir.."Spell_Nature_TremorTotem"..icondir2..GetSpellInfo(8143),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(8143));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."Tremor Totem.mp3"); end,
-								descStyle = "custom",
-								order = 4,
-							},
-						}
+						args = listOptions({8143,16190,2484,8177},"castSuccess"),
 					},
 					mage = {
 						type = 'group',
 						inline = true,
 						name = "|cff69CCF0Mage|r",
 						order = 8,
-						args = {
-							coldSnap = {
-								type = 'toggle',
-								name = icondir.."Spell_Frost_WizardMark"..icondir2..GetSpellInfo(11958),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(11958));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."cold snap.mp3"); end,
-								descStyle = "custom",
-								order = 1,
-							},
-							deepFreeze = {
-								type = 'toggle',
-								name = icondir.."Ability_Mage_DeepFreeze"..icondir2..GetSpellInfo(44572),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(44572));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."Deep Freeze.mp3"); end,
-								descStyle = "custom",
-								order = 2,
-							},
-							icyveins = {
-								type = 'toggle',
-								name = icondir.."Spell_Frost_ColdHearted"..icondir2..GetSpellInfo(12472),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(12472));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."icy veins.mp3"); end,
-								descStyle = "custom",
-								order = 3,
-							},
-							counterspell = {
-								type = 'toggle',
-								name = icondir.."Spell_Frost_IceShock"..icondir2..GetSpellInfo(2139),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(2139));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."counterspell.mp3"); end,
-								descStyle = "custom",
-								order = 4,
-							},
-							invisibility = {
-								type = 'toggle',
-								name = icondir.."Ability_Mage_Invisibility"..icondir2..GetSpellInfo(66),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(66));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."invisibility.mp3"); end,
-								descStyle = "custom",
-								order = 5,
-							},
-						}
+						args = listOptions({44445,12051,44572,11958,2139,66},"castSuccess"),
 					},
 					dk	= {
 						type = 'group',
 						inline = true,
 						name = "|cffC41F3BDeath Knight|r",
 						order = 9,
-						args = {
-							mindFreeze = {
-								type = 'toggle',
-								name = icondir.."Spell_DeathKnight_MindFreeze"..icondir2..GetSpellInfo(47528),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(47528));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."mind Freeze.mp3"); end,
-								descStyle = "custom",
-								order = 1,
-							},
-							strangulate = {
-								type = 'toggle',
-								name = icondir.."Spell_Shadow_SoulLeech_3"..icondir2..GetSpellInfo(47476),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(47476));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."strangulate.mp3"); end,
-								descStyle = "custom",
-								order = 2,
-							},
-							runeWeapon = {
-								type = 'toggle',
-								name = icondir.."INV_Sword_62"..icondir2..GetSpellInfo(47568),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(47568));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."rune Weapon.mp3"); end,
-								descStyle = "custom",
-								order = 3,
-							},
-							gargoyle = {
-								type = 'toggle',
-								name = icondir.."Ability_Hunter_Pet_Bat"..icondir2..GetSpellInfo(49206),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(49206));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."gargoyle.mp3"); end,
-								--func = function () print (sicon); end, --(keep type = 'execute)
-								descStyle = "custom",
-								order = 4,
-							},
-							hungeringCold = {
-								type = 'toggle',
-								name = icondir.."INV_Staff_15"..icondir2..GetSpellInfo(49203),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(49203));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."hungering Cold.mp3"); end,
-								descStyle = "custom",
-								order = 5,
-							},
-							markofblood = {
-								type = 'toggle',
-								name = icondir.."Ability_Hunter_RapidKilling"..icondir2..GetSpellInfo(61606),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(61606));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."mark of blood.mp3"); end,
-								descStyle = "custom",
-								order = 5,
-							},
-						}
+						args = listOptions({47528,47476,47568,49206,49203,61606},"castSuccess"),
 					},
 					hunter = {
 						type = 'group',
 						inline = true,
 						name = "|cffABD473Hunter|r",
 						order = 10,
-						args = {
-							wyvernSting = {
-								type = 'toggle',
-								name = icondir.."INV_Spear_02"..icondir2..GetSpellInfo(19386),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(19386));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."wyvern Sting.mp3"); end,
-								descStyle = "custom",
-								order = 1,
-							},
-							silencingshot = {
-								type = 'toggle',
-								name = icondir.."Ability_TheBlackArrow"..icondir2..GetSpellInfo(34490),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(34490));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."silencingshot.MP3"); end,
-								descStyle = "custom",
-								order = 1,
-							},
-							aimedshot = {
-								type = 'toggle',
-								name = icondir.."INV_Spear_07"..icondir2..GetSpellInfo(19434),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(19434));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."Aimed Shot.MP3"); end,
-								descStyle = "custom",
-								order = 1,
-							},
-							freezingtrap = {
-								type = 'toggle',
-								name = icondir.."Spell_Frost_ChainsOfIce"..icondir2..GetSpellInfo(1499),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(1499));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."freezingtrap.mp3"); end,
-								descStyle = "custom",
-								order = 1,
-							},
-						}
+						args = listOptions({23989,19386,34490,49050,14311,1499},"castSuccess"),
 					},
 					warlock = {
 						type = 'group',
 						inline = true,
 						name = "|cff9482C9Warlock|r",
 						order = 11,
-						args = {
-							fear2 = {
-								type = 'toggle',
-								name = icondir.."Spell_Shadow_DeathScream"..icondir2..GetSpellInfo(5484),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(5484));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."fear2.mp3"); end,
-								descStyle = "custom",
-								order = 1,
-							},
-							spellLock = {
-								type = 'toggle',
-								name = icondir.."Spell_Shadow_MindRot"..icondir2..GetSpellInfo(19647),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(19647));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."spell Lock.mp3"); end,
-								descStyle = "custom",
-								order = 2,
-							},
-							demonicCircleTeleport = {
-								type = 'toggle',
-								name = icondir.."Spell_Shadow_DemonicCircleTeleport"..icondir2..GetSpellInfo(48020),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(48020));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."demonic Circle Teleport.mp3"); end,
-								descStyle = "custom",
-								order = 3,
-							},
-							deathcoil = {
-								type = 'toggle',
-								name = icondir.."Spell_Shadow_DeathCoil"..icondir2..GetSpellInfo(6789),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(6789));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."deathcoil.mp3"); end,
-								descStyle = "custom",
-								order = 4,
-							},
-						}
+						args = listOptions({19647,48020,47860},"castSuccess"),
 					},
 					paladin = {
 						type = 'group',
 						inline = true,
 						name = "|cffF58CBAPaladin|r",
 						order = 11,
-						args = {
-							repentance = {
-								type = 'toggle',
-								name = icondir.."Spell_Holy_PrayerOfHealing"..icondir2..GetSpellInfo(20066),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(20066));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."repentance.mp3"); end,
-								descStyle = "custom",
-								order = 1,
-							},
-							hammerofjustice = {
-								type = 'toggle',
-								name = icondir.."Spell_Holy_SealOfMight"..icondir2..GetSpellInfo(853),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(853));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."hammer of justice.mp3"); end,
-								descStyle = "custom",
-								order = 2,
-							},
-							avengingWrath = {
-								type = 'toggle',
-								name = icondir.."spell_holy_avenginewrath"..icondir2..GetSpellInfo(31884),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(31884));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."avenging Wrath.mp3"); end,
-								descStyle = "custom",
-								order = 3,
-							},
-						}
+						args = listOptions({20066,10308,31884},"castSuccess"),
 					},
 				},
 			},
@@ -1946,18 +680,7 @@ function SoundAlerter:OnOptionsCreate()
 						inline = true,
 						name = "|cffFFF569Rogue|r",
 						order = 1,
-						args = {
-							blindup = {
-								type = 'toggle',
-								name = icondir.."Spell_Shadow_MindSteal"..icondir2..GetSpellInfo(2094),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(2094));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."blind.mp3"); end,
-								descStyle = "custom",
-								order = 1,
-							},
-						},
+						args = listOptions({2094,51724},"enemyDebuffs"),
 					}
 				},
 			},
@@ -1975,18 +698,7 @@ function SoundAlerter:OnOptionsCreate()
 						inline = true,
 						name = "|cffFFF569Rogue|r",
 						order = 1,
-						args = {
-							blinddown = {
-								type = 'toggle',
-								name = icondir.."Spell_Shadow_MindSteal"..icondir2..GetSpellInfo(2094),
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(2094));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."blinddown.mp3"); end,
-								descStyle = "custom",
-								order = 1,
-							},
-						},
+						args = listOptions({2094,51724},"enemyDebuffdown"),
 					}
 				},
 			},
@@ -2040,9 +752,9 @@ function SoundAlerter:OnOptionsCreate()
 							},
 							vanishalert = {
 								type = 'toggle',
-								name = icondir.."Ability_Vanish"..icondir2..GetSpellInfo(1856),
+								name = icondir.."Ability_Vanish"..icondir2..GetSpellInfo(26889),
 								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(1856));
+									GameTooltip:SetHyperlink(GetSpellLink(26889));
 								end,
 								descStyle = "custom",
 								order = 2,
@@ -2057,7 +769,33 @@ function SoundAlerter:OnOptionsCreate()
 								type = 'toggle',
 								name = icondir.."Spell_Shadow_MindSteal"..icondir2.."Blind on Self",
 								desc = "Enemies that have blinded you will be alerted",
-								order = 3,
+								order = 4,
+							},
+							sapalert = {
+								type = 'toggle',
+								name = icondir.."ability_sap"..icondir2.."Sap on Self or Friend",
+								desc = "Enemies that have blinded you will be alerted",
+								order = 5,
+							},
+						},
+					},
+					paladin = {
+					type = 'group',
+					inline = true,
+					name = "|cffF58CBAPaladin|r",
+					order = 7,
+					args = {
+							bubblealert = {
+							type = 'toggle',
+							name = icondir.."Spell_Holy_DivineIntervention"..icondir2.."Divine Shield",
+							desc = "Enemies that have casted Divine Shield will be alerted",
+							order = 1,
+							},
+							bubblealerttext = {
+							type = 'toggle',
+							name = icondir.."Spell_Holy_DivineIntervention"..icondir2.."Divine Shield Text",
+							desc = "Example: [PlayerName]: Bubbled!",
+							order = 2,
 							},
 						},
 					},
@@ -2065,7 +803,7 @@ function SoundAlerter:OnOptionsCreate()
 						type = 'group',
 						inline = true,
 						name = "|cffFFFFFFGeneral|r",
-						order = 5,
+						order = 8,
 						args = {
 							trinketalert = {
 								type = 'toggle',
@@ -2098,13 +836,19 @@ function SoundAlerter:OnOptionsCreate()
 						desc = "Example: Casted = [PlayerName] Casted [SpellName]",
 						order = 8,
 						width = full,
+					},
+					saptext = {
+						type = "input",
+						name = "Sap text - if you're sapped",
+						order = 9,
+						width = full,
 					}
 				},
 			},
 			spellInterrupt = {
 				type = 'group',
 				--inline = true,
-				name = "Friendly Interrupts",
+				name = "Enemy Interrupts",
 				disabled = function() return sadb.interrupt end,
 				set = setOption,
 				get = getOption,
@@ -2112,8 +856,8 @@ function SoundAlerter:OnOptionsCreate()
 				args = {
 					lockout = {
 						type = 'toggle',
-						name = "Self Interrupted spells",
-						desc = "Counterspell, Kick, Mind Freeze etc",
+						name = "Interrupted spells",
+						desc = "Arcane Torrent, , Kick, Mind Freeze etc",
 						order = 1,
 					},
 				}
@@ -2121,82 +865,22 @@ function SoundAlerter:OnOptionsCreate()
 			FriendDebuff = {
 				type = 'group',
 				--inline = true,
-				name = "Arena partner #1 Debuffs",
-				disabled = function() return sadb.friendlydebuff end,
+				name = "Arena partner Enemy Spell Casting",
+				disabled = function() return sadb.ArenaPartner end,
 				set = setOption,
 				get = getOption,
 				order = 7,
-				args = {
-					stun = {
-						type = 'toggle',
-						name = icondir.."Spell_Holy_SealOfMight"..icondir2.."Stuns on arena partner",
-						desc = "Hammer of Justice",
-						confirm = function() PlaySoundFile(""..sadb.sapath.."friendstunned.mp3"); end,
-						order = 1,
-					},
-					fearfriend = {
-						type = 'toggle',
-						name = icondir.."Spell_Shadow_Possession"..icondir2.."Fear on arena partner",
-						desc = "Fear, Intimidating shout, Psychic Scream, Death Coil",
-						confirm = function() PlaySoundFile(""..sadb.sapath.."friendfeared.mp3"); end,
-						order = 2,
-					},
-					hexfriend = {
-								type = 'toggle',
-								name = icondir.."Spell_Shaman_Hex"..icondir2.."Hex on arena partner",
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(51514));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."friendhexxed.mp3"); end,
-								descStyle = "custom",
-								order = 3,
-					},
-					friendpoly = {
-								type = 'toggle',
-								name = icondir.."Spell_Nature_Polymorph"..icondir2.."Poly on arena partner",
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(51514));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."friendpoly.mp3"); end,
-								descStyle = "custom",
-								order = 4,
-					},
-					Blindfriend = {
-								type = 'toggle',
-								name = icondir.."Spell_Shadow_MindSteal"..icondir2.."Blind on arena partner",
-								desc = function ()
-									GameTooltip:SetHyperlink(GetSpellLink(51514));
-								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."blindfriend.mp3"); end,
-								descStyle = "custom",
-								order = 5,
-					},
-					interruptfriendly = {
-								type = 'toggle',
-								name = "Interrupts on Enemy from Arena partner",
-								desc = "Interrupts on Enemy from Arena partner",
-								confirm = function() PlaySoundFile(""..sadb.sapath.."friendcountered.mp3"); end,
-								descStyle = "custom",
-								order = 6,
-					},
-					friendcyclone = {
-								type = 'toggle',
-								name = icondir.."Spell_Nature_EarthBind"..icondir2.."Cyclone on Arena Partner",
-								desc = "Cyclone on Arena Partner",
-								confirm = function() PlaySoundFile(""..sadb.sapath.."friendcycloned.mp3"); end,
-								descStyle = "custom",
-								order = 7,
-					},
-					friendsapped = {
-								type = 'toggle',
-								name = icondir.."ability_sap"..icondir2.."Sap on Arena Partner",
-								desc = "Sap on Arena Partner",
-								confirm = function() PlaySoundFile(""..sadb.sapath.."friendsapped.mp3"); end,
-								descStyle = "custom",
-								order = 8,
-					},
-				}
+				args = listOptions({51514,118,33786,2094,6215},"friendCCs"),
 			},
+			FriendDebuffSuccess = {
+			type = 'group',
+			name = "Arena partner Debuffs",
+			disabled = function() return sadb.ArenaPartner end,
+			set = setOption,
+			get = getOption,
+			order = 8,
+			args = listOptions({10308,51514,12826,33786,6215,2139,51724},"friendCCSuccess"),
+			}
 		}
 	})
 end
@@ -2211,17 +895,28 @@ end
 function SoundAlerter:PLAYER_ENTERING_WORLD()
 	CombatLogClearEntries()
 end
+function SoundAlerter:PlaySpell(list, spellID, ...)
+	--if list[spellID] == nil then return end
+--	if not list[spellID] then return end
+--	if not self.spellList[spellID] then return end
+	if list[spellID] then
+	if not sadb[list[spellID]] then return	end
+	PlaySoundFile(sadb.sapath..list[spellID]..".mp3");
+		if sadb.debugmode then
+		print("<SA> DEBUG: Playing sound file: "..list[spellID]..".mp3");
+		end
+	end
+end
 
 function SoundAlerter:COMBAT_LOG_EVENT_UNFILTERED(event , ...)
 
-	 pvpType, isFFA, faction = GetZonePVPInfo();
+	local pvpType, isFFA, faction = GetZonePVPInfo();
 	
 	if (not ((pvpType == "contested" and sadb.field) or (pvpType == "hostile" and sadb.field) or (pvpType == "friendly" and sadb.field) or (currentZoneType == "pvp" and sadb.battleground) or (((currentZoneType == "arena") or (pvpType == "arena")) and sadb.arena) or sadb.all)) then
 		return
 	end
-	 timestamp,event,sourceGUID,sourceName,sourceFlags,destGUID,destName,destFlags,spellID,spellName= select ( 1 , ... );
-	--print (sourceName,destName,event,spellName,spellID);
-	 toEnemy,fromEnemy,toTarget,fromFocus = false , false , false , false 
+	local timestamp,event,sourceGUID,sourceName,sourceFlags,destGUID,destName,destFlags,spellID,spellName= select ( 1 , ... );
+	local toEnemy,fromEnemy,toTarget,fromFocus = false , false , false , false 
 
 	if (destName and not CombatLog_Object_IsA(destFlags, COMBATLOG_OBJECT_NONE) ) then
 		toEnemy = CombatLog_Object_IsA(destFlags, COMBATLOG_FILTER_HOSTILE_PLAYERS)
@@ -2243,351 +938,71 @@ function SoundAlerter:COMBAT_LOG_EVENT_UNFILTERED(event , ...)
 	toFocus = CombatLog_Object_IsA(destFlags, COMBATLOG_OBJECT_FOCUS)
 	end
 
-		--toTarget = CombatLog_Object_IsA(destFlags, COMBATLOG_OBJECT_TARGET)
-		--toTarget = (UnitGUID("target") == destGUID)
-enemyTarget = UnitName("focustarget")
-enemyTarget2 = UnitName("targettarget")
-	--print (toTarget,sourceName,destName)
-	--DEBUG
+local enemyTarget = UnitName("focustarget") --Make sure it's fromEnemy
+local enemyTarget2 = UnitName("targettarget") --also make sure it's fromEnemy
+local myTarget = UnitName("target")
+local myFocus = UnitName("focus")
 
-	--end
 --[[debug
 	if (spellID == 23989) then
 		print (sourceName,destName,event,spellName,spellID)
 	end
 enddebug]]
-	--Event Spell_AURA_APPLIED works with enemies with buffs on them from used cooldowns
 
---Spells not fully tested: Hand of Sacrifice, Hibernate, Blade Flurry, All warrior spells, All Mage spells, all DK spells, all Hunter spells
-if (event == "SPELL_AURA_APPLIED" and toEnemy and ((sadb.myself and (fromTarget or fromFocus)) or sadb.enemyinrange) and not sadb.auraApplied) then
-
-		--Night Elves
-		if (spellID == 58984 and sadb.Shadowmeld) then
-			PlaySoundFile(""..sadb.sapath.."Shadowmeld.mp3");
-		end
-		--Trolls
-		if (spellID == 26297 and sadb.berserking) then
-			PlaySoundFile(""..sadb.sapath.."Berserk.mp3");
-		end
-		--Dwarves
-		if (spellID == 20594 and sadb.berserking) then
-			PlaySoundFile(""..sadb.sapath.."Stoneform.mp3");
-		end
-		--Orcs
-		if (((spellID == 20572) or (spellID == 33702) or (spellID == 33697)) and sadb.BloodFury) then
-			PlaySoundFile(""..sadb.sapath.."BloodFury.mp3");
-		end
-		--dranei
-		if (((spellID == 59545) or (spellID == 59543) or (spellID == 59548) or (spellID == 59542) or (spellID == 59544) or (spellID == 59547) or (spellID == 28880)) and sadb.giftofthenaaru) then
-			PlaySoundFile(""..sadb.sapath.."giftofthenaaru.mp3");
-		end
-		--druid
-		if (spellID == 61336 and sadb.survivalInstincts) then
-			PlaySoundFile(""..sadb.sapath.."Survival Instincts.mp3");
-		end
-		if (spellID == 29166 and sadb.innervate) then
-			PlaySoundFile(""..sadb.sapath.."Innervate.mp3");
-		end
-		if (spellID == 22812 and sadb.barkskin) then
-			PlaySoundFile(""..sadb.sapath.."barkskin.mp3");
-		end
-		if (spellID == 17116 and sadb.naturesSwiftness) then
-			PlaySoundFile(""..sadb.sapath.."Natures Swiftness.mp3");
-		end
-		if (spellID == 53312 and sadb.naturesGrasp) then
-			PlaySoundFile(""..sadb.sapath.."Natures Grasp.mp3");
-		end
-		if (spellID == 22842 and sadb.frenziedRegeneration) then
-			PlaySoundFile(""..sadb.sapath.."Frenzied Regeneration.mp3");
-		end
-		if (spellID == 48505 and sadb.starfall) then
-			PlaySoundFile(""..sadb.sapath.."Starfall.mp3");
-		end
-		if (spellID == 50334 and sadb.berserk) then
-			PlaySoundFile(""..sadb.sapath.."Berserk.mp3");
-		end
-		if (spellID == 1850 and sadb.dash) then
-			PlaySoundFile(""..sadb.sapath.."dash.mp3");
-		end
-		--paladin
-		if (spellID == 31821 and sadb.auraMastery) then
-			PlaySoundFile(""..sadb.sapath.."Aura Mastery.mp3");
-		end
-		if (spellID == 10278 and sadb.handOfProtection) then 
-			PlaySoundFile(""..sadb.sapath.."Hand of Protection.mp3");
-		end
-		if (spellID == 1044 and sadb.handOfFreedom) then
-			PlaySoundFile(""..sadb.sapath.."Hand of Freedom.mp3");
-		end
-		if (spellID == 642 and sadb.divineShield) then
-			PlaySoundFile(""..sadb.sapath.."divine shield.mp3");
-		end
-		if (spellID == 6940 and sadb.handofsacrifice) then
-			PlaySoundFile(""..sadb.sapath.."Sacrifice.mp3");
-		end
-		if (spellID == 64205 and sadb.divineSacrifice) then
-			PlaySoundFile(""..sadb.sapath.."Divine Sacrifice.mp3");
-		end
-		if (spellID == 54428 and sadb.divinePlea) then
-			PlaySoundFile(""..sadb.sapath.."Divine Plea.mp3");
-		end
-		--rogue
-		if (spellID == 51713 and sadb.shadowDance) then
-			PlaySoundFile(""..sadb.sapath.."Shadow Dance.mp3");
-		end
-		if (spellID == 31224 and sadb.cloakOfShadows) then
-			PlaySoundFile(""..sadb.sapath.."Cloak of Shadows.mp3");
-		end
-		if (spellID == 13750 and sadb.adrenalineRush) then
-			PlaySoundFile(""..sadb.sapath.."Adrenaline Rush.mp3");
-		end
-		if (spellID == 26669 and sadb.evasion) then
-			PlaySoundFile(""..sadb.sapath.."Evasion.mp3");
-		end
-		--warrior
-		if (spellID == 871 and sadb.shieldWall) then
-			PlaySoundFile(""..sadb.sapath.."Shield Wall.mp3")
-		end
-		if (spellID == 12975 and sadb.laststand) then
-			PlaySoundFile(""..sadb.sapath.."Last Stand.MP3")
-		end
-		if (spellID == 1719 and sadb.recklessness) then
-			PlaySoundFile(""..sadb.sapath.."recklessness.mp3")
-		end
-		if (spellID == 18499 and sadb.berserkerRage) then
-			PlaySoundFile(""..sadb.sapath.."Berserker Rage.mp3");
-		end
-		if (spellID == 20230 and sadb.retaliation) then
-			PlaySoundFile(""..sadb.sapath.."Retaliation.mp3")
-		end
-		if (spellID == 23920 and sadb.spellReflection) then
-			PlaySoundFile(""..sadb.sapath.."Spell Reflection.mp3")
-		end
-		if (spellID == 12328 and sadb.sweepingStrikes) then
-			PlaySoundFile(""..sadb.sapath.."Sweeping Strikes.mp3");
-		end
-		if (spellID == 46924 and sadb.bladestorm) then
-			PlaySoundFile(""..sadb.sapath.."Bladestorm.mp3");
-		end
-		if (spellID == 12292 and sadb.deathWish) then
-			PlaySoundFile(""..sadb.sapath.."Death Wish.mp3");
-		end
-		--priest
-		if (spellID == 33206 and sadb.painSuppression) then
-			PlaySoundFile(""..sadb.sapath.."pain suppression.mp3");
-		end
-		if (spellID == 10060 and sadb.powerInfusion) then
-			PlaySoundFile(""..sadb.sapath.."Power Infusion.mp3");
-		end
-		if (spellID == 6346 and sadb.fearWard) then
-			PlaySoundFile(""..sadb.sapath.."Fear Ward.mp3");
-		end
-		if (spellID == 47585 and sadb.dispersion) then
-			PlaySoundFile(""..sadb.sapath.."Dispersion.mp3");
-		end
-		if (spellID == 19236 and sadb.desperatePrayer) then
-			PlaySoundFile(""..sadb.sapath.."DesperatePrayer.mp3");
-		end
-		if (spellID == 14751 and sadb.innerfocus) then
-			PlaySoundFile(""..sadb.sapath.."inner focus.mp3");
-		end
-		if (spellID == 12472 and sadb.icyveins) then
-			PlaySoundFile(""..sadb.sapath.."icy veins.mp3");
-		end
-		--shaman
-		if (((spellID == 57960) or (spellID == 52128) or (spellID == 33736)) and sadb.waterShield) then
-			PlaySoundFile(""..sadb.sapath.."water shield.mp3");
-		end
-		if (spellID == 16188 and sadb.naturesSwiftness2) then
-			PlaySoundFile(""..sadb.sapath.."Natures Swiftness.mp3");
-		end
-		if (spellID == 16166 and sadb.ElementalMastery) then
-			PlaySoundFile(""..sadb.sapath.."ElementalMastery.mp3");
-		end
-		if (spellID == 30823 and sadb.shamanisticRage) then
-			PlaySoundFile(""..sadb.sapath.."Shamanistic Rage.mp3")
-		end
-		if ((spellID == 974 or (spellID == 32594)) and sadb.earthShield) then
-			PlaySoundFile(""..sadb.sapath.."Earth shield.mp3");
-		end
-		--mage
-		if (spellID == 45438 and sadb.iceBlock) then
-			PlaySoundFile(""..sadb.sapath.."ice block.mp3");
-		end
-		if (spellID == 12042 and sadb.arcanePower) then
-			PlaySoundFile(""..sadb.sapath.."Arcane Power.mp3");
-		end
-		if (spellID == 12051 and sadb.evocation) then
-			PlaySoundFile(""..sadb.sapath.."Evocation.mp3");
-		end
-		if (((spellID == 44448) or (spellID == 44445) or (spellID == 44446)) and sadb.HotStreak) then
-			PlaySoundFile(""..sadb.sapath.."Hot Streak.MP3");
-		end
-		--dk
-		if (spellID == 49039 and sadb.lichborne) then
-			PlaySoundFile(""..sadb.sapath.."Lichborne.mp3");
-		end
-		if (spellID == 48792 and sadb.iceboundFortitude) then
-			PlaySoundFile(""..sadb.sapath.."Icebound Fortitude.mp3");
-		end
-		if (spellID == 55233 and sadb.vampiricBlood) then
-			PlaySoundFile(""..sadb.sapath.."Vampiric Blood.mp3");
-		end
-		if (spellID == 48707 and sadb.antimagicshell) then
-			PlaySoundFile(""..sadb.sapath.."Anti Magic Shell.mp3");
-		end
-		if (spellID == 49222 and sadb.boneshield) then
-			PlaySoundFile(""..sadb.sapath.."Bone Shield.mp3");
-		end
-		if (spellID == 49016 and sadb.hysteria) then --Unholy Frenzy = Hysteria
-			PlaySoundFile(""..sadb.sapath.."hysteria.mp3");
-		end
-		--hunter. NOTE: Feign Death cannot be detected in combat log, it is counted as a 'death' and cannot be introduced :(
-		if (spellID == 19263 and sadb.deterrence) then
-			PlaySoundFile(""..sadb.sapath.."Deterrence.mp3");
-		end
-		if (spellID == 34471 and sadb.theBeastWithin) then
-			PlaySoundFile(""..sadb.sapath.."The Beast Within.mp3")
-		end
-		--warlock
-		if (spellID == 17941 and sadb.shadowtrance) then
-			PlaySoundFile(""..sadb.sapath.."Shadowtrance.mp3")
-		end
-	end
-	if (event == "SPELL_AURA_APPLIED" and destName == party1 and (isinparty ~= nil) and not sadb.friendlydebuff) then
-			if spellID == 33786 and sadb.cyclonefriend then
-			PlaySoundFile(""..sadb.sapath.."friendcycloned.mp3");
+	if (event == "SPELL_AURA_APPLIED" and not sadb.castSuccess) then --making check for spellID since LUA error on indexing table
+		if (spellID == 12826 or spellID == 51514 or spellID == 10890 or spellID == 2094 or spellID == 51724 or spellID == 33702 or spellID == 57960 or spellID == 58984 or spellID == 26297 or spellID == 20594 or spellID == 20572 or spellID == 7744 or spellID == 28880 or spellID == 61336 or spellID == 29166 or spellID == 22812 or spellID == 17116 or spellID == 53312 or spellID == 22842 or spellID == 48505 or spellID == 50334 or spellID == 1850 or spellID == 31821 or spellID == 10278 or spellID == 1044 or spellID == 642 or spellID == 6940 or spellID == 64205 or spellID == 54428 or spellID == 51713 or spellID == 31224 or spellID == 13750 or spellID == 26669 or spellID == 55694 or spellID == 871 or spellID == 12975 or spellID == 18499 or spellID == 20230 or spellID == 23920 or spellID == 12328 or spellID == 46924 or spellID == 12292 or spellID == 33206 or spellID == 10060 or spellID == 6346 or spellID == 47585 or spellID == 14751 or spellID == 47788 or spellID == 30823 or spellID == 974 or spellID == 16188 or spellID == 33736 or spellID == 16166 or spellID == 45438 or spellID == 12042 or spellID == 12472 or spellID == 12043 or spellID == 49039 or spellID == 48792 or spellID == 55233 or spellID == 48707 or spellID == 49222 or spellID == 49016 or spellID == 34471 or spellID == 19263 or spellID == 17941) then
+						if currentZoneType ~= "arena" and ((destName == targetName) or (destName == focusName) or (enemyTarget ~= playerName and destName == enemyTarget) or (enemyTarget2 ~= playerName and destName == enemyTarget)) then
+							if fromEnemy and (spellID == 51724 or spellID == 33786 or spellID == 10308 or spellID == 2139 or spellID == 51514 or spellID == 12826 or spellID ==  6215 or spellID == 10890 or spellID == 10890) and not sadb.ArenaPartner then
+									if ((sadb.myself and (fromFocus or fromTarget)) or sadb.enemyinrange) then
+									self:PlaySpell (self.spellList.friendCCSuccess,spellID)
+									end
+							end
+						else
+						if fromEnemy and currentZoneType == "arena" and destName ~= playerName and (spellID == 51724 or spellID == 33786 or spellID == 10308 or spellID == 2139 or spellID == 51514 or spellID == 12826 or spellID ==  6215 or spellID == 10890) then
+									if ((sadb.myself and (fromTarget or fromFocus)) or sadb.enemyinrange) and not sadb.ArenaPartner then
+									self:PlaySpell (self.spellList.friendCCSuccess,spellID)
+									end
+						else
+						if toEnemy and sourceName == playerName and (spellID == 2094 or spellID == 51724) then
+									if (sadb.myself and (toTarget or toFocus)) or sadb.enemyinrange then
+									self:PlaySpell (self.spellList.enemyDebuffs,spellID)
+									end
+						else
+						if ((sadb.myself and ((toSelf and spellID == 51724) or (toSelf and fromEnemy) or (fromFocus and fromEnemy) or (fromTarget and fromEnemy))) or sadb.enemyinrange) then
+						self:PlaySpell (self.spellList.auraApplied,spellID) --fromEnemy is nil when Sap is used
+						self:PlaySpell (self.spellList.castSuccess,spellID)
+						end
+					end
+					end
+				end
 			end
-			if spellID == 51514 and sadb.hexfriend then 
-			PlaySoundFile(""..sadb.sapath.."friendhexxed.mp3");
+		end
+	if (event == "SPELL_AURA_REMOVED" and toEnemy and ((sadb.myself and (fromTarget or fromFocus)) or sadb.enemyinrange) and not sadb.aruaRemoved) then
+		if (spellID == 871 or spellID == 10278 or spellID == 642 or spellID == 31224 or spellID == 26669 or spellID == 33206 or spellID == 47585 or spellID == 45438 or spellID == 48792 or spellID == 49039 or spellID == 48505 or spellID == 19263 or spellID == 34471) then
+		self:PlaySpell (self.spellList.auraRemoved,spellID)
+		end
+	end
+	if (event == "SPELL_AURA_REMOVED" and (sourceName == playerName) and not sadb.aruaRemoved) then
+		if (spellID == 2094 or spellID == 51724) then
+		self:PlaySpell (self.spellList.enemyDebuffdown,spellID)
+		end
+	end
+	if (event == "SPELL_CAST_START" and fromEnemy and (sadb.myself and ((fromTarget or fromFocus) or ((enemyTarget or enemyTarget2) == playerName)) or sadb.enemyinrange) and not sadb.castStart) then
+		if (spellID == 30146 or spellID == 2060 or spellID == 635 or spellID == 49273 or spellID == 5185 or spellID == 2006 or spellID == 7328 or spellID == 2008 or spellID == 50769 or spellID == 2637 or spellID == 33786 or spellID == 8129 or spellID == 9484 or spellID == 64843 or spellID == 605 or spellID == 51514 or spellID == 118 or spellID == 12826 or spellID == 28272 or spellID == 28272 or spellID == 61305 or spellID == 61721 or spellID == 61025 or spellID == 61780 or spellID == 28271 or spellID == 982 or spellID == 14327 or spellID == 6215 or spellID == 17928 or spellID == 710 or spellID == 688 or spellID == 691 or spellID == 712 or spellID == 697) then
+			if currentZoneType == "arena" and ((((enemyTarget ~= playerName) or (enemyTarget2 ~= playerName)) and (isinparty ~= nil)) and not sadb.ArenaPartner) then
+				if sadb.debugmode then
+				print(enemyTarget,playerName,EnemyTarget2,isinparty)
+				end
+			self:PlaySpell (self.spellList.friendCCs,spellID)
+			else
+				if (sadb.myself and (fromTarget or fromFocus)) or sadb.enemyinrange then
+				self:PlaySpell (self.spellList.castStart,spellID)
+				end
 			end
-			if spellID == 51724 and sadb.friendsapped then 
-			PlaySoundFile(""..sadb.sapath.."friendsapped.mp3");
-			end
-	end
-	--Event SPELL_AURA_REMOVED is when enemies have lost the buff provided by SPELL_AURA_APPLIED (eg. Bubble down)
-	if (event == "SPELL_AURA_REMOVED" and toEnemy and ((sadb.myself and (fromTarget or fromFocus)) or sadb.enemyinrange) and not sadb.auraRemoved) then
-		if (spellID == 19263 and sadb.deterdown) then
-			PlaySoundFile(""..sadb.sapath.."Deterrencedown.mp3");
-		end
-		if (spellID == 871 and sadb.shieldWallDown) then
-			PlaySoundFile(""..sadb.sapath.."Shield Wall Down.mp3");
-		end
-		if (spellID == 48505 and sadb.sfalldown) then
-			PlaySoundFile(""..sadb.sapath.."Starfalldown.mp3");
-		end
-		if (spellID == 642 and sadb.bubbleDown) then
-		   PlaySoundFile(""..sadb.sapath.."Bubble down.mp3")
-		end
-		if (spellID == 47585 and sadb.dispersionDown) then
-		   PlaySoundFile(""..sadb.sapath.."Dispersiondown.mp3")
-		end
-		if (spellID == 10278 and sadb.protectionDown) then
-		   PlaySoundFile(""..sadb.sapath.."Protection down.mp3")
-		end
-		if (spellID == 31224 and sadb.cloakDown) then
-		   PlaySoundFile(""..sadb.sapath.."Cloak down.mp3")
-		end
-		if (spellID == 33206 and sadb.PSDown) then
-		   PlaySoundFile(""..sadb.sapath.."PS down.mp3")
-		end
-		if (spellID == 5277 and sadb.evasionDown) then
-		   PlaySoundFile(""..sadb.sapath.."Evasion down.mp3")
-		end
-		if (spellID == 45438 and sadb.iceBlockDown) then
-		   PlaySoundFile(""..sadb.sapath.."Ice Block down.mp3")
-		end
-		if (spellID == 49039 and sadb.lichborneDown) then
-		   PlaySoundFile(""..sadb.sapath.."lichborne Down.mp3")
-		end
-		if (spellID == 48792 and sadb.iceboundFortitudeDown) then
-		   PlaySoundFile(""..sadb.sapath.."Icebound Fortitude Down.mp3")
 		end
 	end
-	if (event == "SPELL_CAST_START" and fromEnemy and (sadb.myself and ((fromTarget or fromFocus) or ((enemyTarget or enemyTarget2) == playerName)) or sadb.enemyinrange) and not sadb.castStart) then--does destName trigger on your focus?
-	--general
-		if (((spellID == 2060) or (spellID == 77472) or (spellID == 5185) or (spellID == 635)) and sadb.bigHeal) then
-			PlaySoundFile(""..sadb.sapath.."big heal.mp3");
-		end
-		if (((spellID == 2006) or (spellID == 2008) or (spellID == 7328) or (spellID == 50769)) and sadb.resurrection) then
-			PlaySoundFile(""..sadb.sapath.."Resurrection.mp3");
-		end
-	--hunter
-		if (spellID == 982 and sadb.revivePet) then
-			PlaySoundFile(""..sadb.sapath.."Revive Pet.mp3");
-		end
-		--druid
-		if (spellID == 33786) then
-				if ((sadb.friendcyclone and ((enemyTarget or enemyTarget2) == party1) and (isinparty ~= nil)) and not sadb.friendlydebuff) then
-				PlaySoundFile(""..sadb.sapath.."cyclonefriend.mp3");
-				else
-					if sadb.cyclone then
-					PlaySoundFile(""..sadb.sapath.."cyclone.mp3");
-					end
-				end
-		end
-		if (spellID == 2637 and sadb.hibernate) then
-			PlaySoundFile(""..sadb.sapath.."hibernate.mp3");
-		end
-		if (spellID == 8129 and sadb.manaBurn) then
-			PlaySoundFile(""..sadb.sapath.."Mana Burn.mp3");
-		end
-		if (spellID == 9484 and sadb.shackleUndead) then
-			PlaySoundFile(""..sadb.sapath.."Shackle Undead.mp3");
-		end
-		if (spellID == 64843 and sadb.divineHymn) then
-			PlaySoundFile(""..sadb.sapath.."Divine Hymn.mp3");
-		end
-		if (spellID == 605 and sadb.mindControl) then
-			PlaySoundFile(""..sadb.sapath.."Mind Control.mp3");
-		end
-		--shaman
-		if (spellID == 51514) then
-				if ((sadb.hexfriend and ((enemyTarget or enemyTarget2) == party1) and (isinparty ~= nil)) and not sadb.friendlydebuff) then
-				PlaySoundFile(""..sadb.sapath.."hexfriend.mp3");
-				print (enemyTarget,enemyTarget2,party1,playerName)
-				else
-					if sadb.hex then
-					PlaySoundFile(""..sadb.sapath.."Hex.mp3");
-					end
-				end
-		end
-		--mage
-		if ((spellID == 12826) or (spellID == 118) or (spellID == 28272) or (spellID == 61305) or (spellID == 61721) or (spellID == 61025) or (spellID == 61780) or (spellID == 28271)) then
-				if ((sadb.friendpoly and ((enemyTarget or enemyTarget2) == party1) and (isinparty ~= nil)) and not sadb.friendlydebuff) then
-				PlaySoundFile(""..sadb.sapath.."polyfriend.mp3");
-				else
-					if sadb.polymorph then
-					PlaySoundFile(""..sadb.sapath.."polymorph.mp3");
-					end
-				end
-		end
-		--dk
-		--hunter
-		if (spellID == 1513 and sadb.scareBeast) then
-			PlaySoundFile(""..sadb.sapath.."Scare Beast.mp3");
-		end
-		--warlock
-		if (spellID == 710 and sadb.banish) then
-			PlaySoundFile(""..sadb.sapath.."Banish.mp3");
-		end
-		if spellID == 6215 then
-				if ((sadb.fearfriend and ((enemyTarget or enemyTarget2) == party1) and (isinparty ~= nil)) and not sadb.friendlydebuff) then
-				PlaySoundFile(""..sadb.sapath.."fearfriend.mp3");
-				else
-					if sadb.fear then
-					PlaySoundFile(""..sadb.sapath.."fear.mp3");
-					end
-				end
-		end
-		if (spellID == 17928 and sadb.fear2) then  --Howl of Terror
-			PlaySoundFile(""..sadb.sapath.."fear2.mp3");
-		end
-	end
-	--SPELL_CAST_SUCCESS only applies when the enemy has casted a spell
-	--TODO: Add seperate LUA File for spell list
-	if (event == "SPELL_CAST_SUCCESS" and fromEnemy and (sadb.myself and (fromTarget or fromFocus) or sadb.enemyinrange) and not sadb.castSuccess) then
-	--General
+--Trinket Sound Alerts
+	if (event == "SPELL_CAST_SUCCESS" and fromEnemy and ((sadb.myself and (fromTarget or fromFocus)) or sadb.enemyinrange) and not sadb.castSuccess) then
 		if (((spellID == 42292) or (spellID == 59752)) and sadb.trinket) then
 			if (sadb.class and ((currentZoneType == "arena")  or (pvpType == "arena"))) then
 				local c = self:ArenaClass(sourceGUID)--destguid
@@ -2599,37 +1014,37 @@ if (event == "SPELL_AURA_APPLIED" and toEnemy and ((sadb.myself and (fromTarget 
 				self:PlayTrinket()
 				end
 			end
-	--	if ((spellName == "Every Man for Himself" or spellName == "PvP Trinket") and sadb.trinketalert and not sadb.chatalerts) then
-	--	DEFAULT_CHAT_FRAME:AddMessage("["..sourceName.."]: Trinketted - Cooldown: 2 minutes", 1.0, 0.25, 0.25);
-	--	end
+--Trinket Chat Alerts
 		if (((spellID == 42292) or (spellID == 59752)) and sadb.trinketalert and not sadb.chatalerts) then
 							if sadb.party then
-							SendChatMessage("["..sourceName.."]: Trinketted - Cooldown: 2 minutes", "PARTY", nil, nil)
+							SendChatMessage("["..sourceName.."]: Trinketted", "PARTY", nil, nil)
 							end
 							if sadb.clientonly then
-							DEFAULT_CHAT_FRAME:AddMessage("["..sourceName.."]: Trinketted - Cooldown: 2 minutes", 1.0, 0.25, 0.25);
+							DEFAULT_CHAT_FRAME:AddMessage("["..sourceName.."]: Trinketted", 1.0, 0.25, 0.25);
 							end
 							if sadb.say then
-							SendChatMessage("["..sourceName.."]: Trinketted - Cooldown: 2 minutes", "SAY", nil, nil)
+							SendChatMessage("["..sourceName.."]: Trinketted", "SAY", nil, nil)
 							end
 							if sadb.bgchat then
-							SendChatMessage("["..sourceName.."]: Trinketted - Cooldown: 2 minutes", "BATTLEGROUND", nil, nil)
+							SendChatMessage("["..sourceName.."]: Trinketted", "BATTLEGROUND", nil, nil)
 							end
 		end
-		--druid
-		--paladin
-		--rogue
-		--Undead
-		if (spellID == 7744 and sadb.willoftheforsaken) then
-			PlaySoundFile(""..sadb.sapath.."Will Of The Forsaken.mp3");
-		end
-		if (spellID == 14185 and sadb.preparation) then
-			PlaySoundFile(""..sadb.sapath.."preparation.mp3")
-		end
-		if (spellID == 34433 and sadb.shadowFiend) then
-			PlaySoundFile(""..sadb.sapath.."Shadowfiend.mp3")
-		end
-		if (spellID == 26889 and sadb.vanish) then
+			if spellID == 642 and sadb.bubblealert and not sadb.chatalerts then
+							if sadb.party then
+							SendChatMessage("["..sourceName.."]: "..sadb.bubblealerttext.."", "PARTY", nil, nil)
+							end
+							if sadb.clientonly then
+							DEFAULT_CHAT_FRAME:AddMessage("["..sourceName.."]: "..sadb.bubblealerttext.."", 1.0, 0.25, 0.25);
+							end
+							if sadb.say then
+							SendChatMessage("["..sourceName.."]: "..sadb.bubblealerttext.."", "SAY", nil, nil)
+							end
+							if sadb.bgchat then
+							SendChatMessage("["..sourceName.."]: "..sadb.bubblealerttext.."", "BATTLEGROUND", nil, nil)
+							end
+			end
+--Vanish Chat Alerts
+		if (spellID == 26889) then
 				if not sadb.chatalerts then
 					if sadb.vanishalert then
 							if sadb.party then
@@ -2644,19 +1059,13 @@ if (event == "SPELL_AURA_APPLIED" and toEnemy and ((sadb.myself and (fromTarget 
 							if sadb.bgchat then
 							SendChatMessage("["..sourceName.."]: "..sadb.spelltext.." \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "BATTLEGROUND", nil, nil)
 							end
-					PlaySoundFile(""..sadb.sapath.."Vanish.mp3")
-					end
-					if not sadb.vanishalert then
-					PlaySoundFile(""..sadb.sapath.."Vanish.mp3")
 					end
 				end
-			if sadb.chatalerts then
-			PlaySoundFile(""..sadb.sapath.."Vanish.mp3")
-			end
 		end
-				if spellID == 1784 then
-			if not sadb.chatalerts then
-					if sadb.stealthalert and sadb.stealth then
+--Stealth Chat Alerts
+			if spellID == 1784 then
+				if not sadb.chatalerts then
+					if sadb.stealthalert then
 							if sadb.party then
 							SendChatMessage("["..sourceName.."]: "..sadb.spelltext.." \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "PARTY", nil, nil)
 							end
@@ -2669,405 +1078,139 @@ if (event == "SPELL_AURA_APPLIED" and toEnemy and ((sadb.myself and (fromTarget 
 							if sadb.bgchat then
 							SendChatMessage("["..sourceName.."]: "..sadb.spelltext.." \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "BATTLEGROUND", nil, nil)
 							end
-					PlaySoundFile(""..sadb.sapath.."Stealth.mp3")
+						self:PlaySpell (self.spellList.castSuccess,spellID)
 					end
-					if sadb.stealthalert and not sadb.stealth then
-							if sadb.party then
-							SendChatMessage("["..sourceName.."]: "..sadb.spelltext.." \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "PARTY", nil, nil)
-							end
-							if sadb.clientonly then
-							DEFAULT_CHAT_FRAME:AddMessage("["..sourceName.."]: "..sadb.spelltext.." \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", 1.0, 0.25, 0.25);
-							end
-							if sadb.say then
-							SendChatMessage("["..sourceName.."]: "..sadb.spelltext.." \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "SAY", nil, nil)
-							end
-							if sadb.bgchat then
-							SendChatMessage("["..sourceName.."]: "..sadb.spelltext.." \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "BATTLEGROUND", nil, nil)
-							end
-					end
-				if not sadb.stealthalert and sadb.stealth then
-				PlaySoundFile(""..sadb.sapath.."Stealth.mp3")
 				end
 			end
-			if sadb.chatalerts and sadb.stealth then
-			PlaySoundFile(""..sadb.sapath.."Stealth.mp3")
-			end
-			end
-			if (((spellID == 65992) or (spellID == 8143)) and sadb.tremorTotem) then
-				PlaySoundFile(""..sadb.sapath.."Tremor Totem.mp3");
-			end
-		end
-		
-		if (event == "SPELL_AURA_APPLIED" and fromEnemy and not sadb.castSuccess) then
-			if (sadb.myself and ((fromTarget or fromFocus) or (destName == playerName)) or sadb.enemyinrange) then
-		--print (sourceName,destName)
-		if (spellID == 51722 and sadb.disarm2) then --dismantle
-			PlaySoundFile(""..sadb.sapath.."Disarm2.mp3")
-		end
-		if (spellID == 51724 and sadb.sap) then --dismantle
-			PlaySoundFile(""..sadb.sapath.."sap.mp3")
-		end
-		if (spellID == 1766 and sadb.kick) then --why was it under aura_applied?
-			PlaySoundFile(""..sadb.sapath.."kick.mp3")
-		end
-		if (spellID == 14177 and sadb.coldBlood) then
-			PlaySoundFile(""..sadb.sapath.."ColdBlood.mp3")
-		end
-	--	if (spellName == "Vanish" and sadb.vanish) then -- and (sadb.chatalerts or not sadb.vanishalert)
-	--		PlaySoundFile(""..sadb.sapath.."Vanish.mp3")
-	--	end
-	--	if (spellName == "Vanish" and sadb.vanish and sadb.vanishalert and not sadb.chatalerts) then
-		--	DEFAULT_CHAT_FRAME:AddMessage("["..sourceName.."]: Casts \124cff71d5ff\124Hspell:1856\124h[Vanish]\124h\124r - Cooldown: 2 minutes", 1.0, 0.25, 0.25);
-	--	end
-		if (spellID == 13877 and sadb.bladeflurry) then
-			PlaySoundFile(""..sadb.sapath.."Blade Flurry.mp3")
-		end
-		--if (spellName == "Stealth" and sadb.stealth and (sadb.chatalerts or not sadb.stealthalert)) then
-		--	PlaySoundFile(""..sadb.sapath.."Stealth.mp3")
-		--end
-
-		--warrior
-		if (spellID == 676 and sadb.disarm) then
-			PlaySoundFile(""..sadb.sapath.."Disarm.mp3")
-		end
-		if (spellID == 5246 and sadb.fear3) then --Intimidating Shout
-			PlaySoundFile(""..sadb.sapath.."Fear3.mp3");
-		end
-		if (spellID == 6552 and sadb.pummel) then
-			PlaySoundFile(""..sadb.sapath.."pummel.mp3")
-		end
-		if (spellID == 72 and sadb.shieldBash) then
-			PlaySoundFile(""..sadb.sapath.."Shield Bash.mp3")
-		end
-		--priest
-		if (spellID == 10890 and sadb.fear4) then --psychic scream
-			PlaySoundFile(""..sadb.sapath.."Fear4.mp3");
-		end
-
-		if (spellID == 64058 and sadb.disarm3) then --psychic horror
-			PlaySoundFile(""..sadb.sapath.."disarm3.mp3")
-		end
-		--shaman
-		if (spellID == 8177 and sadb.grounding) then
-			PlaySoundFile(""..sadb.sapath.."Grounding.mp3")
-		end
-		if (spellID == 2484 and sadb.earthbind) then
-			PlaySoundFile(""..sadb.sapath.."Earthbind.mp3")
-		end
-		if (spellID == 16190 and sadb.manaTide) then
-			PlaySoundFile(""..sadb.sapath.."Mana Tide.mp3");
-		end
-
-		--mage
-		if (spellID == 44572 and sadb.deepFreeze) then
-			PlaySoundFile(""..sadb.sapath.."Deep Freeze.mp3");
-		end
-		if (spellID == 2139 and sadb.counterspell) then
-			PlaySoundFile(""..sadb.sapath.."Counterspell.mp3");
-		end
-		if (spellID == 11958 and sadb.ColdSnap) then
-			PlaySoundFile(""..sadb.sapath.."cold snap.mp3");
-		end
-		if (spellID == 66 and sadb.invisibility) then
-			PlaySoundFile(""..sadb.sapath.."Invisibility.mp3");
-		end
-		--dk
-		if (spellID == 47528 and sadb.mindFreeze) then
-			PlaySoundFile(""..sadb.sapath.."Mind Freeze.mp3")
-		end
-		if (spellID == 47476 and sadb.strangulate) then
-			PlaySoundFile(""..sadb.sapath.."Strangulate.mp3");
-		end
-		if (spellID == 49028 and sadb.runeWeapon) then
-			PlaySoundFile(""..sadb.sapath.."Rune Weapon.mp3");
-		end
-		if (spellID == 49206 and sadb.gargoyle) then
-			PlaySoundFile(""..sadb.sapath.."gargoyle.mp3");
-		end
-		if (spellID == 49203 and sadb.hungeringCold) then
-			PlaySoundFile(""..sadb.sapath.."Hungering cold.mp3");
-		end
-		if (spellID == 61606 and sadb.markofblood) then
-			PlaySoundFile(""..sadb.sapath.."Mark of Blood.mp3");
-		end
-		--hunter
-		if (spellID == 19386 and sadb.wyvernSting) then
-			PlaySoundFile(""..sadb.sapath.."Wyvern Sting.mp3");
-		end
-		if (spellID == 34490 and sadb.silencingshot) then
-			PlaySoundFile(""..sadb.sapath.."silencingshot.mp3");
-		end
-		if (spellID == 19434 and sadb.aimedshot) then
-			PlaySoundFile(""..sadb.sapath.."Aimed Shot.MP3");
-		end
-		if (spellID == 23989 and sadb.readiness) then
-			PlaySoundFile(""..sadb.sapath.."Readiness.mp3");
-		end
-		if (((spellID == 1499) or (spellID == 60192)) and sadb.freezingtrap) then
-			PlaySoundFile(""..sadb.sapath.."FreezingTrap.mp3");
-		end
-		--warlock
-		--if (spellID == 17928 and sadb.fear2) then --HOWL OF TERROR
-	--		PlaySoundFile(""..sadb.sapath.."fear2.mp3");
-	--	end
-		if (spellID == 19647 and sadb.spellLock) then
-			PlaySoundFile(""..sadb.sapath.."Spell Lock.mp3");
-		end
-		if (spellID == 48020 and sadb.demonicCircleTeleport) then
-			PlaySoundFile(""..sadb.sapath.."Demonic Circle Teleport.mp3");
-		end
-		--paladin
-		if (spellID == 20066 and sadb.repentance) then
-			PlaySoundFile(""..sadb.sapath.."Repentance.mp3");
-		end
-		if (spellID == 31884 and sadb.avengingWrath) then
-			PlaySoundFile(""..sadb.sapath.."Avenging Wrath.mp3");
-		end
-		end
 	end
-			if (event == "SPELL_CAST_SUCCESS" and fromEnemy and not sadb.castSuccess) then
-				if spellID == 10308 then
-					if ((sadb.stun and destName == party1 and (isinparty ~= nil)) and not sadb.friendlydebuff) then
-						if destName ~= playerName then
-							PlaySoundFile(""..sadb.sapath.."friendstunned.mp3")	
-						end
-						else
-						if (destName == playerName or (sadb.myself and (fromTarget or fromFocus) or sadb.enemyinrange)) and sadb.hammerofjustice then
-							PlaySoundFile(""..sadb.sapath.."hammer of justice.mp3");
-						end
-					end
+	--SPELL_CAST_SUCCESS means that spell cast was successfull, not interrupted, but still can be missed on a player (refer to aura_applied)
+			if ((event == "SPELL_CAST_SUCCESS") and fromEnemy and not sadb.castSuccess) then
+				if (spellID == 48173 or spellID == 10890 or spellID == 33786 or spellID == 10308 or spellID == 51514 or spellID == 12826 or spellID == 6215 or spellID == 12051 or spellID == 11958 or spellID == 44572 or spellID == 44445 or spellID == 2139 or spellID == 66 or spellID == 47528 or spellID == 47476 or spellID == 47568 or spellID == 49206 or spellID == 49203 or spellID == 61606 or spellID == 23989 or spellID == 19386 or spellID == 34490 or spellID == 19434 or spellID == 49050 or spellID == 60192 or spellID == 14311 or spellID == 1499 or spellID == 17928 or spellID == 19647 or spellID == 48020 or spellID == 47860 or spellID == 20066 or spellID == 31884 or spellID == 51722 or spellID == 1766 or spellID == 14177 or spellID == 14185 or spellID == 26889 or spellID == 13877 or spellID == 8143 or spellID == 65992 or spellID == 16190 or spellID == 2484 or spellID == 8177 or spellID == 676 or spellID == 5246 or spellID == 6552 or spellID == 72 or spellID == 34433 or spellID == 64044) then
+						if ((((sadb.myself and (fromFocus or fromTarget)) or sadb.enemyinrange) or (destName == playerName)) and not sadb.castSuccess) then
+							self:PlaySpell (self.spellList.castSuccess,spellID)
+						end 
 				end
-			end
-				if (event == "SPELL_AURA_APPLIED" and fromEnemy and not sadb.castSuccess) then
-					if (spellID == 6215 or spellID == 5484 or spellID == 5246 or spellID == 8122 or spellID == 17928 or spellID == 47860 or spellID == 10890) then
-						if ((sadb.fearfriend and destName == party1) and not sadb.friendlydebuff) then
-							if destName ~= playerName then
-							PlaySoundFile(""..sadb.sapath.."friendfeared.mp3");
-							end
-							else
-							if (destName == playerName or (sadb.myself and (fromTarget or fromFocus) or sadb.enemyinrange)) and spellID == 47860 and sadb.deathcoil then
-							PlaySoundFile(""..sadb.sapath.."DeathCoil.mp3");
-							end
-							end
-						end
-					
-		
-			if ((spellID == 12826) or (spellID == 118) or (spellID == 28272) or (spellID == 61305) or (spellID == 61721) or (spellID == 61025) or (spellID == 61780) or (spellID == 28271)) then
-				if ((sadb.friendpoly and destName == party1) and not sadb.friendlydebuff) then
-					if destName ~= playerName then
-						if isinparty ~= nil then
-						PlaySoundFile(""..sadb.sapath.."friendpoly.mp3");
-						end
-					end
-				end
-			end
 		end
-	if	(spellID == 2094) then 
-			if ((event == "SPELL_AURA_APPLIED") and not sadb.castSuccess) then
-				if sadb.blindonenemychat and toEnemy then
+
+	if ((spellID == 51724) and (event == "SPELL_AURA_APPLIED") and ((sadb.myself and ((toTarget or fromTarget or fromFocus) or ((toSelf) or destName == party1))) or sadb.enemyinrange)) then --We cannot know if it came from a friend or enemy
+			if sadb.sapalert and not sadb.chatalerts then
+				if toSelf and sadb.party then 
+				SendChatMessage(sadb.saptext, "PARTY", nil, nil)
+				else
+				if destName ~= playerName and fromEnemy and currentZoneType == "arena" and sadb.party and not sourceName == playerName then 
+				SendChatMessage(destName.." Is Sapped!", "PARTY", nil, nil)
+				end
+				end
+				if toSelf and sadb.clientonly then
+				DEFAULT_CHAT_FRAME:AddMessage(sadb.saptext, 1.0, 0.25, 0.25);
+				else
+				if destName ~= playerName and fromEnemy and currentZoneType == "arena" and sadb.clientonly and not sourceName == playerName then 
+				DEFAULT_CHAT_FRAME:AddMessage(destName.." Is Sapped!", 1.0, 0.25, 0.25);
+				end
+				end
+				if toSelf and sadb.say then
+				SendChatMessage(sadb.saptext, "SAY", nil, nil)
+				else
+				if destName ~= playerName and fromEnemy and currentZoneType == "arena" and sadb.say and not sourceName == playerName then 
+				SendChatMessage(destName.." Is Sapped!", "SAY", nil, nil)
+				end
+				end
+				if toSelf and sadb.bgchat then
+				SendChatMessage(sadb.saptext, "BATTLEGROUND", nil, nil)
+				else
+				end
+				if not sadb.sapenemy and not sadb.castSuccess then
+					self:PlaySpell (self.spellList.castSuccess,spellID)
+				end
+			end
+	end 
+--Blind on Enemy
+		if spellID == 2094 and ((event == "SPELL_AURA_APPLIED") and ((sadb.myself and (toTarget or fromTarget or fromFocus)) or sadb.enemyinrange) and not sadb.castSuccess) then
+				if sadb.blindonenemychat and (toEnemy or fromEnemy) and not sadb.chatalerts then
 					if sadb.party then
-						if sourceName == playerName and ((sadb.myself and ((toTarget or fromTarget or fromFocus) or (destName == playerName))) or sadb.enemyinrange) then
-						SendChatMessage("I have casted \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r on ["..destName.."]", "PARTY", nil, nil)
+						if sourceName == playerName then
+						SendChatMessage("\124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r up on ["..destName.."]", "PARTY", nil, nil)
 						else
-						if (((sadb.myself and (toTarget or fromTarget or fromFocus)) or (destName == playerName)) or sadb.enemyinrange) then
-						SendChatMessage("["..sourceName.."]: has casted \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r on ["..destName.."]", "PARTY", nil, nil)
+						if (toSelf) then
+						SendChatMessage("["..sourceName.."]: Blinded me!", "PARTY", nil, nil)
+						end
+						if destName == party1 and isinparty ~= nil then
+						SendChatMessage("["..sourceName.."]: has casted \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r up on ["..destName.."]", "PARTY", nil, nil)
 						end
 						end
 					end
 					if sadb.clientonly then
-						if sourceName == playerName and ((sadb.myself and ((toTarget or fromTarget or fromFocus) or (destName == playerName))) or sadb.enemyinrange) then
-						DEFAULT_CHAT_FRAME:AddMessage("I have casted \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r on ["..destName.."]", 1.0, 0.25, 0.25);
+						if sourceName == playerName then
+						DEFAULT_CHAT_FRAME:AddMessage("\124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r up on ["..destName.."]", 1.0, 0.25, 0.25);
 						else
-						if (((sadb.myself and (toTarget or fromTarget or fromFocus)) or (destName == playerName)) or sadb.enemyinrange) then
-						DEFAULT_CHAT_FRAME:AddMessage("["..sourceName.."]: has casted \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r on ["..destName.."]", 1.0, 0.25, 0.25);
+						if (toSelf) then
+						DEFAULT_CHAT_FRAME:AddMessage("["..sourceName.."]: Blinded me!", 1.0, 0.25, 0.25);
+						end
+						if destName == party1 and isinparty ~= nil then
+						DEFAULT_CHAT_FRAME:AddMessage("["..sourceName.."]: has casted \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r up on ["..destName.."]", 1.0, 0.25, 0.25);
 						end
 						end
 					end
 					if sadb.say then
-						if sourceName == playerName and ((sadb.myself and ((toTarget or fromTarget or fromFocus) or (destName == playerName))) or sadb.enemyinrange) then
-						SendChatMessage("I have casted \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r on ["..destName.."]", "SAY", nil, nil)
+						if sourceName == playerName then
+						SendChatMessage("\124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r up on ["..destName.."]", "SAY", nil, nil)
 						else
-						if (((sadb.myself and (toTarget or fromTarget or fromFocus)) or (destName == playerName)) or sadb.enemyinrange) then
+						if (toSelf) then
+						SendChatMessage("["..sourceName.."]: Blinded me!", "SAY", nil, nil)
+						end
+						if destName == party1 and isinparty ~= nil then
 						SendChatMessage("["..sourceName.."]: has casted \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r on ["..destName.."]", "SAY", nil, nil)
 						end
-						end
 					end
 					if sadb.bgchat then
-						if sourceName == playerName and ((sadb.myself and ((toTarget or fromTarget or fromFocus) or (destName == playerName))) or sadb.enemyinrange) then
-						SendChatMessage("I have casted \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r on ["..destName.."]", "BATTLEGROUND", nil, nil)
+						if sourceName == playerName then
+						SendChatMessage("\124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r up on ["..destName.."]", "BATTLEGROUND", nil, nil)
 						else
-						if (((sadb.myself and (toTarget or fromTarget or fromFocus)) or (destName == playerName)) or sadb.enemyinrange) then
-						SendChatMessage("["..sourceName.."]: has casted \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r on ["..destName.."]", "BATTLEGROUND", nil, nil)
-						end
+						if (toSelf) then
+						SendChatMessage("["..sourceName.."]: Blinded me!", "BATTLEGROUND", nil, nil)
+						if destName == party1 and isinparty ~= nil then
+						SendChatMessage("["..sourceName.."]: has casted \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r on ["..destName.."]", "	BATTLEGROUND", nil, nil)
 						end
 					end
-				end
-					if (sadb.blindonselfchat and fromEnemy) then 
-							if destName == playerName and sadb.party and (sadb.myself or sadb.enemyinrange) then 
-							SendChatMessage("\124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r has been cast on me", "PARTY", nil, nil)
-							end
-							if destName == playerName and sadb.clientonly and (sadb.myself or sadb.enemyinrange) then
-							DEFAULT_CHAT_FRAME:AddMessage("\124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r has been cast on me", 1.0, 0.25, 0.25);
-							end
-							if destName == playerName and sadb.say and (sadb.myself or sadb.enemyinrange) then
-							SendChatMessage("\124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r has been cast on me", "SAY", nil, nil)
-							end
-							if destName == playerName and sadb.bgchat and (sadb.myself or sadb.enemyinrange) then
-							SendChatMessage("\124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r has been cast on me", "BATTLEGROUND", nil, nil)
-							end
 					end
-		
-					if sadb.Blindfriend then
-						if (destName == party1 and fromEnemy and not sadb.friendlydebuff) then --Checking if it's from the enemy, and it's affected member 1 in my party
-								if isinparty ~= nil then											--Checking if Party size is more than 1
-								PlaySoundFile(""..sadb.sapath.."BlindFriend.mp3")				--If it meets both above conditions, it plays this
-								end
-						else
-							if fromEnemy then 			--Else If I'm not in a party and I have blindfriend on, and it's from an enemy, then
-							--	if sourceName == playerName
-								if (sadb.blind and ((sadb.myself and ((fromTarget or fromFocus) or (destName == playerName))) or sadb.enemyinrange)) then --If I have blind option on and it's from my target or focus or has affected me when I have target and focus only option on, otherwise it's all enemies in range
-									PlaySoundFile(""..sadb.sapath.."Blind.mp3")	
-								end
-							else
-								if (sadb.blindup and toEnemy and (((sadb.myself and (toTarget or toFocus)) or (sourceName == playerName)) or sadb.enemyinrange)) then 
-								PlaySoundFile(""..sadb.sapath.."Blind.mp3")	--Else if it's NOT from enemy then I need to check if Blindup option is on (Enemy Debuffs) and it's to my target or focus, it alerts when I have blinded the enemy. Also alerts when players have blinded your target or in range
-								end
-							--	if ((sadb.blindup and (sadb.myself and (toTarget or toEnemy or toFocus) or (destName == playerName)) or sadb.enemyinrange) or (sadb.blind and ((sadb.myself and ((fromTarget or fromFocus) or (destName == playerName))) or sadb.enemyinrange and destName == playerName)))) then
-					--			if (sadb.myself and (fromTarget or fromFocus)) or 
-							--	PlaySoundFile(""..sadb.sapath.."Blind.mp3")	
-							end
-						end
-					else
-						if fromEnemy then
-							if not sadb.Blindfriend then 
-								if (sadb.blind and ((sadb.myself and ((fromTarget or fromFocus) or (destName == playerName))) or sadb.enemyinrange and destName == playerName)) then 
-									PlaySoundFile(""..sadb.sapath.."Blind.mp3")	--Checking if enemy has blinded me or if I am targetting the enemy and it has blinded someone else
-								end
-							end
-						else
-							if (sadb.blindup and (((sadb.myself and (fromTarget or fromFocus)) or (sourceName == playerName)) or sadb.enemyinrange and toEnemy)) then
-								PlaySoundFile(""..sadb.sapath.."Blind.mp3")	
-							end
-						end
-					end 
 				end
 			end
-
-		if (event == "SPELL_AURA_REMOVED" and (sadb.myself or sadb.enemyinrange)) then
-				if sadb.blindonenemychat and spellID == 2094 then
+		end
+	end
+	if (event == "SPELL_AURA_REMOVED" and (sadb.myself or sadb.enemyinrange) and sourceName == playerName) then
+				if sadb.blindonenemychat and spellID == 2094 and not sadb.chatalerts then
 					if sadb.party then
-						if destName == playerName then
-						return
-						else
-						if fromEnemy and (((sadb.myself and (fromTarget or fromFocus)) or (sourceName == playerName)) or sadb.enemyinrange and toEnemy) then
 						SendChatMessage("\124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r down on ["..destName.."]", "PARTY", nil, nil)
-						end
-						end
 					end
 					if sadb.clientonly then
-						if destName == playerName then
-						return
-						else
-						if fromEnemy and (((sadb.myself and (fromTarget or fromFocus)) or (sourceName == playerName)) or sadb.enemyinrange and toEnemy) then
 						DEFAULT_CHAT_FRAME:AddMessage("\124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r down on ["..destName.."]", 1.0, 0.25, 0.25);
-						end
-						end
 					end
 					if sadb.say then
-						if destName == playerName then
-						return
-						else
-						if fromEnemy and (((sadb.myself and (fromTarget or fromFocus)) or (sourceName == playerName)) or sadb.enemyinrange and toEnemy) then
 						SendChatMessage("\124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r down on ["..destName.."]", "SAY", nil, nil)
-						end
-						end
 					end
 					if sadb.bgchat then
-						if destName == playerName then
-						return
-						else
-						if fromEnemy and (((sadb.myself and (fromTarget or fromFocus)) or (sourceName == playerName)) or sadb.enemyinrange and toEnemy) then
 						SendChatMessage("\124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r down on ["..destName.."]", "BATTLEGROUND", nil, nil)
-						end
-						end
 					end
-				
-			if sadb.blinddown and toEnemy and sourceName == playerName then
-			PlaySoundFile(""..sadb.sapath.."BlindDown.mp3")	
-			end
 			end
 		end
 if (event == "SPELL_INTERRUPT" and (toEnemy or fromEnemy) and not sadb.interrupt) then
-		if ((spellID == 44572) or (spellID == 2139) or (spellID == 50613) or (spellID == 1766) or (spellID == 57994) or (spellID == 72) or (spellID == 47528)) then
-					if not sadb.lockout then
-								if not sadb.chatalerts and sadb.interruptalert then
-											if sadb.party then
-												if sourceName == playerName and ((sadb.myself and (toTarget or toFocus)) or sadb.enemyinrange) then
-													SendChatMessage(""..sadb.InterruptText.." ["..destName.."]: with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "PARTY", nil, nil)
-													else
-														if destName == playerName then
-														SendChatMessage("["..sourceName.."]: "..sadb.InterruptText.." me with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "PARTY", nil, nil)
-														else
-																if (toEnemy and ((sadb.myself and (toTarget or toFocus)) or sadb.enemyinrange)) then
-																	SendChatMessage("["..sourceName.."]: "..sadb.InterruptText.." ["..destName.."]: with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "PARTY", nil, nil)
-																end
-														end
-													end
-												end
-											end
-											if sadb.clientonly then
-												if sourceName == playerName and ((sadb.myself and (toTarget or toFocus)) or sadb.enemyinrange) then
-												DEFAULT_CHAT_FRAME:AddMessage(""..sadb.InterruptText.." ["..destName.."]: with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", 1.0, 0.25, 0.25);
-													else
-														if destName == playerName then
-	
-														DEFAULT_CHAT_FRAME:AddMessage("["..sourceName.."]: "..sadb.InterruptText.." me with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", 1.0, 0.25, 0.25);
-														else
-															if (toEnemy and ((sadb.myself and (toTarget or toFocus)) or sadb.enemyinrange)) then
-																DEFAULT_CHAT_FRAME:AddMessage("["..sourceName.."]: "..sadb.InterruptText.." ["..destName.."]: with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", 1.0, 0.25, 0.25);
-															end
-														end
-												end
-											end
-											if sadb.say then
-												if sourceName == playerName and ((sadb.myself and (toTarget or toFocus)) or sadb.enemyinrange) then
-												SendChatMessage(""..sadb.InterruptText.." ["..destName.."]: with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "SAY", nil, nil)
-													else
-														if destName == playerName then
-														SendChatMessage("["..sourceName.."]: "..sadb.InterruptText.." me with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "SAY", nil, nil)
-														else
-															if (toEnemy and ((sadb.myself and (toTarget or toFocus)) or sadb.enemyinrange)) then
-															--print("here1")
-																SendChatMessage("["..sourceName.."]: "..sadb.InterruptText.." ["..destName.."]: with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "SAY", nil, nil)
-															end
-														end
-												end
-											end
-											if sadb.bgchat then
-												if sourceName == playerName  and ((sadb.myself and (toTarget or toFocus)) or sadb.enemyinrange) then
-												SendChatMessage(""..sadb.InterruptText.." ["..destName.."]: with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "BATTLEGROUND", nil, nil)
-													else
-														if destName == playerName then
-														SendChatMessage("["..sourceName.."]: "..sadb.InterruptText.." me with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "BATTLEGROUND", nil, nil)
-														else
-															if (toEnemy and ((sadb.myself and (toTarget or toFocus)) or sadb.enemyinrange)) then
-															SendChatMessage("["..sourceName.."]: "..sadb.InterruptText.." ["..destName.."]:  with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "BATTLEGROUND", nil, nil)
-															end
-														end
-												end
-											end		
-								end
-					end
-		if sadb.lockout then	
-				if not sadb.chatalerts and sadb.interruptalert then
+	if (sadb.myself and (toEnemy or ((fromEnemy and (fromTarget or fromFocus)) or (toEnemy and (toTarget or toFocus)))) or sadb.enemyinrange) then
+		if spellID == 44572 or spellID == 2139 or spellID == 50613 or spellID == 57994 or spellID == 72 or spellID == 47528 or spellID == 1766 then
+					if  ((sadb.myself and toEnemy and (toTarget or toFocus)) or sadb.enemyinrange) then
+						if sourceName == playerName then
+							PlaySoundFile(""..sadb.sapath.."lockout.mp3");
+						end
+					end	
+			if not sadb.chatalerts and sadb.interruptalert then -- Event>Targetting>Spell>Options
 					if sadb.party then
 						if sourceName == playerName and ((sadb.myself and toEnemy and (toTarget or toFocus)) or sadb.enemyinrange) then
 							SendChatMessage(""..sadb.InterruptText.." ["..destName.."]: with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "PARTY", nil, nil)
 							else
-								if destName == playerName then
+								if toSelf then
 								SendChatMessage("["..sourceName.."]: "..sadb.InterruptText.." me with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "PARTY", nil, nil)
 								else
-								if (toEnemy and ((sadb.myself and (toTarget or toFocus)) or sadb.enemyinrange)) then
+								--if (toEnemy and ((sadb.myself and (toTarget or toFocus)) or sadb.enemyinrange)) then
+								if currentZoneType == "arena" and ((destName ~= playerName) or (sourceName ~= playerName)) and isinparty ~= nil then
 								SendChatMessage("["..sourceName.."]: "..sadb.InterruptText.." ["..destName.."]:  with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "PARTY", nil, nil)
 								end
 							end
@@ -3077,10 +1220,10 @@ if (event == "SPELL_INTERRUPT" and (toEnemy or fromEnemy) and not sadb.interrupt
 						if sourceName == playerName and ((sadb.myself and toEnemy and (toTarget or toFocus)) or sadb.enemyinrange) then
 						DEFAULT_CHAT_FRAME:AddMessage(""..sadb.InterruptText.." ["..destName.."]: with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", 1.0, 0.25, 0.25);
 						else
-							if destName == playerName then
+							if toSelf then
 								DEFAULT_CHAT_FRAME:AddMessage("["..sourceName.."]: "..sadb.InterruptText.." me with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r",  1.0, 0.25, 0.25);
 								else
-								if toEnemy and ((sadb.myself and (toTarget or toFocus)) or sadb.enemyinrange) then
+								if currentZoneType == "arena" and ((destName ~= playerName) or (sourceName ~= playerName)) and isinparty ~= nil then
 								DEFAULT_CHAT_FRAME:AddMessage("["..sourceName.."]: "..sadb.InterruptText.." ["..destName.."]:  with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r",  1.0, 0.25, 0.25);
 								end
 							end
@@ -3090,10 +1233,10 @@ if (event == "SPELL_INTERRUPT" and (toEnemy or fromEnemy) and not sadb.interrupt
 						if sourceName == playerName and ((sadb.myself and toEnemy and (toTarget or toFocus)) or sadb.enemyinrange) then
 						SendChatMessage(""..sadb.InterruptText.." ["..destName.."]: with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "SAY", nil, nil)
 						else
-								if destName == playerName then
+								if toSelf then
 								SendChatMessage("["..sourceName.."]: "..sadb.InterruptText.." me with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "SAY", nil, nil)
 								else
-								if toEnemy and ((sadb.myself and (toTarget or toFocus)) or sadb.enemyinrange) then
+								if currentZoneType == "arena" and ((destName ~= playerName) or (sourceName ~= playerName)) and isinparty ~= nil then
 								SendChatMessage("["..sourceName.."]: "..sadb.InterruptText.." ["..destName.."]:  with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "SAY", nil, nil)
 								end
 							end
@@ -3103,51 +1246,21 @@ if (event == "SPELL_INTERRUPT" and (toEnemy or fromEnemy) and not sadb.interrupt
 						if sourceName == playerName and ((sadb.myself and toEnemy and (toTarget or toFocus)) or sadb.enemyinrange) then
 						SendChatMessage(""..sadb.InterruptText.." ["..destName.."]: with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "BATTLEGROUND", nil, nil)
 						else
-							if destName == playerName then
+							if toSelf then
 								SendChatMessage("["..sourceName.."]: "..sadb.InterruptText.." me with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "BATTLEGROUND", nil, nil)
 								else
-								if toEnemy and ((sadb.myself and (toTarget or toFocus)) or sadb.enemyinrange) then
+								if currentZoneType == "arena" and ((destName ~= playerName) or (sourceName ~= playerName)) and isinparty ~= nil then
 								SendChatMessage("["..sourceName.."]: "..sadb.InterruptText.." ["..destName.."]:  with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "BATTLEGROUND", nil, nil)
 								end
 							end
 						end
 					end
 				end
-		--	print (sourceName,playerName,party1,destName)
-			if  ((sadb.myself and toEnemy and (toTarget or toFocus)) or sadb.enemyinrange) then
-				if sourceName == playerName then
-				PlaySoundFile(""..sadb.sapath.."lockout.mp3");
-				end
-				if ((sourceName == party1) and sadb.interruptfriendly) then
-				PlaySoundFile(""..sadb.sapath.."friendcountered.mp3");
-				end
 			end
-			if ((sadb.myself and fromEnemy and (fromTarget or fromFocus)) or sadb.enemyinrange) then
-				if destName == playerName then
-				PlaySoundFile(""..sadb.sapath.."lockout.mp3");
-				end
-				if destName == party1 and sadb.interruptfriendly then
-				PlaySoundFile(""..sadb.sapath.."friendcountered.mp3");
-				end
-			end
-
-		--	if  ((sourceName == playerName) or ((sadb.myself and (toEnemy or fromEnemy) and (toTarget or toFocus)) or sadb.enemyinrange)) then
-		--		if sourceName == party1 and sadb.partytarget and isinparty then
-		--		print ("worked")
-		--		PlaySoundFile(""..sadb.sapath.."friendcountered.mp3");
-		--		end
-		--		else
-		--		PlaySoundFile(""..sadb.sapath.."lockout.mp3");
-			--	end
-
-		--what happens:
-		--party1 casts, enemy counters, no sound alert but chat alert
-		--enemy casts to party1, party1 counters enemy, countered spell sound
-		
-		--	if ((sadb.myself and toEnemy and (toTarget or toFocus)) or sadb.enemyinrange) then
 		end
 	end
 end
+			
 function SoundAlerter:UNIT_AURA(event,uid)
 	if (((currentZoneType == "arena") or (pvpType == "arena")) and sadb.drinking and toEnemy and ((sadb.myself and fromTarget or fromFocus) or sadb.enemyinrange)) then
 		if UnitAura (uid,DRINK_SPELL) then

@@ -23,5 +23,6 @@ SA_sponsors = {
 	["Zerodeath"] = { ["Realm"] = "Neltharion x12", ["Type"] = "C" },
 	--Frostwolf
 	["Clov"] = { ["Realm"] = "Frostwolf x3", ["Type"] = "C" },
+	--Deathwing
 	["Jeuriess"] = { ["Realm"] = "Deathwing x12", ["Type"] = "C" }
 	}
