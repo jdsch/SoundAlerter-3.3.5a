@@ -13,6 +13,8 @@ dbDefaults = {
 		debugmode = false,
 		sapenemy = true,
 		ArenaPartner = false,
+		enemyinrange = false,
+		myself = true,
 --Chat Alerts
 		bubblealert = true,
 		bubblealerttext = "Bubbled!",
