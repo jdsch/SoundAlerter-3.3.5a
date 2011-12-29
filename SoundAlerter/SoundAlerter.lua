@@ -725,7 +725,7 @@ function SoundAlerter:OnOptionsCreate()
 						type = 'group',
 						inline = true,
 						name = "|cffFFF569Rogue|r",
-						order = 6,
+						order = 7,
 						args = {
 							stealthalert = {
 								type = 'toggle',
@@ -769,7 +769,7 @@ function SoundAlerter:OnOptionsCreate()
 					type = 'group',
 					inline = true,
 					name = "|cffF58CBAPaladin|r",
-					order = 7,
+					order = 6,
 					args = {
 							bubblealert = {
 							type = 'toggle',
@@ -778,7 +778,7 @@ function SoundAlerter:OnOptionsCreate()
 							order = 1,
 							},
 							bubblealerttext = {
-							type = 'toggle',
+							type = 'input',
 							name = icondir.."Spell_Holy_DivineIntervention"..icondir2.."Divine Shield Text",
 							desc = "Example: [PlayerName]: Bubbled!",
 							order = 2,
@@ -813,20 +813,20 @@ function SoundAlerter:OnOptionsCreate()
 						type = "input",
 						name = "Interrupt Text",
 						desc = "Example: Interrupted = Interrupted [PlayerName]: with [SpellName]",
-						order = 7,
+						order = 8,
 						width = full,
 					},
 					spelltext = {
 						type = "input",
 						name = "Ability Casting Text",
 						desc = "Example: Casted = [PlayerName] Casted [SpellName]",
-						order = 8,
+						order = 9,
 						width = full,
 					},
 					saptext = {
 						type = "input",
 						name = "Sap text - if you're sapped",
-						order = 9,
+						order = 10,
 						width = full,
 					}
 				},
