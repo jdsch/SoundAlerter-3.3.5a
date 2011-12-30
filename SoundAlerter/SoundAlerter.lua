@@ -10,14 +10,10 @@ SoundAlerter = LibStub("AceAddon-3.0"):NewAddon("SoundAlerter", "AceEvent-3.0","
 local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 local AceConfig = LibStub("AceConfig-3.0")
 local self , SoundAlerter = SoundAlerter , SoundAlerter
-local SOUNDALERTER_TEXT="|cffFF7D0ASoundAlerter|r"
-local SOUNDALERTER_VERSION= " r335.01"
-local SOUNDALERTER_AUTHOR=" updated by |cff0070DETrolollolol|r - Sargeras - Molten-WoW.com"
 local sadb
 local PlaySoundFile = PlaySoundFile
 local SendChatMessage = SendChatMessage
 local playerName = UnitName("player")
-local targetName = UnitName("target")
 local focusName = UnitName("focus")
 local _,currentZoneType = IsInInstance()
 local DRINK_SPELL = GetSpellInfo(57073)
@@ -51,10 +47,8 @@ function SoundAlerter:OnInitialize()
 		end
 	end
 	self.db1 = LibStub("AceDB-3.0"):New("sadb",dbDefaults, "Default");
-	DEFAULT_CHAT_FRAME:AddMessage(SOUNDALERTER_TEXT .. SOUNDALERTER_VERSION .. SOUNDALERTER_AUTHOR .."  - /SOUNDALERTER ");
+	DEFAULT_CHAT_FRAME:AddMessage("|cffFF7D0ASoundAlerter|r by |cff0070DETrolollolol|r - Sargeras - Molten-WoW.com  - /SOUNDALERTER ");
 	--LibStub("AceConfig-3.0"):RegisterOptionsTable("SoundAlerter", SoundAlerter.Options, {"SoundAlerter", "SS"})
-	self:RegisterChatCommand("SoundAlerter", "ShowConfig")
-	self:RegisterChatCommand("SOUNDALERTER", "ShowConfig")
 	self.db1.RegisterCallback(self, "OnProfileChanged", "ChangeProfile")
 	self.db1.RegisterCallback(self, "OnProfileCopied", "ChangeProfile")
 	self.db1.RegisterCallback(self, "OnProfileReset", "ChangeProfile")
@@ -78,17 +72,16 @@ function SoundAlerter:OnInitialize()
 	LibStub("AceConfig-3.0"):RegisterOptionsTable("SoundAlerter_bliz", bliz_options)
 	AceConfigDialog:AddToBlizOptions("SoundAlerter_bliz", "SoundAlerter")
 end
-
 function SoundAlerter:OnEnable()
 	SoundAlerter:RegisterEvent("PLAYER_ENTERING_WORLD")
 	SoundAlerter:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 	SoundAlerter:RegisterEvent("UNIT_AURA")
 	SoundAlerter:RegisterEvent("PARTY_MEMBERS_CHANGED")
 end
+
 function SoundAlerter:PARTY_MEMBERS_CHANGED()
  local partysize = GetNumPartyMembers()
 	if event == "PARTY_MEMBERS_CHANGED" then
-	
 		if partysize == 0 then
 				if sadb.debugmode then
 				print("<SA> Debug: Party Members have changed")
@@ -880,6 +873,17 @@ function SoundAlerter:ArenaClass(id)
 end
 function SoundAlerter:PLAYER_ENTERING_WORLD()
 	CombatLogClearEntries()
+	if (IsAddOnLoaded("SpellAlerter")) then
+	print("|cffFF7D0ASoundAlerter|r detected that you have Spell Alerter loaded. Use /soundalerter or /salerter instead of /sa")
+	self:RegisterChatCommand("SoundAlerter", "ShowConfig")
+	self:RegisterChatCommand("SOUNDALERTER", "ShowConfig")
+	self:RegisterChatCommand("SALERTER", "ShowConfig")
+	else
+	self:RegisterChatCommand("SoundAlerter", "ShowConfig")
+	self:RegisterChatCommand("SOUNDALERTER", "ShowConfig")
+	self:RegisterChatCommand("SALERTER", "ShowConfig")
+	self:RegisterChatCommand("sa", "ShowConfig")
+	end
 end
 function SoundAlerter:PlaySpell(list, spellID, ...)
 	--if list[spellID] == nil then return end
@@ -928,7 +932,6 @@ local enemyTarget = UnitName("focustarget") --Make sure it's fromEnemy
 local enemyTarget2 = UnitName("targettarget") --also make sure it's fromEnemy
 local myTarget = UnitName("target")
 local myFocus = UnitName("focus")
-
 --[[debug
 	if (spellID == 23989) then
 		print (sourceName,destName,event,spellName,spellID)
@@ -937,7 +940,7 @@ enddebug]]
 
 	if (event == "SPELL_AURA_APPLIED" and not sadb.castSuccess) then --making check for spellID since LUA error on indexing table
 		if (spellID == 12826 or spellID == 51514 or spellID == 10890 or spellID == 2094 or spellID == 51724 or spellID == 33702 or spellID == 57960 or spellID == 58984 or spellID == 26297 or spellID == 20594 or spellID == 20572 or spellID == 7744 or spellID == 28880 or spellID == 61336 or spellID == 29166 or spellID == 22812 or spellID == 17116 or spellID == 53312 or spellID == 22842 or spellID == 48505 or spellID == 50334 or spellID == 1850 or spellID == 31821 or spellID == 10278 or spellID == 1044 or spellID == 642 or spellID == 6940 or spellID == 64205 or spellID == 54428 or spellID == 51713 or spellID == 31224 or spellID == 13750 or spellID == 26669 or spellID == 55694 or spellID == 871 or spellID == 12975 or spellID == 18499 or spellID == 20230 or spellID == 23920 or spellID == 12328 or spellID == 46924 or spellID == 12292 or spellID == 33206 or spellID == 10060 or spellID == 6346 or spellID == 47585 or spellID == 14751 or spellID == 47788 or spellID == 30823 or spellID == 974 or spellID == 16188 or spellID == 33736 or spellID == 16166 or spellID == 45438 or spellID == 12042 or spellID == 12472 or spellID == 12043 or spellID == 49039 or spellID == 48792 or spellID == 55233 or spellID == 48707 or spellID == 49222 or spellID == 49016 or spellID == 34471 or spellID == 19263 or spellID == 17941) then
-						if currentZoneType ~= "arena" and ((destName == targetName) or (destName == focusName) or (enemyTarget ~= playerName and destName == enemyTarget) or (enemyTarget2 ~= playerName and destName == enemyTarget)) then
+						if currentZoneType ~= "arena" and ((destName == myTarget) or (destName == focusName) or (enemyTarget ~= playerName and destName == enemyTarget) or (enemyTarget2 ~= playerName and destName == enemyTarget)) then
 							if fromEnemy and (spellID == 51724 or spellID == 33786 or spellID == 10308 or spellID == 2139 or spellID == 51514 or spellID == 12826 or spellID ==  6215 or spellID == 10890 or spellID == 10890) and not sadb.ArenaPartner then
 									if ((sadb.myself and (fromFocus or fromTarget)) or sadb.enemyinrange) then
 									self:PlaySpell (self.spellList.friendCCSuccess,spellID)
