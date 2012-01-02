@@ -939,14 +939,13 @@ function SoundAlerter:COMBAT_LOG_EVENT_UNFILTERED(event , ...)
 	end
 	if (destName and not CombatLog_Object_IsA(destFlags, COMBATLOG_OBJECT_NONE) ) then
 		toFriend = CombatLog_Object_IsA(destFlags, COMBATLOG_FILTER_FRIENDLY_UNITS)
-		-- toTarget3 = CombatLog_Object_IsA(sourceFlags, COMBATLOG_OBJECT_TARGET)		--COMBATLOG_FILTER_ME only records in combat log when spell has casted
 	end
 	if (destName and not CombatLog_Object_IsA(destFlags, COMBATLOG_OBJECT_NONE) ) then
 	toTarget = COMBATLOG_OBJECT_TARGET
 	toFocus = CombatLog_Object_IsA(destFlags, COMBATLOG_OBJECT_FOCUS)
 	end
 
-local enemyTarget = UnitName("focustarget") --Make sure it's fromEnemy
+local focusTarget = UnitName("focustarget") --Make sure it's fromEnemy
 local enemyTarget2 = UnitName("targettarget") --also make sure it's fromEnemy
 local arena1 = UnitName("arena1target")
 local arena2 = UnitName("arena2target")
@@ -963,7 +962,7 @@ local myFocus = UnitName("focus")
 enddebug]]
 
 	if (event == "SPELL_AURA_APPLIED" and not sadb.castSuccess) then --making check for spellID since LUA error on indexing table
-		if (spellID == 14177 or spellID == 33786 or spellID == 12826 or spellID == 51514 or spellID == 2139 or spellID == 17928 or spellID == 6215 or spellID == 10308 or spellID == 12826 or spellID == 51514 or spellID == 10890 or spellID == 2094 or spellID == 51724 or spellID == 33702 or spellID == 57960 or spellID == 58984 or spellID == 26297 or spellID == 20594 or spellID == 20572 or spellID == 7744 or spellID == 28880 or spellID == 61336 or spellID == 29166 or spellID == 22812 or spellID == 17116 or spellID == 53312 or spellID == 22842 or spellID == 48505 or spellID == 50334 or spellID == 1850 or spellID == 31821 or spellID == 10278 or spellID == 1044 or spellID == 642 or spellID == 6940 or spellID == 64205 or spellID == 54428 or spellID == 51713 or spellID == 31224 or spellID == 13750 or spellID == 26669 or spellID == 55694 or spellID == 871 or spellID == 12975 or spellID == 18499 or spellID == 20230 or spellID == 23920 or spellID == 12328 or spellID == 46924 or spellID == 12292 or spellID == 33206 or spellID == 10060 or spellID == 6346 or spellID == 47585 or spellID == 14751 or spellID == 47788 or spellID == 30823 or spellID == 974 or spellID == 16188 or spellID == 33736 or spellID == 16166 or spellID == 45438 or spellID == 12042 or spellID == 12472 or spellID == 12043 or spellID == 49039 or spellID == 48792 or spellID == 55233 or spellID == 48707 or spellID == 49222 or spellID == 49016 or spellID == 34471 or spellID == 19263 or spellID == 17941) then
+		if (spellID == 14177 or spellID == 33786 or spellID == 12826 or spellID == 2139 or spellID == 17928 or spellID == 6215 or spellID == 10308 or spellID == 12826 or spellID == 51514 or spellID == 10890 or spellID == 2094 or spellID == 51724 or spellID == 33702 or spellID == 57960 or spellID == 58984 or spellID == 26297 or spellID == 20594 or spellID == 20572 or spellID == 7744 or spellID == 28880 or spellID == 61336 or spellID == 29166 or spellID == 22812 or spellID == 17116 or spellID == 53312 or spellID == 22842 or spellID == 48505 or spellID == 50334 or spellID == 1850 or spellID == 31821 or spellID == 10278 or spellID == 1044 or spellID == 642 or spellID == 6940 or spellID == 64205 or spellID == 54428 or spellID == 51713 or spellID == 31224 or spellID == 13750 or spellID == 26669 or spellID == 55694 or spellID == 871 or spellID == 12975 or spellID == 18499 or spellID == 20230 or spellID == 23920 or spellID == 12328 or spellID == 46924 or spellID == 12292 or spellID == 33206 or spellID == 10060 or spellID == 6346 or spellID == 47585 or spellID == 14751 or spellID == 47788 or spellID == 30823 or spellID == 974 or spellID == 16188 or spellID == 33736 or spellID == 16166 or spellID == 45438 or spellID == 12042 or spellID == 12472 or spellID == 12043 or spellID == 49039 or spellID == 48792 or spellID == 55233 or spellID == 48707 or spellID == 49222 or spellID == 49016 or spellID == 34471 or spellID == 19263 or spellID == 17941) then
 						if toFriend and ((currentZoneType == "arena") or (pvpType == "arena")) and destName ~= playerName and (spellID == 2094 or spellID == 51724 or spellID == 33786 or spellID == 10308 or spellID == 2139 or spellID == 51514 or spellID == 12826 or spellID == 6215 or spellID == 10890) and not sadb.ArenaPartner then
 						self:PlaySpell (self.spellList.friendCCSuccess,spellID) 
 						else
@@ -973,15 +972,18 @@ enddebug]]
 									end
 						else
 						if fromEnemy and ((currentZoneType ~= "arena") or (pvpType ~= "arena")) and destName ~= playerName and (spellID == 5246 or spellID == 17928 or spellID == 51724 or spellID == 33786 or spellID == 10308 or spellID == 2139 or spellID == 51514 or spellID == 12826 or spellID ==  6215 or spellID == 10890) then
-								if toFriend and (myTarget == destName) or (myFocus == destName) or (enemyTarget == destName) and not sadb.ArenaPartner then
+								if toFriend and (myTarget == destName) or (myFocus == destName) or (focusTarget == destName) and not sadb.ArenaPartner then
 								self:PlaySpell (self.spellList.friendCCSuccess,spellID) 
 								end
 						else
-						if (spellID == 10308 or spellID == 2094) and toSelf and not myTarget == sourceName and not fromFocus then
+						if (spellID == 10308 or spellID == 2094 or spellID == 51514 or spellID == 118 or spellID == 12826 or spellID == 28272 or spellID == 61305 or spellID == 61721 or spellID == 61025 or spellID == 61780 or spellID == 28271) and toSelf and not myTarget == sourceName and not fromFocus then
 						self:PlaySpell (self.spellList.castSuccess,spellID)
+						self:PlaySpell (self.spellList.castStart,spellID) --enemy casts on you
 						else --below make sure it's not the spell ID, so it doesn't trigger 2 alerts in SPELL_CAST_SUCCESS and here 
 						if fromEnemy and (sadb.myself and ((myTarget == sourceName) or fromFocus) or sadb.enemyinrange) and spellID ~= 10308 and spellID ~= 2094 then
-						print(fromEnemy,myTarget,sourceName,fromFocus) --check divine sacrifice
+							if sadb.debugmode then
+							print(event,fromEnemy,myTarget,sourceName,fromFocus) --check divine sacrifice
+							end
 						self:PlaySpell (self.spellList.auraApplied,spellID) --fromEnemy is nil when Sap is used
 						self:PlaySpell (self.spellList.castSuccess,spellID)
 						else
@@ -1009,14 +1011,19 @@ enddebug]]
 		self:PlaySpell (self.spellList.enemyDebuffdown,spellID)
 		end
 	end
-	if (event == "SPELL_CAST_START" and fromEnemy and (sadb.myself and ((myTarget == sourceName) or fromFocus or (enemyTarget ~= playerName) or (enemyTarget2 ~= playerName)) or (sadb.enemyinrange and ((enemyTarget ~= playerName) or (enemyTarget2 ~= playerName)))) and not sadb.castStart) then
+	if (event == "SPELL_CAST_START" and fromEnemy and (sadb.myself and ((myTarget == sourceName) or fromFocus or (focusTarget ~= playerName) or (enemyTarget2 ~= playerName)) or (sadb.enemyinrange and ((focusTarget ~= playerName) or (enemyTarget2 ~= playerName)))) and not sadb.castStart) then
 		if (spellID == 48782 or spellID == 30146 or spellID == 2060 or spellID == 635 or spellID == 49273 or spellID == 5185 or spellID == 2006 or spellID == 7328 or spellID == 2008 or spellID == 50769 or spellID == 2637 or spellID == 33786 or spellID == 8129 or spellID == 9484 or spellID == 64843 or spellID == 605 or spellID == 51514 or spellID == 118 or spellID == 12826 or spellID == 28272 or spellID == 28272 or spellID == 61305 or spellID == 61721 or spellID == 61025 or spellID == 61780 or spellID == 28271 or spellID == 982 or spellID == 14327 or spellID == 6215 or spellID == 17928 or spellID == 710 or spellID == 688 or spellID == 691 or spellID == 712 or spellID == 697) then
-			if ((currentZoneType == "arena") or (pvpType == "arena")) and (spellID == 33786 or spellID == 51514 or spellID == 12826 or spellID == 118 or spellID == 28272 or spellID == 61305 or spellID == 61721 or spellID == 61025 or spellID == 61780 or spellID == 28271 or spellID == 6215) and not sadb.ArenaPartner then --((((enemyTarget ~= playerName) or (enemyTarget2 ~= playerName)) and (isinparty ~= nil))
-			--	if ((enemyTarget ~= nil and enemyTarget ~= playerName) and (enemyTarget2 ~= nil and enemyTarget2 ~= playerName) and (arena1 ~= nil and arena1 ~= playerName) or (arena2 ~= nil and arena2 ~= playerName) or (arena3 ~= nil and arena3 ~= playerName) or (arena4 ~= nil and arena4 ~= playerName) or (arena5 ~= nil and arena5 ~= playerName)) or ((myTarget == sourceName) and destName ~= playerName) then
+			if ((currentZoneType == "arena") or (pvpType == "arena")) and (spellID == 33786 or spellID == 51514 or spellID == 12826 or spellID == 118 or spellID == 28272 or spellID == 61305 or spellID == 61721 or spellID == 61025 or spellID == 61780 or spellID == 28271 or spellID == 6215) and not sadb.ArenaPartner then --((((focusTarget ~= playerName) or (enemyTarget2 ~= playerName)) and (isinparty ~= nil))
+			--	if ((focusTarget ~= nil and focusTarget ~= playerName) and (enemyTarget2 ~= nil and enemyTarget2 ~= playerName) and (arena1 ~= nil and arena1 ~= playerName) or (arena2 ~= nil and arena2 ~= playerName) or (arena3 ~= nil and arena3 ~= playerName) or (arena4 ~= nil and arena4 ~= playerName) or (arena5 ~= nil and arena5 ~= playerName)) or ((myTarget == sourceName) and destName ~= playerName) then
 				if isinparty ~= nil and isinparty ~= 0 and (arena1 ~= playerName and arena2 ~= playerName and arena3 ~= playerName and arena4 ~= playerName and arena5 ~= playerName) then
-				--print (arena1,arena2,destName,playerName,enemyTarget,enemyTarget2,myTarget) --DEBUGGING CODE
+				--print (arena1,arena2,destName,playerName,focusTarget,enemyTarget2,myTarget) --DEBUGGING CODE
 					self:PlaySpell (self.spellList.friendCCs,spellID)
 				end
+				--if sadb.myself and ((myTarget == sourceName) or fromFocus) or sadb.enemyinrange then
+					if (focusTarget == playerName or enemyTarget2 == playerName or arena1 == playerName or arena2 == playerName or arena3 == playerName or arena4 == playerName or arena5 == playerName) then
+					self:PlaySpell (self.spellList.castStart,spellID)
+					end
+				--end
 			else
 				if ((sadb.myself and ((myTarget == sourceName) or fromFocus)) or sadb.enemyinrange) and (spellID == 48782 or spellID == 2060 or spellID == 635 or spellID == 49273 or spellID == 5185) and sadb.bigHeal then
 				self:PlaySpell (self.spellList.castStart,spellID)
