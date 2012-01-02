@@ -34,6 +34,7 @@ function SoundAlerter:GetSpellList ()
 			[31224] = "cloakOfShadows", --works
 			[13750] = "adrenalineRush",
 			[26669] = "evasion", --works
+			[14177] = "coldBlood",
 			--Warrior
 			[55694] = "EnragedRegeneration", --works
 			[871] = "shieldWall", --works
@@ -144,7 +145,7 @@ function SoundAlerter:GetSpellList ()
 			[697] = "summonpet", --works
 			[30146] = "summonpet", --felguard, works
 		},
-		castSuccess = {
+		castSuccess = { --Used for abilities that affect the player
 			--mage
 			[12051] = "evocation",
 			[11958] = "coldSnap",
@@ -183,7 +184,6 @@ function SoundAlerter:GetSpellList ()
 			[51724] = "sap", --works
 			[2094] = "blind", --works
 			[1766] = "kick", --works
-			[14177] = "coldBlood",
 			[14185] = "preparation", --works
 			[26889] = "vanish", --works
 			[13877] = "bladeflurry", --works
@@ -230,7 +230,6 @@ function SoundAlerter:GetSpellList ()
 			[47528] = "friendcountered", 
 		},
 		friendCCs = {
-			[2094] = "blindfriend",
 			[33786] = "cyclonefriend",
 			[51514] = "hexfriend", 
 			[12826] = "polyfriend",
@@ -244,6 +243,8 @@ function SoundAlerter:GetSpellList ()
 			[6215] = "fearfriend",
 		},
 		friendCCSuccess = {
+			[2094] = "blindfriend",
+			[5246] = "friendfeared", --intimidating shout
 			[51724] = "friendsapped",
 			[33786] = "friendcycloned",
 			[10308] = "friendstunned",

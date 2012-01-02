@@ -33,6 +33,7 @@ dbDefaults = {
 		InterruptText = "INTERRUPTED:",
 		spelltext = "Casted", 
 		saptext = "I'm Sapped!",
+		saptextfriend = "Is Sapped!",
 
 	}
 }

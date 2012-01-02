@@ -11,7 +11,7 @@ SA_sponsors = {
 	["Troolololol"] = { ["Realm"] = "Sargeras x20", ["Type"] = "A" },
 	["Ammonia"] = { ["Realm"] = "Sargeras x20", ["Type"] = "A" },
 	["Trolollolol"] = { ["Realm"] = "Sargeras x20", ["Type"] = "A" },
-	
+--sponsors
 --contributers
 	--Warsong
 	["Shaquetta"] = { ["Realm"] = "Warsong (Pure PvP)", ["Type"] = "C" },

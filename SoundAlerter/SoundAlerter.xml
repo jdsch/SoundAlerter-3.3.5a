@@ -3,7 +3,6 @@
 	<Script file="libs\LibStub\LibStub.lua" />
 	<Script file="libs\CallbackHandler-1.0\CallbackHandler-1.0.lua"/>
 	<Script file="libs\LibDataBroker-1.1\LibDataBroker-1.1.lua"/>
-
 	<!--@no-lib-strip@-->
 	<Include file="libs\AceAddon-3.0\AceAddon-3.0.xml"/>
 	<Include file="libs\AceEvent-3.0\AceEvent-3.0.xml"/>
@@ -15,10 +14,8 @@
 	<Include file="libs\AceConsole-3.0\AceConsole-3.0.xml" />
 	<Include file="libs\AceGUI-3.0\AceGUI-3.0.xml" />
 	<Include file="libs\AceConfig-3.0\AceConfig-3.0.xml" />
-
 	<Include file="libs\LibSharedMedia-3.0\lib.xml"/>
 	<Include file="libs\AceGUI-3.0-SharedMediaWidgets\widget.xml"/>
-
 	<Include file="libs\LibDeformat-3.0\lib.xml"/>
 	<!--@end-no-lib-strip@-->
 </Ui>

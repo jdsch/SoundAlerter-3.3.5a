@@ -3,7 +3,6 @@ SoundAlerter by Trolollolol
 If you have any issues or concerns with the addon, Send me an ingame message at  Trolollol - Realm:Sargeras Server:Molten-WoW.com
 
 Known Bugs: HoJ is played twice - will fix
-chat alerts (trinket and interrupt ignore target/focus)
 ]]
 
 SoundAlerter = LibStub("AceAddon-3.0"):NewAddon("SoundAlerter", "AceEvent-3.0","AceConsole-3.0","AceTimer-3.0")
@@ -87,12 +86,17 @@ function SoundAlerter:PARTY_MEMBERS_CHANGED()
 				print("<SA> Debug: Party Members have changed")
 				end
 		isinparty = 0 else
-		party1 = nil
+		--party1 = nil
 			if partysize > 0 then
 				if sadb.debugmode then
 				print("<SA> Debug: Party Members have changed")
 				end
 			isinparty = 1
+			party1 = UnitName("party1")
+			party2 = UnitName("party2")
+			party3 = UnitName("party3")
+			party4 = UnitName("party4")
+			party5 = UnitName("party5")
 			end
 		end
 	end
@@ -286,8 +290,8 @@ function SoundAlerter:OnOptionsCreate()
 					},
 					castSuccess = {
 						type = 'toggle',
-						name = "Disable enemy special spells",
-						desc = "Disbles sound notifications of special abilities",
+						name = "Disable enemy cooldown abilities",
+						desc = "Disbles sound notifications of cooldown abilities",
 						order = 4,
 					},
 					chatalerts = {
@@ -313,7 +317,8 @@ function SoundAlerter:OnOptionsCreate()
 			spellAuraApplied = {
 				type = 'group',
 				--inline = true,
-				name = "Buffs",
+				name = "Enemy Buffs",
+				desc = "Alerts you when your enemy gains a buff, or uses a cooldown",
 				set = setOption,
 				get = getOption,
 				disabled = function() return sadb.aruaApplied end,
@@ -370,7 +375,7 @@ function SoundAlerter:OnOptionsCreate()
 						inline = true,
 						name = "|cffFFF569Rogue|r",
 						order = 6,
-						args = listOptions({51713,31224,13750,26669},"auraApplied")
+						args = listOptions({14177,51713,31224,13750,26669},"auraApplied")
 					},
 					warrior	= {
 						type = 'group',
@@ -433,7 +438,8 @@ function SoundAlerter:OnOptionsCreate()
 			spellAuraRemoved = {
 				type = 'group',
 				--inline = true,
-				name = "Buff Down",
+				name = "Enemy Buff Down",
+				desc = "Alerts you when enemy buffs or used cooldowns are off the enemy",
 				set = setOption,
 				get = getOption,
 				disabled = function() return sadb.aruaRemoved end,
@@ -500,7 +506,8 @@ function SoundAlerter:OnOptionsCreate()
 			spellCastStart = {
 				type = 'group',
 				--inline = true,
-				name = "Spell Casting",
+				name = "Enemy Spell Casting",
+				desc = "Alerts you when an enemy is attempting to cast a spell on you or another player",
 				disabled = function() return sadb.castStart end,
 				set = setOption,
 				get = getOption,
@@ -574,7 +581,8 @@ function SoundAlerter:OnOptionsCreate()
 			spellCastSuccess = {
 				type = 'group',
 				--inline = true,
-				name = "Special Abilities",
+				name = "Enemy Cooldown Abilities",
+				desc = "Alerts you when enemies have used cooldowns",
 				disabled = function() return sadb.castSuccess end,
 				set = setOption,
 				get = getOption,
@@ -585,7 +593,7 @@ function SoundAlerter:OnOptionsCreate()
 						inline = true,
 						name = "|cffFFF569Rogue|r",
 						order = 4,
-						args = listOptions({51722,51724,2094,1766,14177,14185,26889,13877,1784},"castSuccess"),
+						args = listOptions({51722,51724,2094,1766,14185,26889,13877,1784},"castSuccess"),
 					},
 					warrior	= {
 						type = 'group',
@@ -649,6 +657,7 @@ function SoundAlerter:OnOptionsCreate()
 				type = 'group',
 				--inline = true,
 				name = "Enemy Debuff",
+				desc = "Alerts you when you have casted a CC on an enemy",
 				disabled = function() return sadb.enemydebuff end,
 				set = setOption,
 				get = getOption,
@@ -667,6 +676,7 @@ function SoundAlerter:OnOptionsCreate()
 				type = 'group',
 				--inline = true,
 				name = "Enemy Debuff Down",
+				desc = "Alerts you when your casted CC's on your enemy is down",
 				disabled = function() return sadb.enemydebuffdown end,
 				set = setOption,
 				get = getOption,
@@ -685,6 +695,7 @@ function SoundAlerter:OnOptionsCreate()
 				type = 'group',
 				--inline = true,
 				name = "Chat Alerts",
+				desc = "Alerts you and others via sending a chat message",
 				disabled = function() return sadb.chatalerts end,
 				set = setOption,
 				get = getOption,
@@ -806,20 +817,27 @@ function SoundAlerter:OnOptionsCreate()
 						type = "input",
 						name = "Interrupt Text",
 						desc = "Example: Interrupted = Interrupted [PlayerName]: with [SpellName]",
-						order = 8,
+						order = 9,
 						width = full,
 					},
 					spelltext = {
 						type = "input",
-						name = "Ability Casting Text",
-						desc = "Example: Casted = [PlayerName] Casted [SpellName]",
-						order = 9,
+						name = "Vanish/Stealth Casting Text",
+						desc = "Example: Casted = [PlayerName] Casted [Vanish/Stealth]",
+						order = 10,
 						width = full,
 					},
 					saptext = {
 						type = "input",
 						name = "Sap text - if you're sapped",
-						order = 10,
+						order = 11,
+						width = full,
+					},
+					saptextfriend = {
+						type = "input",
+						name = "Sap text - if your arena partner is sapped",
+						desc = "Example: [PlayerName] is sapped!",
+						order = 11,
 						width = full,
 					}
 				},
@@ -849,16 +867,16 @@ function SoundAlerter:OnOptionsCreate()
 				set = setOption,
 				get = getOption,
 				order = 7,
-				args = listOptions({51514,118,33786,2094,6215},"friendCCs"),
+				args = listOptions({51514,118,33786,6215},"friendCCs"),
 			},
 			FriendDebuffSuccess = {
 			type = 'group',
-			name = "Arena partner Debuffs",
+			name = "Arena partner CCs/Debuffs",
 			disabled = function() return sadb.ArenaPartner end,
 			set = setOption,
 			get = getOption,
 			order = 8,
-			args = listOptions({10308,51514,12826,33786,6215,2139,51724},"friendCCSuccess"),
+			args = listOptions({2094,10308,51514,12826,33786,6215,2139,51724},"friendCCSuccess"),
 			}
 		}
 	})
@@ -873,8 +891,8 @@ function SoundAlerter:ArenaClass(id)
 end
 function SoundAlerter:PLAYER_ENTERING_WORLD()
 	CombatLogClearEntries()
-	if (IsAddOnLoaded("SpellAlerter")) then
-	print("|cffFF7D0ASoundAlerter|r detected that you have Spell Alerter loaded. Use /soundalerter or /salerter instead of /sa")
+	if (IsAddOnLoaded("SpellAlerter")) or (IsAddOnLoaded("SunnArt")) then
+	print("|cffFF7D0ASoundAlerter|r detected that you have SpellAlerter or SunnArt loaded. Use /soundalerter or /salerter instead of /sa")
 	self:RegisterChatCommand("SoundAlerter", "ShowConfig")
 	self:RegisterChatCommand("SOUNDALERTER", "ShowConfig")
 	self:RegisterChatCommand("SALERTER", "ShowConfig")
@@ -921,7 +939,7 @@ function SoundAlerter:COMBAT_LOG_EVENT_UNFILTERED(event , ...)
 	end
 	if (destName and not CombatLog_Object_IsA(destFlags, COMBATLOG_OBJECT_NONE) ) then
 		toFriend = CombatLog_Object_IsA(destFlags, COMBATLOG_FILTER_FRIENDLY_UNITS)
-		 toTarget3 = CombatLog_Object_IsA(sourceFlags, COMBATLOG_OBJECT_TARGET)		--COMBATLOG_FILTER_ME only records in combat log when spell has casted
+		-- toTarget3 = CombatLog_Object_IsA(sourceFlags, COMBATLOG_OBJECT_TARGET)		--COMBATLOG_FILTER_ME only records in combat log when spell has casted
 	end
 	if (destName and not CombatLog_Object_IsA(destFlags, COMBATLOG_OBJECT_NONE) ) then
 	toTarget = COMBATLOG_OBJECT_TARGET
@@ -930,8 +948,14 @@ function SoundAlerter:COMBAT_LOG_EVENT_UNFILTERED(event , ...)
 
 local enemyTarget = UnitName("focustarget") --Make sure it's fromEnemy
 local enemyTarget2 = UnitName("targettarget") --also make sure it's fromEnemy
+local arena1 = UnitName("arena1target")
+local arena2 = UnitName("arena2target")
+local arena3 = UnitName("arena3target")
+local arena4 = UnitName("arena4target")
+local arena5 = UnitName("arena5target")
 local myTarget = UnitName("target")
 local myFocus = UnitName("focus")
+
 --[[debug
 	if (spellID == 23989) then
 		print (sourceName,destName,event,spellName,spellID)
@@ -939,50 +963,59 @@ local myFocus = UnitName("focus")
 enddebug]]
 
 	if (event == "SPELL_AURA_APPLIED" and not sadb.castSuccess) then --making check for spellID since LUA error on indexing table
-		if (spellID == 12826 or spellID == 51514 or spellID == 10890 or spellID == 2094 or spellID == 51724 or spellID == 33702 or spellID == 57960 or spellID == 58984 or spellID == 26297 or spellID == 20594 or spellID == 20572 or spellID == 7744 or spellID == 28880 or spellID == 61336 or spellID == 29166 or spellID == 22812 or spellID == 17116 or spellID == 53312 or spellID == 22842 or spellID == 48505 or spellID == 50334 or spellID == 1850 or spellID == 31821 or spellID == 10278 or spellID == 1044 or spellID == 642 or spellID == 6940 or spellID == 64205 or spellID == 54428 or spellID == 51713 or spellID == 31224 or spellID == 13750 or spellID == 26669 or spellID == 55694 or spellID == 871 or spellID == 12975 or spellID == 18499 or spellID == 20230 or spellID == 23920 or spellID == 12328 or spellID == 46924 or spellID == 12292 or spellID == 33206 or spellID == 10060 or spellID == 6346 or spellID == 47585 or spellID == 14751 or spellID == 47788 or spellID == 30823 or spellID == 974 or spellID == 16188 or spellID == 33736 or spellID == 16166 or spellID == 45438 or spellID == 12042 or spellID == 12472 or spellID == 12043 or spellID == 49039 or spellID == 48792 or spellID == 55233 or spellID == 48707 or spellID == 49222 or spellID == 49016 or spellID == 34471 or spellID == 19263 or spellID == 17941) then
-						if currentZoneType ~= "arena" and ((destName == myTarget) or (destName == focusName) or (enemyTarget ~= playerName and destName == enemyTarget) or (enemyTarget2 ~= playerName and destName == enemyTarget)) then
-							if fromEnemy and (spellID == 51724 or spellID == 33786 or spellID == 10308 or spellID == 2139 or spellID == 51514 or spellID == 12826 or spellID ==  6215 or spellID == 10890 or spellID == 10890) and not sadb.ArenaPartner then
-									if ((sadb.myself and (fromFocus or fromTarget)) or sadb.enemyinrange) then
-									self:PlaySpell (self.spellList.friendCCSuccess,spellID)
-									end
-							end
+		if (spellID == 14177 or spellID == 33786 or spellID == 12826 or spellID == 51514 or spellID == 2139 or spellID == 17928 or spellID == 6215 or spellID == 10308 or spellID == 12826 or spellID == 51514 or spellID == 10890 or spellID == 2094 or spellID == 51724 or spellID == 33702 or spellID == 57960 or spellID == 58984 or spellID == 26297 or spellID == 20594 or spellID == 20572 or spellID == 7744 or spellID == 28880 or spellID == 61336 or spellID == 29166 or spellID == 22812 or spellID == 17116 or spellID == 53312 or spellID == 22842 or spellID == 48505 or spellID == 50334 or spellID == 1850 or spellID == 31821 or spellID == 10278 or spellID == 1044 or spellID == 642 or spellID == 6940 or spellID == 64205 or spellID == 54428 or spellID == 51713 or spellID == 31224 or spellID == 13750 or spellID == 26669 or spellID == 55694 or spellID == 871 or spellID == 12975 or spellID == 18499 or spellID == 20230 or spellID == 23920 or spellID == 12328 or spellID == 46924 or spellID == 12292 or spellID == 33206 or spellID == 10060 or spellID == 6346 or spellID == 47585 or spellID == 14751 or spellID == 47788 or spellID == 30823 or spellID == 974 or spellID == 16188 or spellID == 33736 or spellID == 16166 or spellID == 45438 or spellID == 12042 or spellID == 12472 or spellID == 12043 or spellID == 49039 or spellID == 48792 or spellID == 55233 or spellID == 48707 or spellID == 49222 or spellID == 49016 or spellID == 34471 or spellID == 19263 or spellID == 17941) then
+						if toFriend and ((currentZoneType == "arena") or (pvpType == "arena")) and destName ~= playerName and (spellID == 2094 or spellID == 51724 or spellID == 33786 or spellID == 10308 or spellID == 2139 or spellID == 51514 or spellID == 12826 or spellID == 6215 or spellID == 10890) and not sadb.ArenaPartner then
+						self:PlaySpell (self.spellList.friendCCSuccess,spellID) 
 						else
-						if fromEnemy and currentZoneType == "arena" and destName ~= playerName and (spellID == 51724 or spellID == 33786 or spellID == 10308 or spellID == 2139 or spellID == 51514 or spellID == 12826 or spellID ==  6215 or spellID == 10890) then
-									if ((sadb.myself and (fromTarget or fromFocus)) or sadb.enemyinrange) and not sadb.ArenaPartner then
-									self:PlaySpell (self.spellList.friendCCSuccess,spellID)
-									end
-						else
-						if toEnemy and sourceName == playerName and (spellID == 2094 or spellID == 51724) then
+						if toEnemy and (spellID == 2094 or spellID == 51724) and ((sourceName == playerName) or ((sourceName == party1 or sourceName == party2 or sourceName == party3 or sourceName == party4 or sourceName == party5) and ((currentZoneType == "arena") or (pvpType == "arena")))) then --Blind, Sap
 									if (sadb.myself and (toTarget or toFocus)) or sadb.enemyinrange then
 									self:PlaySpell (self.spellList.enemyDebuffs,spellID)
 									end
 						else
-						if ((sadb.myself and ((toSelf and spellID == 51724) or (toSelf and fromEnemy) or (fromFocus and fromEnemy) or (fromTarget and fromEnemy))) or sadb.enemyinrange) then
+						if fromEnemy and ((currentZoneType ~= "arena") or (pvpType ~= "arena")) and destName ~= playerName and (spellID == 5246 or spellID == 17928 or spellID == 51724 or spellID == 33786 or spellID == 10308 or spellID == 2139 or spellID == 51514 or spellID == 12826 or spellID ==  6215 or spellID == 10890) then
+								if toFriend and (myTarget == destName) or (myFocus == destName) or (enemyTarget == destName) and not sadb.ArenaPartner then
+								self:PlaySpell (self.spellList.friendCCSuccess,spellID) 
+								end
+						else
+						if (spellID == 10308 or spellID == 2094) and toSelf and not myTarget == sourceName and not fromFocus then
+						self:PlaySpell (self.spellList.castSuccess,spellID)
+						else --below make sure it's not the spell ID, so it doesn't trigger 2 alerts in SPELL_CAST_SUCCESS and here 
+						if fromEnemy and (sadb.myself and ((myTarget == sourceName) or fromFocus) or sadb.enemyinrange) and spellID ~= 10308 and spellID ~= 2094 then
 						self:PlaySpell (self.spellList.auraApplied,spellID) --fromEnemy is nil when Sap is used
 						self:PlaySpell (self.spellList.castSuccess,spellID)
+						else
+						if spellID == 51724 and toSelf then
+						self:PlaySpell (self.spellList.castSuccess,spellID)
+						else 
+						if spellID == 51724 and toFriend and isinparty ~= nil and ((myTarget == destName) or (myFocus == destName)) and not sadb.ArenaPartner then
+						self:PlaySpell (self.spellList.friendCCSuccess,spellID) 
 						end
-					end
+						end
+						end
+						end
 					end
 				end
 			end
 		end
-	if (event == "SPELL_AURA_REMOVED" and toEnemy and ((sadb.myself and (fromTarget or fromFocus)) or sadb.enemyinrange) and not sadb.aruaRemoved) then
-		if (spellID == 871 or spellID == 10278 or spellID == 642 or spellID == 31224 or spellID == 26669 or spellID == 33206 or spellID == 47585 or spellID == 45438 or spellID == 48792 or spellID == 49039 or spellID == 48505 or spellID == 19263 or spellID == 34471) then
-		self:PlaySpell (self.spellList.auraRemoved,spellID)
-		end
 	end
-	if (event == "SPELL_AURA_REMOVED" and (sourceName == playerName) and not sadb.aruaRemoved) then
-		if (spellID == 2094 or spellID == 51724) then
+	if (event == "SPELL_AURA_REMOVED" and not sadb.aruaRemoved) then
+		if toEnemy and (spellID == 871 or spellID == 10278 or spellID == 642 or spellID == 31224 or spellID == 26669 or spellID == 33206 or spellID == 47585 or spellID == 45438 or spellID == 48792 or spellID == 49039 or spellID == 48505 or spellID == 19263 or spellID == 34471) then
+			if ((sadb.myself and (fromTarget or fromFocus)) or sadb.enemyinrange) then
+			self:PlaySpell (self.spellList.auraRemoved,spellID)
+			end
+		end
+		if (spellID == 2094 or spellID == 51724) and not sadb.aruaRemoved and ((sourceName == playerName) or ((sourceName == party1 or sourceName == party2 or sourceName == party3 or sourceName == party4 or sourceName == party5) and ((currentZoneType == "arena") or (pvpType == "arena")))) then
 		self:PlaySpell (self.spellList.enemyDebuffdown,spellID)
 		end
 	end
-	if (event == "SPELL_CAST_START" and fromEnemy and (sadb.myself and ((fromTarget or fromFocus) or ((enemyTarget or enemyTarget2) == playerName)) or sadb.enemyinrange) and not sadb.castStart) then
+	if (event == "SPELL_CAST_START" and fromEnemy and (sadb.myself and (fromTarget or fromFocus or (enemyTarget ~= playerName) or (enemyTarget2 ~= playerName)) or (sadb.enemyinrange and ((enemyTarget ~= playerName) or (enemyTarget2 ~= playerName)))) and not sadb.castStart) then
 		if (spellID == 30146 or spellID == 2060 or spellID == 635 or spellID == 49273 or spellID == 5185 or spellID == 2006 or spellID == 7328 or spellID == 2008 or spellID == 50769 or spellID == 2637 or spellID == 33786 or spellID == 8129 or spellID == 9484 or spellID == 64843 or spellID == 605 or spellID == 51514 or spellID == 118 or spellID == 12826 or spellID == 28272 or spellID == 28272 or spellID == 61305 or spellID == 61721 or spellID == 61025 or spellID == 61780 or spellID == 28271 or spellID == 982 or spellID == 14327 or spellID == 6215 or spellID == 17928 or spellID == 710 or spellID == 688 or spellID == 691 or spellID == 712 or spellID == 697) then
-			if currentZoneType == "arena" and ((((enemyTarget ~= playerName) or (enemyTarget2 ~= playerName)) and (isinparty ~= nil)) and not sadb.ArenaPartner) then
-				if sadb.debugmode then
-				print(enemyTarget,playerName,EnemyTarget2,isinparty)
+			if ((currentZoneType == "arena") or (pvpType == "arena")) and (spellID == 33786 or spellID == 51514 or spellID == 12826 or spellID == 118 or spellID == 28272 or spellID == 61305 or spellID == 61721 or spellID == 61025 or spellID == 61780 or spellID == 28271 or spellID == 6215) and not sadb.ArenaPartner then --((((enemyTarget ~= playerName) or (enemyTarget2 ~= playerName)) and (isinparty ~= nil))
+			--	if ((enemyTarget ~= nil and enemyTarget ~= playerName) and (enemyTarget2 ~= nil and enemyTarget2 ~= playerName) and (arena1 ~= nil and arena1 ~= playerName) or (arena2 ~= nil and arena2 ~= playerName) or (arena3 ~= nil and arena3 ~= playerName) or (arena4 ~= nil and arena4 ~= playerName) or (arena5 ~= nil and arena5 ~= playerName)) or ((myTarget == sourceName) and destName ~= playerName) then
+				if isinparty ~= nil and isinparty ~= 0 and (arena1 ~= playerName and arena2 ~= playerName and arena3 ~= playerName and arena4 ~= playerName and arena5 ~= playerName) then
+				--print (arena1,arena2,destName,playerName,enemyTarget,enemyTarget2,myTarget) --DEBUGGING CODE
+					self:PlaySpell (self.spellList.friendCCs,spellID)
 				end
-			self:PlaySpell (self.spellList.friendCCs,spellID)
 			else
 				if (sadb.myself and (fromTarget or fromFocus)) or sadb.enemyinrange then
 				self:PlaySpell (self.spellList.castStart,spellID)
@@ -990,7 +1023,6 @@ enddebug]]
 			end
 		end
 	end
---Trinket Sound Alerts
 	if (event == "SPELL_CAST_SUCCESS" and fromEnemy and ((sadb.myself and (fromTarget or fromFocus)) or sadb.enemyinrange) and not sadb.castSuccess) then
 		if (((spellID == 42292) or (spellID == 59752)) and sadb.trinket) then
 			if (sadb.class and ((currentZoneType == "arena")  or (pvpType == "arena"))) then
@@ -1073,35 +1105,49 @@ enddebug]]
 			end
 	end
 	--SPELL_CAST_SUCCESS means that spell cast was successfull, not interrupted, but still can be missed on a player (refer to aura_applied)
-			if ((event == "SPELL_CAST_SUCCESS") and fromEnemy and not sadb.castSuccess) then
-				if (spellID == 48173 or spellID == 10890 or spellID == 33786 or spellID == 10308 or spellID == 51514 or spellID == 12826 or spellID == 6215 or spellID == 12051 or spellID == 11958 or spellID == 44572 or spellID == 44445 or spellID == 2139 or spellID == 66 or spellID == 47528 or spellID == 47476 or spellID == 47568 or spellID == 49206 or spellID == 49203 or spellID == 61606 or spellID == 23989 or spellID == 19386 or spellID == 34490 or spellID == 19434 or spellID == 49050 or spellID == 60192 or spellID == 14311 or spellID == 1499 or spellID == 17928 or spellID == 19647 or spellID == 48020 or spellID == 47860 or spellID == 20066 or spellID == 31884 or spellID == 51722 or spellID == 1766 or spellID == 14177 or spellID == 14185 or spellID == 26889 or spellID == 13877 or spellID == 8143 or spellID == 65992 or spellID == 16190 or spellID == 2484 or spellID == 8177 or spellID == 676 or spellID == 5246 or spellID == 6552 or spellID == 72 or spellID == 34433 or spellID == 64044) then
-						if ((((sadb.myself and (fromFocus or fromTarget)) or sadb.enemyinrange) or (destName == playerName)) and not sadb.castSuccess) then
+			if ((event == "SPELL_CAST_SUCCESS") and not sadb.castSuccess) then
+				if (spellID == 2094 or spellID == 51724 or spellID == 48173 or spellID == 10890 or spellID == 33786 or spellID == 10308 or spellID == 51514 or spellID == 12826 or spellID == 6215 or spellID == 12051 or spellID == 11958 or spellID == 44572 or spellID == 44445 or spellID == 2139 or spellID == 66 or spellID == 47528 or spellID == 47476 or spellID == 47568 or spellID == 49206 or spellID == 49203 or spellID == 61606 or spellID == 23989 or spellID == 19386 or spellID == 34490 or spellID == 19434 or spellID == 49050 or spellID == 60192 or spellID == 14311 or spellID == 1499 or spellID == 17928 or spellID == 19647 or spellID == 48020 or spellID == 47860 or spellID == 20066 or spellID == 31884 or spellID == 51722 or spellID == 1766 or spellID == 14185 or spellID == 26889 or spellID == 13877 or spellID == 8143 or spellID == 65992 or spellID == 16190 or spellID == 2484 or spellID == 8177 or spellID == 676 or spellID == 5246 or spellID == 6552 or spellID == 72 or spellID == 34433 or spellID == 64044) then				
+						if  ((((sadb.myself and ((fromFocus and fromEnemy) or ((sourceName == myTarget) and fromEnemy))) or sadb.enemyinrange and fromEnemy) or (toSelf and spellID == 51724) or (toSelf and fromEnemy)) and not sadb.castSuccess) then
+							if toFriend and (spellID == 2094 or spellID == 51724 or spellID == 33786 or spellID == 10308 or spellID == 2139 or spellID == 51514 or spellID == 12826 or spellID ==  6215 or spellID == 10890) then
+								if ((currentZoneType == "arena") or (pvpType == "arena")) and isinparty ~= nil then
+								self:PlaySpell (self.spellList.friendCCsuccess,spellID)
+								end
+								if ((currentZoneType ~= "arena") or (pvpType ~= "arena")) and isinparty ~= nil then
+									if destName ~= playerName and isinparty ~= nil and isinparty ~= 0 then
+									self:PlaySpell (self.spellList.friendCCsuccess,spellID)
+									end
+								end
+							else
+							if fromEnemy then
+							print(spellName,fromFocus,myTarget,toSelf,toFriend)
 							self:PlaySpell (self.spellList.castSuccess,spellID)
-						end 
+							end
+							end
+						end
 				end
 		end
-
-	if ((spellID == 51724) and (event == "SPELL_AURA_APPLIED") and ((sadb.myself and ((toTarget or fromTarget or fromFocus) or ((toSelf) or destName == party1))) or sadb.enemyinrange)) then --We cannot know if it came from a friend or enemy
+--Sap Chat Alerts
+	if ((spellID == 51724) and (event == "SPELL_AURA_APPLIED") and ((sadb.myself and ((toTarget or fromTarget or fromFocus) or ((toSelf) or destName ~= playerName))) or sadb.enemyinrange)) then --We cannot know if it came from a friend or enemy
 			if sadb.sapalert and not sadb.chatalerts then
 				if toSelf and sadb.party then 
 				SendChatMessage(sadb.saptext, "PARTY", nil, nil)
 				else
-				if destName ~= playerName and fromEnemy and currentZoneType == "arena" and sadb.party and not sourceName == playerName then 
-				SendChatMessage(destName.." Is Sapped!", "PARTY", nil, nil)
+				if destName ~= playerName and toFriend and ((currentZoneType == "arena") or (pvpType == "arena")) and sadb.party and sourceName ~= playerName then 
+				SendChatMessage(destName..sadb.saptext, "PARTY", nil, nil)
 				end
 				end
 				if toSelf and sadb.clientonly then
 				DEFAULT_CHAT_FRAME:AddMessage(sadb.saptext, 1.0, 0.25, 0.25);
 				else
-				if destName ~= playerName and fromEnemy and currentZoneType == "arena" and sadb.clientonly and not sourceName == playerName then 
-				DEFAULT_CHAT_FRAME:AddMessage(destName.." Is Sapped!", 1.0, 0.25, 0.25);
+				if destName ~= playerName and toFriend and ((currentZoneType == "arena") or (pvpType == "arena")) and sadb.clientonly and sourceName ~= playerName then 
+				DEFAULT_CHAT_FRAME:AddMessage(destName..sadb.saptext, 1.0, 0.25, 0.25);
 				end
 				end
 				if toSelf and sadb.say then
 				SendChatMessage(sadb.saptext, "SAY", nil, nil)
 				else
-				if destName ~= playerName and fromEnemy and currentZoneType == "arena" and sadb.say and not sourceName == playerName then 
-				SendChatMessage(destName.." Is Sapped!", "SAY", nil, nil)
+				if destName ~= playerName and toFriend and ((currentZoneType == "arena") or (pvpType == "arena")) and sadb.say and sourceName ~= playerName then 
+				SendChatMessage(destName..sadb.saptext, "SAY", nil, nil)
 				end
 				end
 				if toSelf and sadb.bgchat then
@@ -1113,51 +1159,51 @@ enddebug]]
 				end
 			end
 	end 
---Blind on Enemy
+--Blind Chat Alerts
 		if spellID == 2094 and ((event == "SPELL_AURA_APPLIED") and ((sadb.myself and (toTarget or fromTarget or fromFocus)) or sadb.enemyinrange) and not sadb.castSuccess) then
 				if sadb.blindonenemychat and (toEnemy or fromEnemy) and not sadb.chatalerts then
 					if sadb.party then
-						if sourceName == playerName then
+						if sourceName == playerName or ((sourceName == party1 or sourceName == party2 or sourceName == party3 or sourceName == party4 or sourceName == party5) and ((currentZoneType == "arena") or (pvpType == "arena"))) then
 						SendChatMessage("\124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r up on ["..destName.."]", "PARTY", nil, nil)
 						else
 						if (toSelf) then
 						SendChatMessage("["..sourceName.."]: Blinded me!", "PARTY", nil, nil)
 						end
-						if destName == party1 and isinparty ~= nil then
+						if fromEnemy and ((currentZoneType == "arena") or (pvpType == "arena")) and destName ~= playerName and isinparty ~= nil then
 						SendChatMessage("["..sourceName.."]: has casted \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r up on ["..destName.."]", "PARTY", nil, nil)
 						end
 						end
 					end
 					if sadb.clientonly then
-						if sourceName == playerName then
+						if sourceName == playerName or ((sourceName == party1 or sourceName == party2 or sourceName == party3 or sourceName == party4 or sourceName == party5) and ((currentZoneType == "arena") or (pvpType == "arena"))) then
 						DEFAULT_CHAT_FRAME:AddMessage("\124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r up on ["..destName.."]", 1.0, 0.25, 0.25);
 						else
 						if (toSelf) then
 						DEFAULT_CHAT_FRAME:AddMessage("["..sourceName.."]: Blinded me!", 1.0, 0.25, 0.25);
 						end
-						if destName == party1 and isinparty ~= nil then
+						if fromEnemy and ((currentZoneType == "arena") or (pvpType == "arena")) and destName ~= playerName and isinparty ~= nil then
 						DEFAULT_CHAT_FRAME:AddMessage("["..sourceName.."]: has casted \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r up on ["..destName.."]", 1.0, 0.25, 0.25);
 						end
 						end
 					end
 					if sadb.say then
-						if sourceName == playerName then
+						if sourceName == playerName or ((sourceName == party1 or sourceName == party2 or sourceName == party3 or sourceName == party4 or sourceName == party5) and ((currentZoneType == "arena") or (pvpType == "arena"))) then
 						SendChatMessage("\124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r up on ["..destName.."]", "SAY", nil, nil)
 						else
 						if (toSelf) then
 						SendChatMessage("["..sourceName.."]: Blinded me!", "SAY", nil, nil)
 						end
-						if destName == party1 and isinparty ~= nil then
+						if fromEnemy and ((currentZoneType == "arena") or (pvpType == "arena")) and destName ~= playerName and isinparty ~= nil then
 						SendChatMessage("["..sourceName.."]: has casted \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r on ["..destName.."]", "SAY", nil, nil)
 						end
 					end
 					if sadb.bgchat then
-						if sourceName == playerName then
+						if sourceName == playerName or ((sourceName == party1 or sourceName == party2 or sourceName == party3 or sourceName == party4 or sourceName == party5) and ((currentZoneType == "arena") or (pvpType == "arena"))) then
 						SendChatMessage("\124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r up on ["..destName.."]", "BATTLEGROUND", nil, nil)
 						else
 						if (toSelf) then
 						SendChatMessage("["..sourceName.."]: Blinded me!", "BATTLEGROUND", nil, nil)
-						if destName == party1 and isinparty ~= nil then
+						if fromEnemy and ((currentZoneType == "arena") or (pvpType == "arena")) and destName ~= playerName and isinparty ~= nil then
 						SendChatMessage("["..sourceName.."]: has casted \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r on ["..destName.."]", "	BATTLEGROUND", nil, nil)
 						end
 					end
@@ -1199,7 +1245,7 @@ if (event == "SPELL_INTERRUPT" and (toEnemy or fromEnemy) and not sadb.interrupt
 								SendChatMessage("["..sourceName.."]: "..sadb.InterruptText.." me with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "PARTY", nil, nil)
 								else
 								--if (toEnemy and ((sadb.myself and (toTarget or toFocus)) or sadb.enemyinrange)) then
-								if currentZoneType == "arena" and ((destName ~= playerName) or (sourceName ~= playerName)) and isinparty ~= nil then
+								if ((currentZoneType == "arena") or (pvpType == "arena")) and ((destName ~= playerName) or (sourceName ~= playerName)) and isinparty ~= nil then
 								SendChatMessage("["..sourceName.."]: "..sadb.InterruptText.." ["..destName.."]:  with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "PARTY", nil, nil)
 								end
 							end
@@ -1212,7 +1258,7 @@ if (event == "SPELL_INTERRUPT" and (toEnemy or fromEnemy) and not sadb.interrupt
 							if toSelf then
 								DEFAULT_CHAT_FRAME:AddMessage("["..sourceName.."]: "..sadb.InterruptText.." me with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r",  1.0, 0.25, 0.25);
 								else
-								if currentZoneType == "arena" and ((destName ~= playerName) or (sourceName ~= playerName)) and isinparty ~= nil then
+								if ((currentZoneType == "arena") or (pvpType == "arena")) and ((destName ~= playerName) or (sourceName ~= playerName)) and isinparty ~= nil then
 								DEFAULT_CHAT_FRAME:AddMessage("["..sourceName.."]: "..sadb.InterruptText.." ["..destName.."]:  with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r",  1.0, 0.25, 0.25);
 								end
 							end
@@ -1225,7 +1271,7 @@ if (event == "SPELL_INTERRUPT" and (toEnemy or fromEnemy) and not sadb.interrupt
 								if toSelf then
 								SendChatMessage("["..sourceName.."]: "..sadb.InterruptText.." me with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "SAY", nil, nil)
 								else
-								if currentZoneType == "arena" and ((destName ~= playerName) or (sourceName ~= playerName)) and isinparty ~= nil then
+								if ((currentZoneType == "arena") or (pvpType == "arena")) and ((destName ~= playerName) or (sourceName ~= playerName)) and isinparty ~= nil then
 								SendChatMessage("["..sourceName.."]: "..sadb.InterruptText.." ["..destName.."]:  with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "SAY", nil, nil)
 								end
 							end
@@ -1238,7 +1284,7 @@ if (event == "SPELL_INTERRUPT" and (toEnemy or fromEnemy) and not sadb.interrupt
 							if toSelf then
 								SendChatMessage("["..sourceName.."]: "..sadb.InterruptText.." me with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "BATTLEGROUND", nil, nil)
 								else
-								if currentZoneType == "arena" and ((destName ~= playerName) or (sourceName ~= playerName)) and isinparty ~= nil then
+								if ((currentZoneType == "arena") or (pvpType == "arena")) and ((destName ~= playerName) or (sourceName ~= playerName)) and isinparty ~= nil then
 								SendChatMessage("["..sourceName.."]: "..sadb.InterruptText.." ["..destName.."]:  with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "BATTLEGROUND", nil, nil)
 								end
 							end
