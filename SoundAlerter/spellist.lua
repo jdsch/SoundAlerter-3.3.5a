@@ -101,6 +101,7 @@ function SoundAlerter:GetSpellList ()
 		},
 		castStart = {
 			--general
+			[48782] = "bigHeal",
 			[2060] = "bigHeal",
 			[635] = "bigHeal",
 			[49273] = "bigHeal",
