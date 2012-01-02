@@ -1018,13 +1018,15 @@ enddebug]]
 					self:PlaySpell (self.spellList.friendCCs,spellID)
 				end
 			else
-				if (spellID == 48782 or spellID == 2060 or spellID == 635 or spellID == 49273 or spellID == 5185) and sadb.bigHeal then
+				if ((sadb.myself and ((myTarget == sourceName) or fromFocus)) or sadb.enemyinrange) and (spellID == 48782 or spellID == 2060 or spellID == 635 or spellID == 49273 or spellID == 5185) and sadb.bigHeal then
 				self:PlaySpell (self.spellList.castStart,spellID)
 				else
-				if (spellID == 7328 or spellID == 2008 or spellID == 2006 or spellId == 50769) and sadb.resurrection then
+				if ((sadb.myself and ((myTarget == sourceName) or fromFocus)) or sadb.enemyinrange) and (spellID == 7328 or spellID == 2008 or spellID == 2006 or spellId == 50769) and sadb.resurrection then
 				self:PlaySpell (self.spellList.castStart,spellID)
 				else
+				if ((sadb.myself and ((myTarget == sourceName) or fromFocus)) or sadb.enemyinrange) then
 				self:PlaySpell (self.spellList.castStart,spellID)
+				end
 				end
 				end
 			end
