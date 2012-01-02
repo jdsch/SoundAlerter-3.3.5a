@@ -1119,7 +1119,9 @@ enddebug]]
 								end
 							else
 							if fromEnemy then
-							print(spellName,fromFocus,myTarget,toSelf,toFriend)
+									if sadb.debugmode then
+									print(spellName,fromFocus,myTarget,toSelf,toFriend)
+									end
 							self:PlaySpell (self.spellList.castSuccess,spellID)
 							end
 							end
@@ -1133,21 +1135,21 @@ enddebug]]
 				SendChatMessage(sadb.saptext, "PARTY", nil, nil)
 				else
 				if destName ~= playerName and toFriend and ((currentZoneType == "arena") or (pvpType == "arena")) and sadb.party and sourceName ~= playerName then 
-				SendChatMessage(destName..sadb.saptext, "PARTY", nil, nil)
+				SendChatMessage(destName.." "..sadb.saptextfriend, "PARTY", nil, nil)
 				end
 				end
 				if toSelf and sadb.clientonly then
 				DEFAULT_CHAT_FRAME:AddMessage(sadb.saptext, 1.0, 0.25, 0.25);
 				else
 				if destName ~= playerName and toFriend and ((currentZoneType == "arena") or (pvpType == "arena")) and sadb.clientonly and sourceName ~= playerName then 
-				DEFAULT_CHAT_FRAME:AddMessage(destName..sadb.saptext, 1.0, 0.25, 0.25);
+				DEFAULT_CHAT_FRAME:AddMessage(destName.." "..sadb.saptextfriend, 1.0, 0.25, 0.25);
 				end
 				end
 				if toSelf and sadb.say then
 				SendChatMessage(sadb.saptext, "SAY", nil, nil)
 				else
 				if destName ~= playerName and toFriend and ((currentZoneType == "arena") or (pvpType == "arena")) and sadb.say and sourceName ~= playerName then 
-				SendChatMessage(destName..sadb.saptext, "SAY", nil, nil)
+				SendChatMessage(destName.." "..sadb.saptextfriend, "SAY", nil, nil)
 				end
 				end
 				if toSelf and sadb.bgchat then
