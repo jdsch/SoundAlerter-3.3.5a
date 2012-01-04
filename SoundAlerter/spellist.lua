@@ -18,7 +18,7 @@ function SoundAlerter:GetSpellList ()
 			[17116] = "naturesSwiftness", 
 			[53312] = "naturesGrasp", --works
 			[22842] = "frenziedRegeneration", 
-			[48505] = "starfall",
+			[53201] = "starfall",
 			[50334] = "berserk", --works
 			[1850] = "dash",
 			--Paladin
@@ -94,7 +94,7 @@ function SoundAlerter:GetSpellList ()
 			[48792] = "iceboundFortitudeDown",
 			[49039] = "lichborneDown",
 			--Druid
-			[48505] = "Starfalldown",
+			[53201] = "Starfalldown",
 			--Hunter
 			[19263] = "Deterrencedown",
 			[34471] = "beastwithindown",
