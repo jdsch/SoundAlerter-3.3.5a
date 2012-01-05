@@ -1,5 +1,6 @@
 --[[SoundAlerter by Trolollolol - Sargeras - Molten-WoW.com
-Notes: Check spell IDs by rank first]]
+Notes: Check spell IDs by rank first
+add teleport]]
 function SoundAlerter:GetSpellList () 
 	return {
 		auraApplied ={					-- aura applied [spellid] = ".mp3 file name",
@@ -30,6 +31,7 @@ function SoundAlerter:GetSpellList ()
 			[64205] = "divineSacrifice", --works
 			[54428] = "divinePlea",		--works
 			--Rogue
+			[11305] = "sprint", --test2983
 			[51713] = "shadowDance", --works
 			[31224] = "cloakOfShadows", --works
 			[13750] = "adrenalineRush",
@@ -196,6 +198,9 @@ function SoundAlerter:GetSpellList ()
 			[2484] = "earthbind", --works
 			[8177] = "grounding", --works
 			--warrior
+			[2457] = "battlestance",
+			[71] = "defensestance",
+			[2458] = "berserkerstance",
 			[676] = "disarm", --works
 			[5246] = "fear3", --intimidating shout, works
 			[6552] = "pummel", --works
