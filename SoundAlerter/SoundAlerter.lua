@@ -1,8 +1,6 @@
 ﻿--[[
 SoundAlerter by Trolollolol
 If you have any issues or concerns with the addon, Send me an ingame message at  Trolollol - Realm:Sargeras Server:Molten-WoW.com
-
-Known Bugs: HoJ is played twice - will fix
 ]]
 
 SoundAlerter = LibStub("AceAddon-3.0"):NewAddon("SoundAlerter", "AceEvent-3.0","AceConsole-3.0","AceTimer-3.0")
@@ -381,7 +379,7 @@ function SoundAlerter:OnOptionsCreate()
 						inline = true,
 						name = "|cffC79C6EWarrior|r",
 						order = 7,
-						args = listOptions({55694,871,12975,18499,20230,23920,12328,46924,12292},"auraApplied")
+						args = listOptions({1719,55694,871,12975,18499,20230,23920,12328,46924,12292},"auraApplied")
 					},
 					priest	= {
 						type = 'group',
@@ -923,7 +921,7 @@ local pvpType, isFFA, faction = GetZonePVPInfo();
 		return
 	end
 	local timestamp,event,sourceGUID,sourceName,sourceFlags,destGUID,destName,destFlags,spellID,spellName= select ( 1 , ... );
-	local toEnemy,fromEnemy,toTarget,fromFocus = false , false , false , false 
+	local toSelf,toEnemy,fromEnemy,toTarget,fromFocus = false , false , false , false , false
 
 	if (destName and not CombatLog_Object_IsA(destFlags, COMBATLOG_OBJECT_NONE) ) then
 		toEnemy = CombatLog_Object_IsA(destFlags, COMBATLOG_FILTER_HOSTILE_PLAYERS)
@@ -960,34 +958,24 @@ local myFocus = UnitName("focus")
 	end
 enddebug]]
 
-	if (event == "SPELL_AURA_APPLIED" and not sadb.castSuccess) then --making check for spellID since LUA error on indexing table
-						if toFriend and ((currentZoneType == "arena") or (pvpType == "arena")) and destName ~= playerName and (spellID == 33786 --[[cyclone]] or spellID == 5246--[[fear]] or spellID == 51514 or spellID == 2094 or spellID == 51724 or spellID == 33786 or spellID == 10308 or spellID == 2139 or spellID == 51514 or spellID == 12826 or spellID == 6215 or spellID == 10890) and not sadb.ArenaPartner then
-						self:PlaySpell (self.spellList.friendCCSuccess,spellID) 
-						else
+	if (event == "SPELL_AURA_APPLIED" and not sadb.castSuccess) then
 						if toEnemy and (spellID == 2094 or spellID == 51724) and ((sourceName == playerName) or ((sourceName == party1 or sourceName == party2 or sourceName == party3 or sourceName == party4 or sourceName == party5) and ((currentZoneType == "arena") or (pvpType == "arena")))) then --Blind, Sap
 									if (sadb.myself and (toTarget or toFocus)) or sadb.enemyinrange then
 									self:PlaySpell (self.spellList.enemyDebuffs,spellID)
 									end
 						else
-						if fromEnemy and (spellID == 33786 --[[cyclone]] or spellID == 5246--[[intimidatingshout]] or spellID == 2094 or spellID == 118 or spellID == 12826 or spellID == 10308 or spellID == 5246 or spellID == 17928 or spellID == 51724 or spellID == 33786 or spellID == 10308 or spellID == 2139 or spellID == 51514 or spellID == 12826 or spellID ==  6215 or spellID == 10890) then
+						if (spellID == 33786 --[[cyclone]] or spellID == 5246--[[intimidatingshout]] or spellID == 2094 or spellID == 118 or spellID == 12826 or spellID == 10308 or spellID == 5246 or spellID == 17928 or spellID == 51724 or spellID == 33786 or spellID == 10308 or spellID == 2139 or spellID == 51514 or spellID == 12826 or spellID ==  6215 or spellID == 10890) then
 							if ((currentZoneType ~= "arena" and currentZoneType ~= nil) or (pvpType ~= "arena" and pvpType ~= nil)) then
-								if sadb.debugmode then
-								print(spellName.." got through +"..pvpType,currentZoneType)
-								end
 								if destName ~= playerName and toFriend and ((myTarget == destName) or (myFocus == destName) or (focusTarget == destName)) and not sadb.ArenaPartner then
-									if sadb.debugmode then
-									print(event,myTarget,myFocus,destName,focusTarget)
-									end
 								self:PlaySpell (self.spellList.friendCCSuccess,spellID) 
-								else
-								if toSelf and not (myTarget == sourceName and not myFocus == sourceName) and spellID == 33786 or spellID == 118 or spellID == 12826 or spellID == 51514 then
+								end
+								if toSelf and (destName == playerName) and (spellID == 33786 or spellID == 118 or spellID == 12826 or spellID == 51514) and (myTarget ~= sourceName) and (myFocus ~= sourceName) then
 								self:PlaySpell (self.spellList.castStart,spellID) 
-								else
+								end
 								if toSelf and not myTarget == sourceName and not fromFocus and (spellID == 5246 or spellID == 2094 or spellID == 10308 or spellID == 5246 or spellID == 17928 or spellID == 51724 or spellID == 33786 or spellID == 10308 or spellID == 2139 or spellID == 12826 or spellID ==  6215 or spellID == 10890) then
 								self:PlaySpell (self.spellList.castSuccess,spellID)
 								end
-								end
-								end
+
 							else
 							if ((currentZoneType == "arena") or (pvpType == "arena")) then
 								if toSelf and not (myTarget == sourceName and not myFocus == sourceName) and spellID == 33786 or spellID == 118 or spellID == 12826 or spellID == 51514 then
@@ -995,24 +983,24 @@ enddebug]]
 								else
 								if toSelf and not myTarget == sourceName and not fromFocus and (spellID == 5246 or spellID == 2094 or spellID == 10308 or spellID == 5246 or spellID == 17928 or spellID == 51724 or spellID == 33786 or spellID == 10308 or spellID == 2139 or spellID == 12826 or spellID ==  6215 or spellID == 10890) then
 								self:PlaySpell (self.spellList.castSuccess,spellID)
+								else
+								if toFriend and ((currentZoneType == "arena") or (pvpType == "arena")) and destName ~= playerName and (spellID == 33786 --[[cyclone]] or spellID == 5246--[[fear]] or spellID == 51514 or spellID == 2094 or spellID == 51724 or spellID == 33786 or spellID == 10308 or spellID == 2139 or spellID == 51514 or spellID == 12826 or spellID == 6215 or spellID == 10890) and not sadb.ArenaPartner then
+								self:PlaySpell (self.spellList.friendCCSuccess,spellID) 
 								end
 								end
+								end	
 								end
-								end														
+							end
 						else
 						if toSelf and not myTarget == sourceName and not fromFocus and (spellID == 1766 or spellID == 51722 --[[dismantle]] or spellID == 2094 or spellID == 44572 --[[Deep Freeze]] or spellID == 61606 or spellID == 19386 or spellID == 49050 or spellID == 19434) then
 						else
 						if spellID == 51724 and toFriend and isinparty ~= nil and ((myTarget == destName) or (myFocus == destName)) and not sadb.ArenaPartner then
 						self:PlaySpell (self.spellList.friendCCSuccess,spellID) 
 						else
-						if fromEnemy and (sadb.myself and ((myTarget == sourceName) or fromFocus) or sadb.enemyinrange) and (--[[races]]spellID == 58984 or spellID == 26297 or spellID == 20594 or spellID == 20572 or spellID == 33702 or spellID == 7744 or spellID == 28880 --[[/races, druid]]or spellID == 61336 or spellID == 29166 or spellID == 22812 or spellID == 17116 or spellID == 53312 or spellID == 53201 or spellID == 22842 or spellID == 53201 or spellID == 50334 or spellID == 1850 --[[/druid, paladin]]or spellID == 31821 or spellID == 10278 or spellID == 1044 or spellID == 642 or spellID == 6940 or spellID == 64205 or spellID == 54428 --[[/paladin, rogue]]or spellID == 51713 or spellID == 31224 or spellID == 13750 or spellID == 26669 or spellID == 14177 or spellID == 11305 --[[/rogue, warrior]]or spellID == 55694 or spellID == 871 or spellID == 12975 or spellID == 18499 or spellID == 20230 or spellID == 23920 or spellID == 12328 or spellID == 46924 or spellID == 12292--[[/warrior, priest]] or spellID == 33206 or spellID == 10060 or spellID == 6346 or spellID == 47585 or spellID == 14751 or spellID == 47788 --[[/priest, shaman]]or spellID == 30823 or spellID == 974 or spellID == 16188 or spellID == 33736 or spellID == 16166 or spellID == 57960--[[/shaman,mage]] or spellID == 45438 or spellID == 12042 or spellID == 12472 or spellID == 12043--[[/mage, DK]] or spellID == 49039 or spellID == 48792 or spellID == 55233 or spellID == 48707 or spellID == 49222 or spellID == 49016 --[[/dk, hunter]] or spellID == 34471 or spellID == 19263 --[[hunter, lock]] or spellID == 17941) then
-							if sadb.debugmode then --check shaman water shield ID
-							print(event,fromEnemy,myTarget,sourceName,fromFocus) --check divine sacrifice
-							end
-						self:PlaySpell (self.spellList.auraApplied,spellID) --fromEnemy is nil when Sap is used
+						if fromEnemy and (sadb.myself and ((myTarget == sourceName) or fromFocus) or sadb.enemyinrange) and (--[[races]]spellID == 58984 or spellID == 26297 or spellID == 20594 or spellID == 20572 or spellID == 33702 or spellID == 7744 or spellID == 28880 --[[/races, druid]]or spellID == 61336 or spellID == 29166 or spellID == 22812 or spellID == 17116 or spellID == 53312 or spellID == 53201 or spellID == 22842 or spellID == 53201 or spellID == 50334 or spellID == 1850 --[[/druid, paladin]]or spellID == 31821 or spellID == 10278 or spellID == 1044 or spellID == 642 or spellID == 6940 or spellID == 64205 or spellID == 54428 --[[/paladin, rogue]]or spellID == 51713 or spellID == 31224 or spellID == 13750 or spellID == 26669 or spellID == 14177 or spellID == 11305 --[[/rogue, warrior]]or spellID == 55694 or spellID == 1719 or spellID == 871 or spellID == 12975 or spellID == 18499 or spellID == 20230 or spellID == 23920 or spellID == 12328 or spellID == 46924 or spellID == 12292--[[/warrior, priest]] or spellID == 33206 or spellID == 10060 or spellID == 6346 or spellID == 47585 or spellID == 14751 or spellID == 47788 --[[/priest, shaman]]or spellID == 30823 or spellID == 974 or spellID == 16188 or spellID == 33736 or spellID == 16166 or spellID == 57960--[[/shaman,mage]] or spellID == 45438 or spellID == 12042 or spellID == 12472 or spellID == 12043--[[/mage, DK]] or spellID == 49039 or spellID == 48792 or spellID == 55233 or spellID == 48707 or spellID == 49222 or spellID == 49016 --[[/dk, hunter]] or spellID == 34471 or spellID == 19263 --[[hunter, lock]] or spellID == 17941) then
+						self:PlaySpell (self.spellList.auraApplied,spellID) 
 						end
-						end
-						end
+						end	
 						end
 			end
 		end

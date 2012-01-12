@@ -39,10 +39,11 @@ function SoundAlerter:GetSpellList ()
 			[14177] = "coldBlood",
 			--Warrior
 			[55694] = "EnragedRegeneration", --works
+			[1719] = "Recklessness",
 			[871] = "shieldWall", --works
 			[12975] = "lastStand", --don't know
 			[18499] = "berserkerRage", --works
-			[20230] = "retaliation", --works
+			[20230] = "Retaliation", --works
 			[23920] = "spellReflection", --works
 			[12328] = "sweepingStrikes", --works
 			[46924] = "bladestorm", --works
