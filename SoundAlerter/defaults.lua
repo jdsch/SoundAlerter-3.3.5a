@@ -1,21 +1,26 @@
 dbDefaults = {
 	profile = {
+	--general
 		all = false,
 		arena = true,
 		battleground = true,
 		field = true,
+		myself = true,
 		sapath = SA_LOCALEPATH[GetLocale()] or "Interface\\Addons\\SoundAlerter\\voice\\",
+		debugmode = false,
+	--disables
 		aruaApplied = false,
 		aruaRemoved = false,
 		castStart = false,
 		castSuccess = false,
 		interrupt = false,
-		debugmode = false,
+	--spells
 		sapenemy = true,
 		ArenaPartner = false,
 		enemyinrange = false,
-		myself = true,
---Chat Alerts
+		sayspell = true,
+		lockout = false,
+	--chat
 		bubblealert = true,
 		bubblealerttext = "Bubbled!",
 		stealthalert = true,
@@ -23,13 +28,14 @@ dbDefaults = {
 		trinketalert = false,
 		interruptalert = true,
 		sapalert = true,
-		
+		blindonenemychat = true,
+		blindonselfchat = true,
+	--chat channel	
 		party = false,
 		say = false,
 		clientonly = true,
 		bgchat = false,
-		blindonenemychat = true,
-		blindonselfchat = true,
+	--chat text
 		InterruptText = "INTERRUPTED:",
 		spelltext = "Casted", 
 		saptext = "I'm Sapped!",

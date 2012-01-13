@@ -171,8 +171,11 @@ function SoundAlerter:GetSpellList ()
 			[49050] = "aimedshot", --rank9
 			[19434] = "aimedshot", --rank1
 			[60192] = "freezingtrap", --double check
+			[14309] = "freezingtrap", --freezing trap effect
+			[13810] = "frosttrap", --frost trap aura
+			[13809] = "frosttrap", --frost trap aura
 			[14311] = "freezingtrap",
-			[1499] = "freezingtrap2",
+			[1499] = "frosttrap",
 			--warlock
 			[17928] = "fear2", --Howl of Terror
 			[19647] = "spellLock",
@@ -250,6 +253,7 @@ function SoundAlerter:GetSpellList ()
 			[6215] = "fearfriend",
 		},
 		friendCCSuccess = {
+			[14309] = "friendfrozen",
 			[2094] = "blindfriend",
 			[5246] = "friendfeared", --intimidating shout
 			[51724] = "friendsapped",
