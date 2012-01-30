@@ -164,8 +164,9 @@ function SoundAlerter:GetSpellList ()
 			[49203] = "hungeringCold",
 			[61606] = "markofblood",
 			--hunter
-			[23989] = "readiness", --works
-			[19386] = "wyvernSting", --works
+			[23989] = "readiness", 
+			[19386] = "wyvernSting", 
+			[49010] = "wyvernSting", 
 			[34490] = "silencingshot",
 			[49050] = "aimedshot", --rank9
 			[19434] = "aimedshot", --rank1
