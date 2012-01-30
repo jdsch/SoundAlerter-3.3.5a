@@ -1239,7 +1239,7 @@ enddebug]]
 						end
 					end
 					if sadb.bgchat then
-						if sourceName == playerName or sourceName == myFocus and toEnemy then
+						if ((sourceName == playerName) or (sourceName == myFocus)) and toEnemy then
 						SendChatMessage("\124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r up on ["..destName.."]", "BATTLEGROUND", nil, nil)
 						end
 						if toSelf then
