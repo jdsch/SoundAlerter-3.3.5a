@@ -3,6 +3,7 @@ SA_sponsors = {
 	["B"] = "Official Sponsor of SoundAlerter",
 	["C"] = "Official Contributer of SoundAlerter",
 --devs
+	["Trolollolol"] = { ["Realm"] = "Sargeras x20", ["Type"] = "A" },
 	--Warsong
 	["Trollolloll"] = { ["Realm"] = "Warsong (Pure PvP)", ["Type"] = "A" },
 	--Sargeras
@@ -10,7 +11,7 @@ SA_sponsors = {
 	["Trollololool"] = { ["Realm"] = "Sargeras x20", ["Type"] = "A" },
 	["Troolololol"] = { ["Realm"] = "Sargeras x20", ["Type"] = "A" },
 	["Ammonia"] = { ["Realm"] = "Sargeras x20", ["Type"] = "A" },
-	["Trolollolol"] = { ["Realm"] = "Sargeras x20", ["Type"] = "A" },
+--	["Trolollolol"] = { ["Realm"] = "Neltharion x12", ["Type"] = "A" },
 --sponsors
 --contributers
 	--Warsong

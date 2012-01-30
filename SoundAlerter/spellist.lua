@@ -1,6 +1,5 @@
 --[[SoundAlerter by Trolollolol - Sargeras - Molten-WoW.com
-Notes: Check spell IDs by rank first
-add teleport]]
+Notes: Check spell IDs by rank first]]
 function SoundAlerter:GetSpellList () 
 	return {
 		auraApplied ={					-- aura applied [spellid] = ".mp3 file name",
@@ -218,10 +217,18 @@ function SoundAlerter:GetSpellList ()
 		enemyDebuffs = {
 			[2094] = "blind", --works
 			[51724] = "sap", --works
+			[12826] = "EnemyPollied",
+			[118] = "EnemyPollied",
+			[33786] = "EnemyCycloned",--menu
+			[51514] = "EnemyHexxed",
 		},
 		enemyDebuffdown = {
 			[2094] = "blinddown", --works
 			[51724] = "sapdown", --works
+			[118] = "polydown",
+			[12826] = "polydown",
+			[33786] = "CycloneDown", --menu
+			[51514] = "hexdown", 
 		},
 		friendlyInterrupt = {			
 			[50613] = "lockout", --arcane torrent
@@ -261,10 +268,27 @@ function SoundAlerter:GetSpellList ()
 			[10308] = "friendstunned",
 			[2139] = "friendcountered", 
 			[51514] = "friendhexxed", 
+			[118] = "friendpollied",
 			[12826] = "friendpollied",
 			[6215] = "friendfeared",
 			[10890] = "friendfeared",
 			[17928] = "friendfeared",
+		},
+		friendCCenemy = {
+			[2094] = "enemyblinded",
+			[51724] = "enemysapped",
+			[51514] = "EnemyHexxed",
+			[12826] = "EnemyPollied",
+			[118] = "EnemyPollied",
+			[33786] = "EnemyCycloned",--menu
+		},
+		friendCCenemyDown = {
+			[2094] = "blinddown", 
+			[51724] = "sapdown", 
+			[51514] = "hexdown", 
+			[12826] = "polydown", 
+			[118] = "polydown",
+			[33786] = "CycloneDown", --menu
 		},
 	}
 end
