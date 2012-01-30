@@ -1016,7 +1016,7 @@ enddebug]]
 							end
 							end
 						else
-						if toSelf and myTarget ~= sourceName and (((spellID == 20066 or spellID == 44572 or spellID == 72) and sadb.saytext) or (spellID == 13810 or spellID == 34490--[[silencingshot]] or spellID == 47476 --[[strangulate]]or spellID == 1766 or spellID == 51722 --[[dismantle]] or spellID == 2094 or spellID == 61606 or spellID == 19386 or spellID == 49050 or spellID == 19434)) and not fromFocus then
+						if not sadb.enemyinrange and toSelf and myTarget ~= sourceName and (((spellID == 20066 or spellID == 44572 or spellID == 72) and sadb.saytext) or (spellID == 13810 or spellID == 34490--[[silencingshot]] or spellID == 47476 --[[strangulate]]or spellID == 1766 or spellID == 51722 --[[dismantle]] or spellID == 2094 or spellID == 61606 or spellID == 19386 or spellID == 49050 or spellID == 19434)) and not fromFocus then
 						self:PlaySpell (self.spellList.castSuccess,spellID) 
 						else
 						if spellID == 51724 and toFriend and isinparty ~= nil and ((myTarget == destName) or (myFocus == destName)) and not sadb.ArenaPartner then
