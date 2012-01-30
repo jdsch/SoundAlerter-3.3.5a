@@ -971,7 +971,6 @@ local arena4 = UnitName("arena4target")
 local arena5 = UnitName("arena5target")
 local myTarget = UnitName("target")
 local myFocus = UnitName("focus")
-
 --[[debug
 	if (spellName == "Wyvern Sting") then
 		print (sourceName,destName,event,spellName,spellID)
@@ -999,7 +998,7 @@ enddebug]]
 								if toSelf and destName == playerName and (spellID == 6215 or spellID == 33786 or spellID == 118 or spellID == 12826 or spellID == 51514) and (myTarget ~= sourceName) and (myFocus ~= sourceName) then
 								self:PlaySpell (self.spellList.castStart,spellID) 
 								end
-								if toSelf and myTarget ~= sourceName and not fromFocus and (spellID == 14309 or spellID == 5246 or spellID == 2094 or spellID == 17928 or spellID == 51724 or spellID == 10308 or spellID == 2139 or spellID == 10890) then
+								if sadb.myself and toSelf and myTarget ~= sourceName and not fromFocus and (spellID == 14309 or spellID == 5246 or spellID == 2094 or spellID == 17928 or spellID == 51724 or spellID == 10308 or spellID == 2139 or spellID == 10890) then
 								self:PlaySpell (self.spellList.castSuccess,spellID)
 								end
 							else
@@ -1007,7 +1006,7 @@ enddebug]]
 								if toSelf and destName == playerName and myTarget ~= sourceName and myFocus ~= sourceName and (spellID == 33786 or spellID == 118 or spellID == 12826 or spellID == 51514) then
 								self:PlaySpell (self.spellList.castStart,spellID) 
 								end
-								if toSelf and destName == playerName and myTarget ~= sourceName and not fromFocus and (spellID == 14309 or spellID == 5246 or spellID == 2094 or spellID == 10308 or spellID == 5246 or spellID == 17928 or spellID == 51724 or spellID == 33786 or spellID == 10308 or spellID == 2139 or spellID == 12826 or spellID ==  6215 or spellID == 10890) then
+								if sadb.myself and toSelf and destName == playerName and myTarget ~= sourceName and not fromFocus and (spellID == 14309 or spellID == 5246 or spellID == 2094 or spellID == 10308 or spellID == 5246 or spellID == 17928 or spellID == 51724 or spellID == 33786 or spellID == 10308 or spellID == 2139 or spellID == 12826 or spellID ==  6215 or spellID == 10890) then
 								self:PlaySpell (self.spellList.castSuccess,spellID)
 								end
 								if toFriend and ((currentZoneType == "arena") or (pvpType == "arena")) and destName ~= playerName and (spellID == 118 or spellID == 14309 or spellID == 33786 --[[cyclone]] or spellID == 5246--[[fear]] or spellID == 51514 or spellID == 2094 or spellID == 51724 or spellID == 33786 or spellID == 10308 or spellID == 2139 or spellID == 51514 or spellID == 12826 or spellID == 6215 or spellID == 10890) and not sadb.ArenaPartner then
@@ -1016,7 +1015,7 @@ enddebug]]
 							end
 							end
 						else
-						if not sadb.enemyinrange and toSelf and myTarget ~= sourceName and (((spellID == 20066 or spellID == 44572 or spellID == 72) and sadb.saytext) or (spellID == 13810 or spellID == 34490--[[silencingshot]] or spellID == 47476 --[[strangulate]]or spellID == 1766 or spellID == 51722 --[[dismantle]] or spellID == 2094 or spellID == 61606 or spellID == 19386 or spellID == 49010 or spellID == 49050 or spellID == 19434)) and not fromFocus then
+						if sadb.myself and toSelf and myTarget ~= sourceName and (((spellID == 20066 or spellID == 44572 or spellID == 72) and sadb.saytext) or (spellID == 13810 or spellID == 34490--[[silencingshot]] or spellID == 47476 --[[strangulate]]or spellID == 1766 or spellID == 51722 --[[dismantle]] or spellID == 2094 or spellID == 61606 or spellID == 19386 or spellID == 49010 or spellID == 49050 or spellID == 19434)) and not fromFocus then
 						self:PlaySpell (self.spellList.castSuccess,spellID) 
 						else
 						if spellID == 51724 and toFriend and isinparty ~= nil and ((myTarget == destName) or (myFocus == destName)) and not sadb.ArenaPartner then
