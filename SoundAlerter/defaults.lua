@@ -21,8 +21,7 @@ dbDefaults = {
 		sapenemy = true,
 		ArenaPartner = false,
 		enemyinrange = false,
-		sayspell = true,
-		lockout = false,
+		lockout = true,
 	--chat
 		bubblealert = true,
 		bubblealerttext = "Bubbled!",
