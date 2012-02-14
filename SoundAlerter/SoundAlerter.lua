@@ -146,6 +146,7 @@ function SoundAlerter:Interrupted()
 end
  function spellOptions2(order, spellID, ...)
 	local spellname,_,icon = GetSpellInfo(spellID)
+	if spellname ~= nil then
 	return {
 		type = 'toggle',
 		name = "\124T"..icon..":24\124t"..spellname,							
@@ -156,6 +157,9 @@ end
 		descStyle = "custom",
 		order = order,
 	}
+	else
+	self:Print("error loading spell ID " ..spellID .. " as it seems to not exist (anymore).")
+	end
 end
  function listOptions(spellList, listType, ...)
 	local args = {}
