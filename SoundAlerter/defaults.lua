@@ -11,6 +11,7 @@ dbDefaults = {
 		trinket = true,
 		drinking = true,
 		class = true,
+		mouseover = false,
 	--disables
 		aruaApplied = false,
 		aruaRemoved = false,
