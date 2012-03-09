@@ -1,8 +1,9 @@
---[[SoundAlerter by Trolollolol - Sargeras - Molten-WoW.com
-Notes: Check spell IDs by rank first]]
+--[[SoundAlerter for 3.3.5a by Trolollolol - Sargeras - Molten-WoW.com
+				Credits to Abatorlos of Spinebreaker, Duskashes, Superk
+								Notes: Check spell IDs by rank first]]
 function SoundAlerter:GetSpellList () 
 	return {
-		auraApplied ={					-- aura applied [spellid] = ".mp3 file name",
+		auraApplied = {					-- aura applied [spellid] = ".mp3 file name",
 			--Races
 			[58984] = "Shadowmeld",
 			[26297] = "berserking", --works
@@ -65,6 +66,7 @@ function SoundAlerter:GetSpellList ()
 			[12042] = "arcanePower",
 			[12472] = "icyveins",
 			[12043] = "PresenceofMind",
+			[28682] = "combustion",
 			--DK
 			[49039] = "lichborne",
 			[48792] = "iceboundFortitude",

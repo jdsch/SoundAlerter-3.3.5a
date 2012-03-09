@@ -11,7 +11,7 @@ dbDefaults = {
 		trinket = true,
 		drinking = true,
 		class = true,
-		mouseover = false,
+		mouseover = false,	
 	--disables
 		aruaApplied = false,
 		aruaRemoved = false,
@@ -23,6 +23,7 @@ dbDefaults = {
 		ArenaPartner = false,
 		enemyinrange = false,
 		lockout = true,
+		sayspell = false,
 	--chat
 		bubblealert = true,
 		bubblealerttext = "Bubbled!",
