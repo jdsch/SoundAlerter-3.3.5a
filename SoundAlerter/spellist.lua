@@ -1,6 +1,7 @@
 --[[SoundAlerter for 3.3.5a by Trolollolol - Sargeras - Molten-WoW.com
 				Credits to Abatorlos of Spinebreaker, Duskashes, Superk
-								Notes: Check spell IDs by rank first]]
+								Notes: Check spell IDs by rank first
+								add death wish down, starfire, bladestorm down]]
 function SoundAlerter:GetSpellList () 
 	return {
 		auraApplied = {					-- aura applied [spellid] = ".mp3 file name",
@@ -82,7 +83,10 @@ function SoundAlerter:GetSpellList ()
 		},
 		auraRemoved = {
 			--Warrior
+			[46924] = "bladestormdown", --works
+			[1719] = "RecklessnessDown",
 			[871] = "shieldWallDown", --works
+			[12292] = "deathWishdown", --dont know
 			--Paladin
 			[10278] = "protectionDown",
 			[642] = "bubbleDown",
@@ -117,6 +121,7 @@ function SoundAlerter:GetSpellList ()
 			--druid
 			[2637] = "hibernate", 
 			[33786] = "cyclone",  --works
+			[48465] = "starfire", --rank 10
 			--paladin
 			--rogue
 			--warrior

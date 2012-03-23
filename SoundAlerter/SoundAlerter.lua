@@ -227,21 +227,10 @@ function SoundAlerter:OnOptionsCreate()
 					},
 					mouseovername = {
 						type = 'toggle',
-						name = "Mouseover enemy sound alerts",
+						name = "Mouseover alerts",
 						desc = "Voice Alerts are enabled for enemies on mouse over",
 						disabled = function() return sadb.enemyinrange end,
 						order = 7,
-					},
-					volumn = {
-						type = 'range',
-						max = 1,
-						min = 0,
-						step = 0.1,
-						name = "Master Volume",
-						desc = "Sets the master volume so sound alerts can be louder/softer",
-						set = function (info, value) SetCVar ("Sound_MasterVolume",tostring (value)) end,
-						get = function () return tonumber (GetCVar ("Sound_MasterVolume")) end,
-						order = 8,
 					},
 					sapath = {
 						type = 'select',
@@ -254,15 +243,57 @@ function SoundAlerter:OnOptionsCreate()
 						type = 'toggle',
 						name = "Debug Mode",
 						desc = "Enable Debugging",
-						order = 10,
-					}
+						order = 11,
+					},
+					volumecontrol = {
+					type = 'group',
+					inline = true,
+					order = 10,
+					name = "Volume Control",
+					args = {
+							volumn = {
+						type = 'range',
+						max = 1,
+						min = 0,
+						isPercent = true,
+						step = 0.1,
+						name = "Master Volume",
+						desc = "Sets the master volume so sound alerts can be louder/softer",
+						set = function (info, value) SetCVar ("Sound_MasterVolume",tostring (value)) end,
+						get = function () return tonumber (GetCVar ("Sound_MasterVolume")) end,
+						order = 1,
+							},
+						volumn2 = {
+						type = 'execute',
+						width = 'normal',
+						name = "Addon sounds only",
+						desc = "Sets other sounds to minimum, only hearing the addon sounds",
+						func = function() 
+								SetCVar ("Sound_AmbienceVolume",tostring ("0")); SetCVar ("Sound_SFXVolume",tostring ("0")); SetCVar ("Sound_MusicVolume",tostring ("0")); 
+								print("|cffFF7D0ASoundAlerter|r: Addons will only be heard by your Client. To undo this, click the 'reset sound options' button.");
+							end,
+						order = 2,
+							},
+						volumn3 = {
+						type = 'execute',
+						width = 'normal',
+						name = "Reset volume options",
+						desc = "Resets sound options",
+						func = function() 
+								SetCVar ("Sound_MasterVolume",tostring ("1")); SetCVar ("Sound_AmbienceVolume",tostring ("1")); SetCVar ("Sound_SFXVolume",tostring ("1")); SetCVar ("Sound_MusicVolume",tostring ("1")); 
+								print("|cffFF7D0ASoundAlerter|r: Sound options reset.");
+							end,
+						order = 2,
+							},
+						},
+					},
 				},
 			},
 		}
 	})
 	self:AddOption('Skill', {
 		type = 'group',
-		name = "Spells", --skills
+		name = "Spells",
 		desc = "Spell Options",
 		order = 1,
 		args = {
@@ -455,20 +486,20 @@ function SoundAlerter:OnOptionsCreate()
 						inline = true,
 						name = "|cffC79C6EWarrior|r",
 						order = 4,
-						args = listOptions({871},"auraRemoved"),
+						args = listOptions({1719,871,12292,46924},"auraRemoved"),
 					},
 					paladin = {
 						type = 'group',
 						inline = true,
 						name = "|cffF58CBAPaladin|r",
-						order = 4,
+						order = 5,
 						args = listOptions({10278,642},"auraRemoved"),
 					},
 					rogue = {
 						type = 'group',
 						inline = true,
 						name = "|cffFFF569Rogue|r",
-						order = 5,
+						order = 6,
 						args = listOptions({31224,26669},"auraRemoved"),
 					},
 					priest	= {
@@ -543,7 +574,7 @@ function SoundAlerter:OnOptionsCreate()
 						inline = true,
 						name = "|cffFF7D0ADruid|r",
 						order = 3,
-						args = listOptions({2637,33786},"castStart"),
+						args = listOptions({2637,33786, 48465},"castStart"),
 					},
 					priest	= {
 						type = 'group',
@@ -987,10 +1018,11 @@ local mouseover = UnitName("mouseover")
 local mouseovertarget = UnitName("mouseovertarget")
 
 --[[debug
-	if (spellName == "Wyvern Sting") then
+	if (spellName == "Starfire") and sadb.debugmode then
 		print (sourceName,destName,event,spellName,spellID)
 	end
 enddebug]]
+
 	if (event == "SPELL_AURA_APPLIED" and not sadb.castSuccess) then
 								if toEnemy and (spellID == 33786 or spellID == 2094 or spellID == 51724 or spellID == 12826 or spellID == 118 or spellID == 51514) and not sadb.enemydebuff then
 									if (sadb.myself and (toTarget or toFocus)) or sadb.enemyinrange then
@@ -1046,7 +1078,7 @@ enddebug]]
 		end
 	end
 	if (event == "SPELL_AURA_REMOVED" and not sadb.aruaRemoved) then
-		if toEnemy and (spellID == 871 or spellID == 10278 or spellID == 642 or spellID == 31224 or spellID == 26669 or spellID == 33206 or spellID == 47585 or spellID == 45438 or spellID == 48792 or spellID == 49039 or spellID == 53201 or spellID == 19263 or spellID == 34471) then
+		if toEnemy and (spellID == 46924 or spellID == 1719 or spellID == 871 or spellID == 12292 or spellID == 10278 or spellID == 642 or spellID == 31224 or spellID == 26669 or spellID == 33206 or spellID == 47585 or spellID == 45438 or spellID == 48792 or spellID == 49039 or spellID == 53201 or spellID == 19263 or spellID == 34471) then
 			if ((sadb.myself and (fromTarget or fromFocus)) or sadb.enemyinrange and mouseover ~= sourceName) or ((mouseover == sourceName) and sadb.mouseovername) then
 			self:PlaySpell (self.spellList.auraRemoved,spellID)
 			end
@@ -1061,7 +1093,7 @@ enddebug]]
 			end
 	end
 	if (event == "SPELL_CAST_START" and fromEnemy and (sadb.myself and ((myTarget == sourceName) or fromFocus or (focusTarget ~= playerName) or (enemyTarget2 ~= playerName)) or (sadb.enemyinrange and ((focusTarget ~= playerName) or (enemyTarget2 ~= playerName))) or sadb.mouseovername and ((mouseover == sourceName) or mouseovertarget ~= playerName)) and not sadb.castStart) then
-		if (spellID == 48782 or spellID == 30146 or spellID == 2060 or spellID == 635 or spellID == 49273 or spellID == 5185 or spellID == 2006 or spellID == 7328 or spellID == 2008 or spellID == 50769 or spellID == 2637 or spellID == 33786 or spellID == 8129 or spellID == 9484 or spellID == 64843 or spellID == 605 or spellID == 51514 or spellID == 118 or spellID == 12826 or spellID == 28272 or spellID == 28272 or spellID == 61305 or spellID == 61721 or spellID == 61025 or spellID == 61780 or spellID == 28271 or spellID == 982 or spellID == 14327 or spellID == 6215 or spellID == 17928 or spellID == 710 or spellID == 688 or spellID == 691 or spellID == 712 or spellID == 697) then
+		if (spellID == 48782 or spellID == 30146 or spellID == 2060 or spellID == 635 or spellID == 49273 or spellID == 5185 or spellID == 2006 or spellID == 7328 or spellID == 2008 or spellID == 50769 or spellID == 2637 or spellID == 48465 or spellID == 33786 or spellID == 8129 or spellID == 9484 or spellID == 64843 or spellID == 605 or spellID == 51514 or spellID == 118 or spellID == 12826 or spellID == 28272 or spellID == 28272 or spellID == 61305 or spellID == 61721 or spellID == 61025 or spellID == 61780 or spellID == 28271 or spellID == 982 or spellID == 14327 or spellID == 6215 or spellID == 17928 or spellID == 710 or spellID == 688 or spellID == 691 or spellID == 712 or spellID == 697) then
 			if ((currentZoneType == "arena") or (pvpType == "arena")) and (spellID == 33786 or spellID == 51514 or spellID == 12826 or spellID == 118 or spellID == 28272 or spellID == 61305 or spellID == 61721 or spellID == 61025 or spellID == 61780 or spellID == 28271 or spellID == 6215) and not sadb.ArenaPartner then
 				if isinparty ~= nil and isinparty ~= 0 and (arena1 ~= playerName and arena2 ~= playerName and arena3 ~= playerName and arena4 ~= playerName and arena5 ~= playerName) and not sadb.ArenaPartner then
 					if sadb.debugmode then
