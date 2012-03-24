@@ -27,7 +27,7 @@ SA_LOCALEPATH = {
 }
 self.SA_LOCALEPATH = SA_LOCALEPATH
 SA_LANGUAGE = {
-	["Interface\\Addons\\SoundAlerter\\Voice_ES\\"] = "Spanish",
+	["Interface\\Addons\\SoundAlerter\\Voice_ES\\"] = "Spanish (Limited)",
 	["Interface\\Addons\\SoundAlerter\\Voice\\"] = "English",
 }
 
@@ -535,7 +535,7 @@ function SoundAlerter:OnOptionsCreate()
 						inline = true,
 						name = "|cffABD473Hunter|r",
 						order = 12,
-						args = listOptions({19263},"auraRemoved"),
+						args = listOptions({19263,34471},"auraRemoved"),
 					},
 				}
 			},
@@ -588,7 +588,7 @@ function SoundAlerter:OnOptionsCreate()
 						inline = true,
 						name = "|cff0070DEShaman|r",
 						order = 7,
-						args = listOptions({51514},"castStart"),
+						args = listOptions({51514,60043},"castStart"),
 						},
 					hunter = {
 						type = 'group',
@@ -1022,7 +1022,9 @@ local mouseovertarget = UnitName("mouseovertarget")
 		print (sourceName,destName,event,spellName,spellID)
 	end
 enddebug]]
-
+	if (spellName == "Healing Wave") and sadb.debugmode then
+		print (sourceName,destName,event,spellName,spellID)
+	end
 	if (event == "SPELL_AURA_APPLIED" and not sadb.castSuccess) then
 								if toEnemy and (spellID == 33786 or spellID == 2094 or spellID == 51724 or spellID == 12826 or spellID == 118 or spellID == 51514) and not sadb.enemydebuff then
 									if (sadb.myself and (toTarget or toFocus)) or sadb.enemyinrange then
@@ -1093,7 +1095,7 @@ enddebug]]
 			end
 	end
 	if (event == "SPELL_CAST_START" and fromEnemy and (sadb.myself and ((myTarget == sourceName) or fromFocus or (focusTarget ~= playerName) or (enemyTarget2 ~= playerName)) or (sadb.enemyinrange and ((focusTarget ~= playerName) or (enemyTarget2 ~= playerName))) or sadb.mouseovername and ((mouseover == sourceName) or mouseovertarget ~= playerName)) and not sadb.castStart) then
-		if (spellID == 48782 or spellID == 30146 or spellID == 2060 or spellID == 635 or spellID == 49273 or spellID == 5185 or spellID == 2006 or spellID == 7328 or spellID == 2008 or spellID == 50769 or spellID == 2637 or spellID == 48465 or spellID == 33786 or spellID == 8129 or spellID == 9484 or spellID == 64843 or spellID == 605 or spellID == 51514 or spellID == 118 or spellID == 12826 or spellID == 28272 or spellID == 28272 or spellID == 61305 or spellID == 61721 or spellID == 61025 or spellID == 61780 or spellID == 28271 or spellID == 982 or spellID == 14327 or spellID == 6215 or spellID == 17928 or spellID == 710 or spellID == 688 or spellID == 691 or spellID == 712 or spellID == 697) then
+		if (spellID == 60043 or spellID == 48782 or spellID == 30146 or spellID == 2060 or spellID == 635 or spellID == 49273 or spellID == 5185 or spellID == 25391 or spellID == 2006 or spellID == 7328 or spellID == 2008 or spellID == 50769 or spellID == 2637 or spellID == 48465 or spellID == 33786 or spellID == 8129 or spellID == 9484 or spellID == 64843 or spellID == 605 or spellID == 51514 or spellID == 118 or spellID == 12826 or spellID == 28272 or spellID == 28272 or spellID == 61305 or spellID == 61721 or spellID == 61025 or spellID == 61780 or spellID == 28271 or spellID == 982 or spellID == 14327 or spellID == 6215 or spellID == 17928 or spellID == 710 or spellID == 688 or spellID == 691 or spellID == 712 or spellID == 697) then
 			if ((currentZoneType == "arena") or (pvpType == "arena")) and (spellID == 33786 or spellID == 51514 or spellID == 12826 or spellID == 118 or spellID == 28272 or spellID == 61305 or spellID == 61721 or spellID == 61025 or spellID == 61780 or spellID == 28271 or spellID == 6215) and not sadb.ArenaPartner then
 				if isinparty ~= nil and isinparty ~= 0 and (arena1 ~= playerName and arena2 ~= playerName and arena3 ~= playerName and arena4 ~= playerName and arena5 ~= playerName) and not sadb.ArenaPartner then
 					if sadb.debugmode then
@@ -1105,7 +1107,7 @@ enddebug]]
 				self:PlaySpell (self.spellList.castStart,spellID)
 				end
 			else
-				if (((sadb.myself and ((myTarget == sourceName) or fromFocus)) or sadb.enemyinrange and mouseover ~= sourceName) or ((mouseover == sourceName) and sadb.mouseovername)) and (spellID == 48782 or spellID == 2060 or spellID == 635 or spellID == 49273 or spellID == 5185) and sadb.bigHeal then
+				if (((sadb.myself and ((myTarget == sourceName) or fromFocus)) or sadb.enemyinrange and mouseover ~= sourceName) or ((mouseover == sourceName) and sadb.mouseovername)) and (spellID == 48782 or spellID == 2060 or spellID == 635 or spellID == 49273 or spellID == 5185 or spellID == 25391) and sadb.bigHeal then
 				self:PlaySpell (self.spellList.castStart,spellID)
 				else
 				if (((sadb.myself and ((myTarget == sourceName) or fromFocus)) or sadb.enemyinrange and mouseover ~= sourceName) or ((mouseover == sourceName) and sadb.mouseovername)) and (spellID == 7328 or spellID == 2008 or spellID == 2006 or spellId == 50769) and sadb.resurrection then

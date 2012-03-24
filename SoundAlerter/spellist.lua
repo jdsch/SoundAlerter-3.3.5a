@@ -114,6 +114,7 @@ function SoundAlerter:GetSpellList ()
 			[635] = "bigHeal",
 			[49273] = "bigHeal",
 			[5185] = "bigHeal",
+			[25391] = "bigHeal", --healing wave rank 11
 			[2006] = "resurrection",
 			[7328] = "resurrection",
 			[2008] = "resurrection",
@@ -132,6 +133,7 @@ function SoundAlerter:GetSpellList ()
 			[605] = "mindControl",
 			--shaman
 			[51514] = "hex", --works
+			[60043] = "lavaburst",
 			--mage
 			[118] = "polymorph", --Can be poly:turtle, cat, sheep, etc
 			[12826] = "polymorph",

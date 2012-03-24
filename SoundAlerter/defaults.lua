@@ -11,7 +11,7 @@ dbDefaults = {
 		trinket = true,
 		drinking = true,
 		class = true,
-		mouseover = false,	
+		mouseover = false,
 	--disables
 		aruaApplied = false,
 		aruaRemoved = false,
@@ -24,6 +24,10 @@ dbDefaults = {
 		enemyinrange = false,
 		lockout = true,
 		sayspell = false,
+	--Disabled Spells at default
+		PresenceofMind = false,
+		Starfire = false,
+		lavaburst = false,
 	--chat
 		bubblealert = true,
 		bubblealerttext = "Bubbled!",
