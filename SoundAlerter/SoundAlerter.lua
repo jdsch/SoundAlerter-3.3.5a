@@ -1022,9 +1022,7 @@ local mouseovertarget = UnitName("mouseovertarget")
 		print (sourceName,destName,event,spellName,spellID)
 	end
 enddebug]]
-	if (spellName == "Healing Wave") and sadb.debugmode then
-		print (sourceName,destName,event,spellName,spellID)
-	end
+
 	if (event == "SPELL_AURA_APPLIED" and not sadb.castSuccess) then
 								if toEnemy and (spellID == 33786 or spellID == 2094 or spellID == 51724 or spellID == 12826 or spellID == 118 or spellID == 51514) and not sadb.enemydebuff then
 									if (sadb.myself and (toTarget or toFocus)) or sadb.enemyinrange then
