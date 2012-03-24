@@ -650,7 +650,7 @@ function SoundAlerter:OnOptionsCreate()
 						inline = true,
 						name = "|cff0070DEShaman|r",
 						order = 7,
-						args = listOptions({8143,16190,2484,8177},"castSuccess"),
+						args = listOptions({8143,16190,2484,8177,32182,2825},"castSuccess"),
 					},
 					mage = {
 						type = 'group',
@@ -1022,7 +1022,6 @@ local mouseovertarget = UnitName("mouseovertarget")
 		print (sourceName,destName,event,spellName,spellID)
 	end
 enddebug]]
-
 	if (event == "SPELL_AURA_APPLIED" and not sadb.castSuccess) then
 								if toEnemy and (spellID == 33786 or spellID == 2094 or spellID == 51724 or spellID == 12826 or spellID == 118 or spellID == 51514) and not sadb.enemydebuff then
 									if (sadb.myself and (toTarget or toFocus)) or sadb.enemyinrange then
@@ -1202,7 +1201,7 @@ enddebug]]
 	end
 	--SPELL_CAST_SUCCESS means that spell cast was successfull, not interrupted, but still can be missed on a player (refer to aura_applied)
 			if ((event == "SPELL_CAST_SUCCESS") and not sadb.castSuccess) then
-				if (spellID == 2139 or spellID == 72 or spellID == 1766 or spellID == 47528 or spellID == 2094 or spellID == 51724 or spellID == 48173 or spellID == 10890 or spellID == 33786 or spellID == 10308 or spellID == 51514 or spellID == 12826 or spellID == 6215 or spellID == 12051 or spellID == 11958 or spellID == 44445 or spellID == 66 or spellID == 47476 or spellID == 47568 or spellID == 49206 or spellID == 49203 or spellID == 61606 or spellID == 23989 or spellID == 19386 or spellID == 49010 or spellID == 34490 or spellID == 19434 or spellID == 49050 or spellID == 60192 or spellID == 14311 or spellID == 17928 or spellID == 19647 or spellID == 48020 or spellID == 47860 or spellID == 20066 or spellID == 31884 or spellID == 51722 or spellID == 14185 or spellID == 26889 or spellID == 13877 or spellID == 8143 or spellID == 65992 or spellID == 16190 or spellID == 2484 or spellID == 8177 or spellID == 676 or spellID == 5246 or spellID == 6552 or spellID == 2457 or spellID == 71 or spellID == 2458 or spellID == 34433 or spellID == 64044) then				
+				if (spellID == 2139 or spellID == 72 or spellID == 1766 or spellID == 47528 or spellID == 2094 or spellID == 51724 or spellID == 48173 or spellID == 10890 or spellID == 33786 or spellID == 10308 or spellID == 51514 or spellID == 12826 or spellID == 6215 or spellID == 12051 or spellID == 11958 or spellID == 44445 or spellID == 66 or spellID == 47476 or spellID == 47568 or spellID == 49206 or spellID == 49203 or spellID == 61606 or spellID == 23989 or spellID == 19386 or spellID == 49010 or spellID == 34490 or spellID == 19434 or spellID == 49050 or spellID == 60192 or spellID == 14311 or spellID == 17928 or spellID == 19647 or spellID == 48020 or spellID == 47860 or spellID == 20066 or spellID == 31884 or spellID == 51722 or spellID == 14185 or spellID == 26889 or spellID == 13877 or spellID == 8143 or spellID == 2825 or spellID == 32182 or spellID == 65992 or spellID == 16190 or spellID == 2484 or spellID == 8177 or spellID == 676 or spellID == 5246 or spellID == 6552 or spellID == 2457 or spellID == 71 or spellID == 2458 or spellID == 34433 or spellID == 64044) then				
 						if ((((sadb.myself and ((fromFocus and fromEnemy) or ((sourceName == myTarget) and fromEnemy))) or sadb.enemyinrange and fromEnemy) or (toSelf and spellID == 51724) or (toSelf and fromEnemy)) and not sadb.castSuccess) then
 							if toFriend and (spellID == 2139 or spellID == 2094 or spellID == 51724 or spellID == 33786 or spellID == 10308 or spellID == 51514 or spellID == 12826 or spellID ==  6215 or spellID == 10890) then
 								if ((currentZoneType == "arena") or (pvpType == "arena")) and isinparty ~= nil and not sadb.ArenaPartner then
@@ -1214,8 +1213,11 @@ enddebug]]
 									end
 								end
 							else
-							if fromEnemy and ((sadb.myself and (myTarget == sourceName) or (myFocus == sourceName)) or sadb.enemyinrange and mouseover ~= sourceName) or ((mouseover == sourceName) and sadb.mouseovername) then
+							if spellID ~= 32182 and spellID ~= 2825 and fromEnemy and (((sadb.myself and (myTarget == sourceName) or (myFocus == sourceName)) or sadb.enemyinrange and mouseover ~= sourceName) or ((mouseover == sourceName) and sadb.mouseovername)) then
 							self:PlaySpell (self.spellList.castSuccess,spellID)
+							end --prevent spamming of heroism/bloodlust with enemy in range option
+							if fromEnemy and (sadb.enemyinrange or sadb.myself) and (sourceName == myTarget or fromFocus) and (spellID == 2825 or spellID == 32182) then
+							self:PlaySpell (self.spellList.castSuccess,spellID) 
 							end
 							end
 						end

@@ -205,6 +205,8 @@ function SoundAlerter:GetSpellList ()
 			[13877] = "bladeflurry", --works
 			[1784] = "stealth",	--works
 			--shaman
+			[2825] = "bloodlust",
+			[32182] = "heroism",
 			[8143] = "tremorTotem", --works
 			[65992] = "tremorTotem", --dont know which one
 			[16190] = "manaTide",
