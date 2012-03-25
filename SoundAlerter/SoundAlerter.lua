@@ -127,6 +127,7 @@ end
 local function setOption(info, value)
 	local name = info[#info]
 	sadb[name] = value
+	PlaySoundFile(""..sadb.sapath..name..".mp3");
 end
 local function getOption(info)
 	local name = info[#info]
@@ -211,13 +212,19 @@ function SoundAlerter:OnOptionsCreate()
 						disabled = function() return sadb.all end,
 						order = 4,
 					},
-					myself = {
+			AlertConditions = {
+					type = 'group',
+					inline = true,
+					order = 9,
+					name = "Alert Conditions",
+					args = {
+						myself = {
 						type = 'toggle',
 						name = "Target and Focus only",
 						disabled = function() return sadb.enemyinrange end,
 						desc = "Alert works only when your current target casts a spell, or an enemy casts a spell on you",
 						order = 5,
-					},
+						},
 					enemyinrange = {
 						type = 'toggle',
 						name = "All Enemies in Range",
@@ -225,6 +232,8 @@ function SoundAlerter:OnOptionsCreate()
 						disabled = function() return sadb.myself end,
 						order = 6,
 					},
+				},
+			},
 					mouseovername = {
 						type = 'toggle',
 						name = "Mouseover alerts",
@@ -299,8 +308,8 @@ function SoundAlerter:OnOptionsCreate()
 		args = {
 			spellGeneral = {
 				type = 'group',
-				name = "Spell module control",
-				desc = "Customise enabling and disabling of certain spells",
+				name = "Spell Disables",
+				desc = "Enable certain spell types",
 				inline = true,
 				set = setOption,
 				get = getOption,
@@ -371,7 +380,6 @@ function SoundAlerter:OnOptionsCreate()
 						type = 'toggle',
 						name = "Alert Drinking in Arena",
 						desc = "Alert when an enemy drinks in arena",
-						confirm = function() PlaySoundFile(""..sadb.sapath.."drinking.mp3"); end,
 						order = 3,
 					},
 					general = {
@@ -386,7 +394,6 @@ function SoundAlerter:OnOptionsCreate()
 								desc = function ()
 									GameTooltip:SetHyperlink(GetSpellLink(42292));
 								end,
-								confirm = function() PlaySoundFile(""..sadb.sapath.."trinket.mp3"); end,
 								descStyle = "custom",
 								order = 1,
 							},
@@ -478,7 +485,7 @@ function SoundAlerter:OnOptionsCreate()
 				desc = "Alerts you when enemy buffs or used cooldowns are off the enemy",
 				set = setOption,
 				get = getOption,
-				disabled = function() return sadb.aruaRemoved end,
+				disabled = function() return sadb.auraRemoved end,
 				order = 2,
 				args = {
 					warrior = {
@@ -1076,7 +1083,7 @@ enddebug]]
 			end
 		end
 	end
-	if (event == "SPELL_AURA_REMOVED" and not sadb.aruaRemoved) then
+	if (event == "SPELL_AURA_REMOVED" and not sadb.auraRemoved) then
 		if toEnemy and (spellID == 46924 or spellID == 1719 or spellID == 871 or spellID == 12292 or spellID == 10278 or spellID == 642 or spellID == 31224 or spellID == 26669 or spellID == 33206 or spellID == 47585 or spellID == 45438 or spellID == 48792 or spellID == 49039 or spellID == 53201 or spellID == 19263 or spellID == 34471) then
 			if ((sadb.myself and (fromTarget or fromFocus)) or sadb.enemyinrange and mouseover ~= sourceName) or ((mouseover == sourceName) and sadb.mouseovername) then
 			self:PlaySpell (self.spellList.auraRemoved,spellID)
