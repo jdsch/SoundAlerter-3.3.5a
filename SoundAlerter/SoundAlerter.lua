@@ -77,9 +77,6 @@ function SoundAlerter:PARTY_MEMBERS_CHANGED()
  local partysize = GetNumPartyMembers()
 	if event == "PARTY_MEMBERS_CHANGED" then
 		if partysize == 0 then
-				if sadb.debugmode then
-				print("<SA> Debug: Party Members have changed")
-				end
 		isinparty = 0 else
 		--party1 = nil
 			if partysize > 0 then
@@ -127,7 +124,7 @@ end
 local function setOption(info, value)
 	local name = info[#info]
 	sadb[name] = value
-	PlaySoundFile(""..sadb.sapath..name..".mp3");
+	PlaySoundFile(sadb.sapath..name..".mp3");
 end
 local function getOption(info)
 	local name = info[#info]
@@ -140,10 +137,10 @@ end
 		tip:AddLine(SA_sponsors[SA_sponsors[name].Type], 1, 0, 0 ) end; end
     end)
 function SoundAlerter:PlayTrinket()
-	PlaySoundFile(""..sadb.sapath.."Trinket.mp3");
+	PlaySoundFile(sadb.sapath.."Trinket.mp3");
 end
 function SoundAlerter:Interrupted()
-	PlaySoundFile(""..sadb.sapath.."Interrupted.mp3");
+	PlaySoundFile(sadb.sapath.."Interrupted.mp3");
 end
  function spellOptions2(order, spellID, ...)
 	local spellname,_,icon = GetSpellInfo(spellID)
@@ -373,7 +370,7 @@ function SoundAlerter:OnOptionsCreate()
 						type = 'toggle',
 						name = "Alert Class calling for trinketting in Arena",
 						desc = "Alert when an enemy class trinkets in arena",
-						confirm = function() PlaySoundFile(""..sadb.sapath.."paladin.mp3"); self:ScheduleTimer("PlayTrinket", 0.4); end,
+						confirm = function() PlaySoundFile(sadb.sapath.."paladin.mp3"); self:ScheduleTimer("PlayTrinket", 0.4); end,
 						order = 2,
 					},
 					drinking = {
@@ -528,7 +525,7 @@ function SoundAlerter:OnOptionsCreate()
 						inline = true,
 						name = "|cffC41F3BDeath Knight|r",
 						order = 10,
-						args = listOptions({48792,49039},"auraRemoved"),
+						args = listOptions({48707,48792,49039},"auraRemoved"),
 					},
 					druid = {
 						type = 'group',
@@ -685,7 +682,7 @@ function SoundAlerter:OnOptionsCreate()
 						inline = true,
 						name = "|cff9482C9Warlock|r",
 						order = 11,
-						args = listOptions({19647,48020,47860},"castSuccess"),
+						args = listOptions({19647,48020,47860,6358},"castSuccess"),
 					},
 					paladin = {
 						type = 'group',
@@ -910,21 +907,19 @@ function SoundAlerter:OnOptionsCreate()
 				get = getOption,
 				order = 6,
 				args = {
-					lockout = {
-						type = 'toggle',
-						name = "Say 'countered' when you interrupt or get interrupted",
-						desc = "Example: Countered",
-						disabled = function() return sadb.sayspell end,
-						confirm = function() PlaySoundFile(""..sadb.sapath.."lockout.mp3");end,
-						order = 1,
-					},
 					sayspell = {
 						type = 'toggle',
-						name = "Say the spell name when you interrupt or get interrupted",
+						name = "Announce Interrupts",
 						desc = "Example: Kick Interrupted",
-						disabled = function() return sadb.lockout end,
-						confirm = function() PlaySoundFile(""..sadb.sapath.."kick.mp3"); self:ScheduleTimer("Interrupted", 0.4);end,
-						order = 2,
+						confirm = function() PlaySoundFile(sadb.sapath.."kick.mp3"); self:ScheduleTimer("Interrupted", 0.4);end,
+						order = 1,
+					},
+					enemyinterrupts = {
+						type = 'toggle',
+						name = "Enemy Interrupts",
+						desc = "Play this sound when you interrupt an enemy",
+						confirm = function() PlaySoundFile(sadb.sapath.."lockout.mp3");end,
+						order = 1,
 					}
 				},
 			},
@@ -1068,13 +1063,23 @@ enddebug]]
 							end
 							end
 						else
-						if sadb.myself and toSelf and myTarget ~= sourceName and (spellID == 44572 or spellID == 72 or spellID == 20066 or spellID == 13810 or spellID == 34490--[[silencingshot]] or spellID == 47476 --[[strangulate]]or spellID == 1766 or spellID == 51722 --[[dismantle]] or spellID == 2094 or spellID == 61606 or spellID == 19386 or spellID == 49010 or spellID == 49050 or spellID == 19434) and not fromFocus then
+						if sadb.myself and toSelf and myTarget ~= sourceName and (spellID == 47860 or spellID == 6358 or spellID == 44572 or spellID == 72 or spellID == 20066 or spellID == 13810 or spellID == 34490--[[silencingshot]] or spellID == 47476 --[[strangulate]]or spellID == 1766 or spellID == 51722 --[[dismantle]] or spellID == 2094 or spellID == 61606 or spellID == 19386 or spellID == 49010 or spellID == 49050 or spellID == 19434) and not fromFocus then
 						self:PlaySpell (self.spellList.castSuccess,spellID) 
 						else
 						if spellID == 51724 and toFriend and isinparty ~= nil and ((myTarget == destName) or (myFocus == destName)) and not sadb.ArenaPartner then
 						self:PlaySpell (self.spellList.friendCCSuccess,spellID) 
 						else
-						if fromEnemy and (--[[races]]spellID == 58984 or spellID == 26297 or spellID == 20594 or spellID == 20572 or spellID == 33702 or spellID == 7744 or spellID == 28880 --[[/races, druid]]or spellID == 61336 or spellID == 29166 or spellID == 22812 or spellID == 17116 or spellID == 53312 or spellID == 53201 or spellID == 22842 or spellID == 53201 or spellID == 50334 or spellID == 1850 --[[/druid, paladin]]or spellID == 31821 or spellID == 10278 or spellID == 1044 or spellID == 642 or spellID == 6940 or spellID == 64205 or spellID == 54428 --[[/paladin, rogue]]or spellID == 51713 or spellID == 31224 or spellID == 13750 or spellID == 26669 or spellID == 14177 or spellID == 11305 --[[/rogue, warrior]]or spellID == 55694 or spellID == 1719 or spellID == 871 or spellID == 12975 or spellID == 18499 or spellID == 20230 or spellID == 23920 or spellID == 12328 or spellID == 46924 or spellID == 12292--[[/warrior, priest]] or spellID == 33206 or spellID == 10060 or spellID == 6346 or spellID == 47585 or spellID == 14751 or spellID == 47788 --[[/priest, shaman]]or spellID == 30823 or spellID == 974 or spellID == 16188 or spellID == 33736 or spellID == 16166 or spellID == 57960--[[/shaman,mage]] or spellID == 45438 or spellID == 12042 or spellID == 12472 or spellID == 12043 or spellID == 28682--[[/mage, DK]] or spellID == 49039 or spellID == 48792 or spellID == 55233 or spellID == 48707 or spellID == 49222 or spellID == 49016 --[[/dk, hunter]] or spellID == 34471 or spellID == 19263 --[[hunter, lock]] or spellID == 17941) then
+						if fromEnemy and (--[[races]]spellID == 58984 or spellID == 26297 or spellID == 20594 or spellID == 20572 or spellID == 33702 or spellID == 7744 or spellID == 28880
+											--[[druid]]or spellID == 61336 or spellID == 29166 or spellID == 22812 or spellID == 17116 or spellID == 53312 or spellID == 53201 or spellID == 22842 or spellID == 53201 or spellID == 50334 or spellID == 1850
+											--[[paladin]]or spellID == 31821 or spellID == 10278 or spellID == 1044 or spellID == 642 or spellID == 6940 or spellID == 64205 or spellID == 54428
+											--[[rogue]]  or spellID == 51713 or spellID == 31224 or spellID == 13750 or spellID == 26669 or spellID == 14177 or spellID == 11305
+											--[[warrior]]or spellID == 55694 or spellID == 1719 or spellID == 871 or spellID == 12975 or spellID == 18499 or spellID == 20230 or spellID == 23920 or spellID == 12328 or spellID == 46924 or spellID == 12292
+											--[[priest]] or spellID == 33206 or spellID == 10060 or spellID == 6346 or spellID == 47585 or spellID == 14751 or spellID == 47788
+											--[[shaman]]or spellID == 30823 or spellID == 974 or spellID == 16188 or spellID == 33736 or spellID == 16166 or spellID == 57960
+											--[[mage]] or spellID == 45438 or spellID == 12042 or spellID == 12472 or spellID == 12043 or spellID == 28682
+											--[[DK]] or spellID == 49039 or spellID == 48792 or spellID == 55233 or spellID == 48707 or spellID == 49222 or spellID == 49016
+											--[[hunter]] or spellID == 34471 or spellID == 19263
+											--[[lock]] or spellID == 17941) then
 							if ((sadb.myself and ((myTarget == sourceName) or fromFocus)) or sadb.enemyinrange) or ((mouseover == sourceName) and sadb.mouseovername) then
 							self:PlaySpell (self.spellList.auraApplied,spellID)
 							end
@@ -1084,7 +1089,7 @@ enddebug]]
 		end
 	end
 	if (event == "SPELL_AURA_REMOVED" and not sadb.auraRemoved) then
-		if toEnemy and (spellID == 46924 or spellID == 1719 or spellID == 871 or spellID == 12292 or spellID == 10278 or spellID == 642 or spellID == 31224 or spellID == 26669 or spellID == 33206 or spellID == 47585 or spellID == 45438 or spellID == 48792 or spellID == 49039 or spellID == 53201 or spellID == 19263 or spellID == 34471) then
+		if toEnemy and (spellID == 46924 or spellID == 1719 or spellID == 871 or spellID == 12292 or spellID == 10278 or spellID == 642 or spellID == 31224 or spellID == 26669 or spellID == 33206 or spellID == 47585 or spellID == 45438 or spellID == 48792 or spellID == 48707 or spellID == 49039 or spellID == 53201 or spellID == 19263 or spellID == 34471) then
 			if ((sadb.myself and (fromTarget or fromFocus)) or sadb.enemyinrange and mouseover ~= sourceName) or ((mouseover == sourceName) and sadb.mouseovername) then
 			self:PlaySpell (self.spellList.auraRemoved,spellID)
 			end
@@ -1099,7 +1104,7 @@ enddebug]]
 			end
 	end
 	if (event == "SPELL_CAST_START" and fromEnemy and (sadb.myself and ((myTarget == sourceName) or fromFocus or (focusTarget ~= playerName) or (enemyTarget2 ~= playerName)) or (sadb.enemyinrange and ((focusTarget ~= playerName) or (enemyTarget2 ~= playerName))) or sadb.mouseovername and ((mouseover == sourceName) or mouseovertarget ~= playerName)) and not sadb.castStart) then
-		if (spellID == 60043 or spellID == 48782 or spellID == 30146 or spellID == 2060 or spellID == 635 or spellID == 49273 or spellID == 5185 or spellID == 25391 or spellID == 2006 or spellID == 7328 or spellID == 2008 or spellID == 50769 or spellID == 2637 or spellID == 48465 or spellID == 33786 or spellID == 8129 or spellID == 9484 or spellID == 64843 or spellID == 605 or spellID == 51514 or spellID == 118 or spellID == 12826 or spellID == 28272 or spellID == 28272 or spellID == 61305 or spellID == 61721 or spellID == 61025 or spellID == 61780 or spellID == 28271 or spellID == 982 or spellID == 14327 or spellID == 6215 or spellID == 17928 or spellID == 710 or spellID == 688 or spellID == 691 or spellID == 712 or spellID == 697) then
+		if (spellID == 60043 or spellID == 48782 or spellID == 30146 or spellID == 2060 or spellID == 635 or spellID == 49273 or spellID == 5185 or spellID == 25391 or spellID == 2006 or spellID == 7328 or spellID == 2008 or spellID == 50769 or spellID == 2637 or spellID == 18658 or spellID == 48465 or spellID == 33786 or spellID == 8129 or spellID == 9484 or spellID == 64843 or spellID == 605 or spellID == 51514 or spellID == 118 or spellID == 12826 or spellID == 28272 or spellID == 28272 or spellID == 61305 or spellID == 61721 or spellID == 61025 or spellID == 61780 or spellID == 28271 or spellID == 982 or spellID == 14327 or spellID == 6215 or spellID == 17928 or spellID == 710 or spellID == 688 or spellID == 691 or spellID == 712 or spellID == 697) then
 			if ((currentZoneType == "arena") or (pvpType == "arena")) and (spellID == 33786 or spellID == 51514 or spellID == 12826 or spellID == 118 or spellID == 28272 or spellID == 61305 or spellID == 61721 or spellID == 61025 or spellID == 61780 or spellID == 28271 or spellID == 6215) and not sadb.ArenaPartner then
 				if isinparty ~= nil and isinparty ~= 0 and (arena1 ~= playerName and arena2 ~= playerName and arena3 ~= playerName and arena4 ~= playerName and arena5 ~= playerName) and not sadb.ArenaPartner then
 					if sadb.debugmode then
@@ -1130,7 +1135,7 @@ enddebug]]
 			if (sadb.class and ((currentZoneType == "arena")  or (pvpType == "arena"))) then
 				local c = self:ArenaClass(sourceGUID)--destguid
 				if c then
-				PlaySoundFile(""..sadb.sapath..""..c..".mp3");
+				PlaySoundFile(sadb.sapath..c..".mp3");
 				self:ScheduleTimer("PlayTrinket", 0.4);
 				end
 				else
@@ -1208,7 +1213,9 @@ enddebug]]
 	end
 	--SPELL_CAST_SUCCESS means that spell cast was successfull, not interrupted, but still can be missed on a player (refer to aura_applied)
 			if ((event == "SPELL_CAST_SUCCESS") and not sadb.castSuccess) then
-				if (spellID == 2139 or spellID == 72 or spellID == 1766 or spellID == 47528 or spellID == 2094 or spellID == 51724 or spellID == 48173 or spellID == 10890 or spellID == 33786 or spellID == 10308 or spellID == 51514 or spellID == 12826 or spellID == 6215 or spellID == 12051 or spellID == 11958 or spellID == 44445 or spellID == 66 or spellID == 47476 or spellID == 47568 or spellID == 49206 or spellID == 49203 or spellID == 61606 or spellID == 23989 or spellID == 19386 or spellID == 49010 or spellID == 34490 or spellID == 19434 or spellID == 49050 or spellID == 60192 or spellID == 14311 or spellID == 17928 or spellID == 19647 or spellID == 48020 or spellID == 47860 or spellID == 20066 or spellID == 31884 or spellID == 51722 or spellID == 14185 or spellID == 26889 or spellID == 13877 or spellID == 8143 or spellID == 2825 or spellID == 32182 or spellID == 65992 or spellID == 16190 or spellID == 2484 or spellID == 8177 or spellID == 676 or spellID == 5246 or spellID == 6552 or spellID == 2457 or spellID == 71 or spellID == 2458 or spellID == 34433 or spellID == 64044) then				
+				if (spellID == 2139 or spellID == 72 or spellID == 1766 or spellID == 47528 or spellID == 2094 or spellID == 51724 or spellID == 48173 or spellID == 10890 or spellID == 33786 or spellID == 10308 or spellID == 51514 or spellID == 12826 or spellID == 6215 or spellID == 12051 or spellID == 11958 or spellID == 44445 or spellID == 66 or spellID == 47476 or spellID == 47568 or spellID == 49206 or spellID == 49203 or spellID == 61606 or spellID == 23989 or spellID == 19386 or spellID == 49010 or spellID == 34490 or spellID == 19434 or spellID == 49050 or spellID == 60192 or spellID == 14311
+						--[[Warlock]]or spellID == 17928 or spellID == 19647 or spellID == 48020 or spellID == 47860 or spellID == 6358
+						--[[other]]  or spellID == 20066 or spellID == 31884 or spellID == 51722 or spellID == 14185 or spellID == 26889 or spellID == 13877 or spellID == 8143 or spellID == 2825 or spellID == 32182 or spellID == 65992 or spellID == 16190 or spellID == 2484 or spellID == 8177 or spellID == 676 or spellID == 5246 or spellID == 6552 or spellID == 2457 or spellID == 71 or spellID == 2458 or spellID == 34433 or spellID == 64044) then
 						if ((((sadb.myself and ((fromFocus and fromEnemy) or ((sourceName == myTarget) and fromEnemy))) or sadb.enemyinrange and fromEnemy) or (toSelf and spellID == 51724) or (toSelf and fromEnemy)) and not sadb.castSuccess) then
 							if toFriend and (spellID == 2139 or spellID == 2094 or spellID == 51724 or spellID == 33786 or spellID == 10308 or spellID == 51514 or spellID == 12826 or spellID ==  6215 or spellID == 10890) then
 								if ((currentZoneType == "arena") or (pvpType == "arena")) and isinparty ~= nil and not sadb.ArenaPartner then
@@ -1327,30 +1334,27 @@ enddebug]]
 if (event == "SPELL_INTERRUPT" and (toEnemy or fromEnemy) and not sadb.interrupt) then
 		--(spellID == 44572 --[[deepfreeze]]or spellID == 2139--[[counterspell]] or spellID == 50613--[[arcanetorrent]] or spellID == 57994--[[windshear]] or spellID == 72--[[shieldbash]] or spellID == 47528--[[mindfreeze]] or spellID == 1766) --[[kick]]then
 					--we no longer need spell names, since we just need spell_interrupt event to trigger
+			if sadb.sayspell then -- Interrupts
 					if toSelf or ((sadb.myself and toEnemy and (toTarget or toFocus)) or sadb.enemyinrange) then
-						if (sourceName == playerName or toSelf) and sadb.lockout then
-						PlaySoundFile(""..sadb.sapath.."lockout.mp3");
-						end
-						if fromEnemy and toFriend and not sadb.ArenaPartner and (sadb.lockout or sadb.sayspell) then
+						if fromEnemy and toFriend and not sadb.ArenaPartner then
 						self:PlaySpell (self.spellList.interruptFriend,spellID)
 						end
-						if toSelf and sadb.sayspell and spellID ~= 57994 and spellID ~= 50613 then --we have no mp3 of wind shear
-						self:PlaySpell(self.spellList.castSuccess,spellID)
+						if toSelf and spellID ~= 57994 and spellID ~= 50613 then --we have no mp3 of wind shear
 						self:ScheduleTimer("Interrupted", 0.4);
 						end	
-						if toSelf and sadb.sayspell and (spellID == 57994 or spellID == 50613) then
-						PlaySoundFile(""..sadb.sapath.."Interrupted.mp3");
+						if toSelf and (spellID == 57994 or spellID == 50613) then
+						PlaySoundFile(sadb.sapath.."Interrupted.mp3");
 						end
-						if sourceName == playerName and sadb.sayspell then
-						PlaySoundFile(""..sadb.sapath.."lockout.mp3");
-						end
-					end	
-	
+			end
+					if sadb.enemyinterrupts and sourceName == playerName then
+					PlaySoundFile(sadb.sapath.."lockout.mp3");
+					end
+			end
 			if toSelf or (sadb.myself and (toEnemy or ((fromEnemy and (fromTarget or fromFocus)) or (toEnemy and (toTarget or toFocus)))) or sadb.enemyinrange) then
 				if not sadb.chatalerts and sadb.interruptalert then -- Event>Targetting>Spell>Options
 					if sadb.party then
 						if sourceName == playerName and ((sadb.myself and toEnemy and (toTarget or toFocus)) or sadb.enemyinrange) then
-							SendChatMessage(""..sadb.InterruptText.." ["..destName.."]: with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "PARTY", nil, nil)
+							SendChatMessage(sadb.InterruptText.." ["..destName.."]: with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "PARTY", nil, nil)
 							else
 								if toSelf then
 								SendChatMessage("["..sourceName.."]: "..sadb.InterruptText.." me with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "PARTY", nil, nil)
@@ -1364,7 +1368,7 @@ if (event == "SPELL_INTERRUPT" and (toEnemy or fromEnemy) and not sadb.interrupt
 					end
 					if sadb.clientonly then
 						if sourceName == playerName and ((sadb.myself and toEnemy and (toTarget or toFocus)) or sadb.enemyinrange) then
-						DEFAULT_CHAT_FRAME:AddMessage(""..sadb.InterruptText.." ["..destName.."]: with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", 1.0, 0.25, 0.25);
+						DEFAULT_CHAT_FRAME:AddMessage(sadb.InterruptText.." ["..destName.."]: with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", 1.0, 0.25, 0.25);
 						else
 							if toSelf then
 								DEFAULT_CHAT_FRAME:AddMessage("["..sourceName.."]: "..sadb.InterruptText.." me with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r",  1.0, 0.25, 0.25);
@@ -1377,7 +1381,7 @@ if (event == "SPELL_INTERRUPT" and (toEnemy or fromEnemy) and not sadb.interrupt
 					end
 					if sadb.say then
 						if sourceName == playerName and ((sadb.myself and toEnemy and (toTarget or toFocus)) or sadb.enemyinrange) then
-						SendChatMessage(""..sadb.InterruptText.." ["..destName.."]: with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "SAY", nil, nil)
+						SendChatMessage(sadb.InterruptText.." ["..destName.."]: with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "SAY", nil, nil)
 						else
 								if toSelf then
 								SendChatMessage("["..sourceName.."]: "..sadb.InterruptText.." me with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "SAY", nil, nil)
@@ -1390,7 +1394,7 @@ if (event == "SPELL_INTERRUPT" and (toEnemy or fromEnemy) and not sadb.interrupt
 					end
 					if sadb.bgchat then
 						if sourceName == playerName and ((sadb.myself and toEnemy and (toTarget or toFocus)) or sadb.enemyinrange) then
-						SendChatMessage(""..sadb.InterruptText.." ["..destName.."]: with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "BATTLEGROUND", nil, nil)
+						SendChatMessage(sadb.InterruptText.." ["..destName.."]: with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "BATTLEGROUND", nil, nil)
 						else
 							if toSelf then
 								SendChatMessage("["..sourceName.."]: "..sadb.InterruptText.." me with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "BATTLEGROUND", nil, nil)
@@ -1409,7 +1413,7 @@ if (event == "SPELL_INTERRUPT" and (toEnemy or fromEnemy) and not sadb.interrupt
 function SoundAlerter:UNIT_AURA(event,uid)
 	if ((currentZoneType == "arena") or (pvpType == "arena")) and sadb.drinking and toEnemy then
 		if UnitAura (uid,DRINK_SPELL) then
-			PlaySoundFile(""..sadb.sapath.."drinking.mp3");
+			PlaySoundFile(sadb.sapath.."drinking.mp3");
 		end
 	end
 end

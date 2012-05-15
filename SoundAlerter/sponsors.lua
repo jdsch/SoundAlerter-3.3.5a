@@ -3,28 +3,17 @@ SA_sponsors = {
 	["B"] = "Official Sponsor of SoundAlerter",
 	["C"] = "Official Contributer of SoundAlerter",
 --devs
-	["Trolollolol"] = { ["Realm"] = "Sargeras x20", ["Type"] = "A" },
-	--Warsong
-	["Trollolloll"] = { ["Realm"] = "Warsong (Pure PvP)", ["Type"] = "A" },
-	--Sargeras
-	["Trollollollo"] = { ["Realm"] = "Sargeras x20", ["Type"] = "A" },
-	["Trollololool"] = { ["Realm"] = "Sargeras x20", ["Type"] = "A" },
-	["Troolololol"] = { ["Realm"] = "Sargeras x20", ["Type"] = "A" },
-	["Ammonia"] = { ["Realm"] = "Sargeras x20", ["Type"] = "A" },
---	["Trolollolol"] = { ["Realm"] = "Neltharion x12", ["Type"] = "A" },
+	["Trolollolol"] = { ["Realm"] = "Ragnaros x20", ["Type"] = "A" },
+	["Trollolloll"] = { ["Realm"] = "Ragnaros x20", ["Type"] = "A" },
+	["Trollololol"] = { ["Realm"] = "Ragnaros x20", ["Type"] = "A" },
+	["Trollollolol"] = { ["Realm"] = "Ragnaros x20", ["Type"] = "A" },
+	["Ammonia"] = { ["Realm"] = "Ragnaros x20", ["Type"] = "A" },
+	["Trollolollo"] = { ["Realm"] = "Deathwing x12", ["Type"] = "A" },
+	["Trolollollol"] = { ["Realm"] = "Deathwing x12", ["Type"] = "A" },
 --sponsors
 --contributers
-	--Warsong
-	["Shaquetta"] = { ["Realm"] = "Warsong (Pure PvP)", ["Type"] = "C" },
-	["Hotslock"] = { ["Realm"] = "Warsong (Pure PvP)", ["Type"] = "C" },
-	["Belsey"] = { ["Realm"] = "Warsong (Pure PvP)", ["Type"] = "C" },
-	--Neltharion
-	["Drterror"] = { ["Realm"] = "Neltharion x12", ["Type"] = "C" },
-	["Horrorshaman"] = { ["Realm"] = "Neltharion x12", ["Type"] = "C" },
-	["Cheaptrick"] = { ["Realm"] = "Neltharion x12", ["Type"] = "C" },
-	["Zerodeath"] = { ["Realm"] = "Neltharion x12", ["Type"] = "C" },
-	--Frostwolf
-	["Clov"] = { ["Realm"] = "Frostwolf x3", ["Type"] = "C" },
+--[[IMPORTANT: Removed Frostwolf, Neltharion and Warsong contributers as they are upgrading to Cataclysm
+				if you want you name added back to list on another realm, PM me on the forums]]
 	--Deathwing
 	["Jeuriess"] = { ["Realm"] = "Deathwing x12", ["Type"] = "C" }
 	}

@@ -22,8 +22,8 @@ dbDefaults = {
 		sapenemy = true,
 		ArenaPartner = false,
 		enemyinrange = false,
-		lockout = true,
-		sayspell = false,
+		sayspell = true,
+		enemyinterrupts = true,
 	--Disabled Spells at default
 		PresenceofMind = false,
 		Starfire = false,

@@ -101,6 +101,7 @@ function SoundAlerter:GetSpellList ()
 			--DK
 			[48792] = "iceboundFortitudeDown",
 			[49039] = "lichborneDown",
+			[48707] = "antimagicshelldown",
 			--Druid
 			[53201] = "Starfalldown",
 			--Hunter
@@ -120,6 +121,7 @@ function SoundAlerter:GetSpellList ()
 			[2008] = "resurrection",
 			[50769] = "resurrection", 
 			--druid
+			[18658] = "hibernate",
 			[2637] = "hibernate", 
 			[33786] = "cyclone",  --works
 			[48465] = "starfire", --rank 10
@@ -191,6 +193,7 @@ function SoundAlerter:GetSpellList ()
 			[48020] = "demonicCircleTeleport",
 			--[6789] = "deathcoil",-- old
 			[47860] = "deathcoil",-- works
+			[6358] = "Seduction",
 			--paladin
 			[20066] = "repentance", --works
 			[10308] = "hammerofjustice", --works
@@ -227,8 +230,8 @@ function SoundAlerter:GetSpellList ()
 			[48173] = "desperatePrayer", --works
 		},
 		enemyDebuffs = {
-			[2094] = "blind", --works
-			[51724] = "sap", --works
+			[2094] = "Enemyblinded", --works
+			[51724] = "Enemysapped", --works
 			[12826] = "EnemyPollied",
 			[118] = "EnemyPollied",
 			[33786] = "EnemyCycloned",--menu
@@ -239,36 +242,28 @@ function SoundAlerter:GetSpellList ()
 			[51724] = "sapdown", --works
 			[118] = "polydown",
 			[12826] = "polydown",
-			[33786] = "CycloneDown", --menu
-			[51514] = "hexdown", 
-		},
-		friendlyInterrupt = {			
-			[50613] = "lockout", --arcane torrent
-			[1766] = "lockout",
-			[57994] = "lockout", --wind shear
-			[72] = "lockout", --shield bash
-			[47528] = "lockout", 
-			[2139] = "lockout",
+			[33786] = "cyclonedown", --menu
+			[51514] = "hexdown",
 		},
 		interruptFriend = {
-			[2139] = "friendcountered", 
+			[2139] = "friendcountered",
 			[50613] = "friendcountered",
 			[1766] = "friendcountered",
 			[57994] = "friendcountered",
-			[72] = "friendcountered", 
-			[47528] = "friendcountered", 
+			[72] = "friendcountered",
+			[47528] = "friendcountered",
 		},
 		friendCCs = {
 			[33786] = "cyclonefriend",
-			[51514] = "hexfriend", 
+			[51514] = "hexfriend",
 			[12826] = "polyfriend",
 			[118] = "polyfriend",
 			[28272] = "polyfriend",
-			[61305] = "polyfriend", 
-			[61721] = "polyfriend", 
-			[61025] = "polyfriend", 
-			[61780] = "polyfriend", 
-			[28271] = "polyfriend", 
+			[61305] = "polyfriend",
+			[61721] = "polyfriend",
+			[61025] = "polyfriend",
+			[61780] = "polyfriend",
+			[28271] = "polyfriend",
 			[6215] = "fearfriend",
 		},
 		friendCCSuccess = {
@@ -278,8 +273,8 @@ function SoundAlerter:GetSpellList ()
 			[51724] = "friendsapped",
 			[33786] = "friendcycloned",
 			[10308] = "friendstunned",
-			[2139] = "friendcountered", 
-			[51514] = "friendhexxed", 
+			[2139] = "friendcountered",
+			[51514] = "friendhexxed",
 			[118] = "friendpoly",
 			[12826] = "friendpoly",
 			[6215] = "friendfeared",
@@ -289,18 +284,18 @@ function SoundAlerter:GetSpellList ()
 		friendCCenemy = {
 			[2094] = "enemyblinded",
 			[51724] = "enemysapped",
-			[51514] = "EnemyHexxed",
-			[12826] = "EnemyPollied",
-			[118] = "EnemyPollied",
-			[33786] = "EnemyCycloned",--menu
+			[51514] = "enemyhexxed",
+			[12826] = "enemypollied",
+			[118] = "enemypollied",
+			[33786] = "enemycycloned",
 		},
 		friendCCenemyDown = {
-			[2094] = "blinddown", 
-			[51724] = "sapdown", 
-			[51514] = "hexdown", 
-			[12826] = "polydown", 
-			[118] = "polydown",
-			[33786] = "CycloneDown", --menu
+			[2094] = "Blinddown",
+			[51724] = "Sapdown",
+			[51514] = "Hexdown",
+			[12826] = "Polydown",
+			[118] = "Polydown",
+			[33786] = "CycloneDown",
 		},
 	}
 end
