@@ -24,13 +24,14 @@ function SoundAlerter:GetSpellList ()
 			[50334] = "berserk", --works
 			[1850] = "dash",
 			--Paladin
-			[31821] = "auraMastery", --works
-			[10278] = "handOfProtection", --works
-			[1044] = "handOfFreedom", --works
-			[642] = "divineShield", --works
+			[31821] = "auraMastery",
+			[10278] = "handOfProtection",
+			[1044] = "handOfFreedom",
+			[642] = "divineShield",
 			[6940] = "handofsacrifice", --don't know
-			[64205] = "divineSacrifice", --works
-			[54428] = "divinePlea",		--works
+			[64205] = "divineSacrifice",
+			[498] = "DivineProtection", 
+			[54428] = "divinePlea",
 			--Rogue
 			[11305] = "sprint", --test2983
 			[51713] = "shadowDance", --works
@@ -83,11 +84,12 @@ function SoundAlerter:GetSpellList ()
 		},
 		auraRemoved = {
 			--Warrior
-			[46924] = "bladestormdown", --works
+			[46924] = "bladestormdown",
 			[1719] = "RecklessnessDown",
-			[871] = "shieldWallDown", --works
+			[871] = "shieldWallDown",
 			[12292] = "deathWishdown", --dont know
 			--Paladin
+			[498] = "DivineProtectionDown", 
 			[10278] = "protectionDown",
 			[642] = "bubbleDown",
 			--Rogue
@@ -126,6 +128,7 @@ function SoundAlerter:GetSpellList ()
 			[33786] = "cyclone",  --works
 			[48465] = "starfire", --rank 10
 			--paladin
+			[10326] = "turnEvil", --unimplemented
 			--rogue
 			--warrior
 			--priest		
@@ -188,6 +191,7 @@ function SoundAlerter:GetSpellList ()
 			[14311] = "freezingtrap",
 			[1499] = "frosttrap",
 			--warlock
+			[5138] = "DrainMana",
 			[17928] = "fear2", --Howl of Terror
 			[19647] = "spellLock",
 			[48020] = "demonicCircleTeleport",

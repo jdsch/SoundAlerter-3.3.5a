@@ -408,7 +408,7 @@ function SoundAlerter:OnOptionsCreate()
 						inline = true,
 						name = "|cffF58CBAPaladin|r",
 						order = 5,
-						args = listOptions({31821,10278,1044,642,6940,64205,54428},"auraApplied")
+						args = listOptions({31821,10278,1044,642,6940,498,64205,54428},"auraApplied")
 					},
 					rogue = {
 						type = 'group',
@@ -497,7 +497,7 @@ function SoundAlerter:OnOptionsCreate()
 						inline = true,
 						name = "|cffF58CBAPaladin|r",
 						order = 5,
-						args = listOptions({10278,642},"auraRemoved"),
+						args = listOptions({498,10278,642},"auraRemoved"),
 					},
 					rogue = {
 						type = 'group',
@@ -579,6 +579,13 @@ function SoundAlerter:OnOptionsCreate()
 						name = "|cffFF7D0ADruid|r",
 						order = 3,
 						args = listOptions({2637,33786, 48465},"castStart"),
+					},
+					paladin = {
+						type = 'group',
+						inline = true,
+						name = "|cffF58CBAPaladin|r",
+						order = 4,
+						args = listOptions({10326},"castStart"),
 					},
 					priest	= {
 						type = 'group',
@@ -682,7 +689,7 @@ function SoundAlerter:OnOptionsCreate()
 						inline = true,
 						name = "|cff9482C9Warlock|r",
 						order = 11,
-						args = listOptions({19647,48020,47860,6358},"castSuccess"),
+						args = listOptions({5138,19647,48020,47860,6358},"castSuccess"),
 					},
 					paladin = {
 						type = 'group',
@@ -1063,7 +1070,7 @@ enddebug]]
 							end
 							end
 						else
-						if sadb.myself and toSelf and myTarget ~= sourceName and (spellID == 47860 or spellID == 6358 or spellID == 44572 or spellID == 72 or spellID == 20066 or spellID == 13810 or spellID == 34490--[[silencingshot]] or spellID == 47476 --[[strangulate]]or spellID == 1766 or spellID == 51722 --[[dismantle]] or spellID == 2094 or spellID == 61606 or spellID == 19386 or spellID == 49010 or spellID == 49050 or spellID == 19434) and not fromFocus then
+						if sadb.myself and toSelf and myTarget ~= sourceName and (spellID == 5138 or spellID == 47860 or spellID == 6358 or spellID == 44572 or spellID == 72 or spellID == 20066 or spellID == 13810 or spellID == 34490--[[silencingshot]] or spellID == 47476 --[[strangulate]]or spellID == 1766 or spellID == 51722 --[[dismantle]] or spellID == 2094 or spellID == 61606 or spellID == 19386 or spellID == 49010 or spellID == 49050 or spellID == 19434) and not fromFocus then
 						self:PlaySpell (self.spellList.castSuccess,spellID) 
 						else
 						if spellID == 51724 and toFriend and isinparty ~= nil and ((myTarget == destName) or (myFocus == destName)) and not sadb.ArenaPartner then
@@ -1071,7 +1078,7 @@ enddebug]]
 						else
 						if fromEnemy and (--[[races]]spellID == 58984 or spellID == 26297 or spellID == 20594 or spellID == 20572 or spellID == 33702 or spellID == 7744 or spellID == 28880
 											--[[druid]]or spellID == 61336 or spellID == 29166 or spellID == 22812 or spellID == 17116 or spellID == 53312 or spellID == 53201 or spellID == 22842 or spellID == 53201 or spellID == 50334 or spellID == 1850
-											--[[paladin]]or spellID == 31821 or spellID == 10278 or spellID == 1044 or spellID == 642 or spellID == 6940 or spellID == 64205 or spellID == 54428
+											--[[paladin]]or spellID == 498 or spellID == 31821 or spellID == 10278 or spellID == 1044 or spellID == 642 or spellID == 6940 or spellID == 64205 or spellID == 54428
 											--[[rogue]]  or spellID == 51713 or spellID == 31224 or spellID == 13750 or spellID == 26669 or spellID == 14177 or spellID == 11305
 											--[[warrior]]or spellID == 55694 or spellID == 1719 or spellID == 871 or spellID == 12975 or spellID == 18499 or spellID == 20230 or spellID == 23920 or spellID == 12328 or spellID == 46924 or spellID == 12292
 											--[[priest]] or spellID == 33206 or spellID == 10060 or spellID == 6346 or spellID == 47585 or spellID == 14751 or spellID == 47788
@@ -1089,7 +1096,7 @@ enddebug]]
 		end
 	end
 	if (event == "SPELL_AURA_REMOVED" and not sadb.auraRemoved) then
-		if toEnemy and (spellID == 46924 or spellID == 1719 or spellID == 871 or spellID == 12292 or spellID == 10278 or spellID == 642 or spellID == 31224 or spellID == 26669 or spellID == 33206 or spellID == 47585 or spellID == 45438 or spellID == 48792 or spellID == 48707 or spellID == 49039 or spellID == 53201 or spellID == 19263 or spellID == 34471) then
+		if toEnemy and (spellID == 46924 or spellID == 1719 or spellID == 871 or spellID == 12292 or spellID == 498 or spellID == 10278 or spellID == 642 or spellID == 31224 or spellID == 26669 or spellID == 33206 or spellID == 47585 or spellID == 45438 or spellID == 48792 or spellID == 48707 or spellID == 49039 or spellID == 53201 or spellID == 19263 or spellID == 34471) then
 			if ((sadb.myself and (fromTarget or fromFocus)) or sadb.enemyinrange and mouseover ~= sourceName) or ((mouseover == sourceName) and sadb.mouseovername) then
 			self:PlaySpell (self.spellList.auraRemoved,spellID)
 			end
@@ -1104,7 +1111,7 @@ enddebug]]
 			end
 	end
 	if (event == "SPELL_CAST_START" and fromEnemy and (sadb.myself and ((myTarget == sourceName) or fromFocus or (focusTarget ~= playerName) or (enemyTarget2 ~= playerName)) or (sadb.enemyinrange and ((focusTarget ~= playerName) or (enemyTarget2 ~= playerName))) or sadb.mouseovername and ((mouseover == sourceName) or mouseovertarget ~= playerName)) and not sadb.castStart) then
-		if (spellID == 60043 or spellID == 48782 or spellID == 30146 or spellID == 2060 or spellID == 635 or spellID == 49273 or spellID == 5185 or spellID == 25391 or spellID == 2006 or spellID == 7328 or spellID == 2008 or spellID == 50769 or spellID == 2637 or spellID == 18658 or spellID == 48465 or spellID == 33786 or spellID == 8129 or spellID == 9484 or spellID == 64843 or spellID == 605 or spellID == 51514 or spellID == 118 or spellID == 12826 or spellID == 28272 or spellID == 28272 or spellID == 61305 or spellID == 61721 or spellID == 61025 or spellID == 61780 or spellID == 28271 or spellID == 982 or spellID == 14327 or spellID == 6215 or spellID == 17928 or spellID == 710 or spellID == 688 or spellID == 691 or spellID == 712 or spellID == 697) then
+		if (spellID == 60043 or spellID == 48782 or spellID == 30146 or spellID == 2060 or spellID == 635 or spellID == 49273 or spellID == 5185 or spellID == 25391 or spellID == 2006 or spellID == 7328 or spellID == 2008 or spellID == 50769 or spellID == 2637 or spellID == 18658 or spellID == 48465 or spellID == 10326 or spellID == 33786 or spellID == 8129 or spellID == 9484 or spellID == 64843 or spellID == 605 or spellID == 51514 or spellID == 118 or spellID == 12826 or spellID == 28272 or spellID == 28272 or spellID == 61305 or spellID == 61721 or spellID == 61025 or spellID == 61780 or spellID == 28271 or spellID == 982 or spellID == 14327 or spellID == 6215 or spellID == 17928 or spellID == 710 or spellID == 688 or spellID == 691 or spellID == 712 or spellID == 697) then
 			if ((currentZoneType == "arena") or (pvpType == "arena")) and (spellID == 33786 or spellID == 51514 or spellID == 12826 or spellID == 118 or spellID == 28272 or spellID == 61305 or spellID == 61721 or spellID == 61025 or spellID == 61780 or spellID == 28271 or spellID == 6215) and not sadb.ArenaPartner then
 				if isinparty ~= nil and isinparty ~= 0 and (arena1 ~= playerName and arena2 ~= playerName and arena3 ~= playerName and arena4 ~= playerName and arena5 ~= playerName) and not sadb.ArenaPartner then
 					if sadb.debugmode then
@@ -1214,7 +1221,7 @@ enddebug]]
 	--SPELL_CAST_SUCCESS means that spell cast was successfull, not interrupted, but still can be missed on a player (refer to aura_applied)
 			if ((event == "SPELL_CAST_SUCCESS") and not sadb.castSuccess) then
 				if (spellID == 2139 or spellID == 72 or spellID == 1766 or spellID == 47528 or spellID == 2094 or spellID == 51724 or spellID == 48173 or spellID == 10890 or spellID == 33786 or spellID == 10308 or spellID == 51514 or spellID == 12826 or spellID == 6215 or spellID == 12051 or spellID == 11958 or spellID == 44445 or spellID == 66 or spellID == 47476 or spellID == 47568 or spellID == 49206 or spellID == 49203 or spellID == 61606 or spellID == 23989 or spellID == 19386 or spellID == 49010 or spellID == 34490 or spellID == 19434 or spellID == 49050 or spellID == 60192 or spellID == 14311
-						--[[Warlock]]or spellID == 17928 or spellID == 19647 or spellID == 48020 or spellID == 47860 or spellID == 6358
+						--[[Warlock]]or spellID == 17928 or spellID == 5138 or spellID == 19647 or spellID == 48020 or spellID == 47860 or spellID == 6358
 						--[[other]]  or spellID == 20066 or spellID == 31884 or spellID == 51722 or spellID == 14185 or spellID == 26889 or spellID == 13877 or spellID == 8143 or spellID == 2825 or spellID == 32182 or spellID == 65992 or spellID == 16190 or spellID == 2484 or spellID == 8177 or spellID == 676 or spellID == 5246 or spellID == 6552 or spellID == 2457 or spellID == 71 or spellID == 2458 or spellID == 34433 or spellID == 64044) then
 						if ((((sadb.myself and ((fromFocus and fromEnemy) or ((sourceName == myTarget) and fromEnemy))) or sadb.enemyinrange and fromEnemy) or (toSelf and spellID == 51724) or (toSelf and fromEnemy)) and not sadb.castSuccess) then
 							if toFriend and (spellID == 2139 or spellID == 2094 or spellID == 51724 or spellID == 33786 or spellID == 10308 or spellID == 51514 or spellID == 12826 or spellID ==  6215 or spellID == 10890) then
@@ -1236,7 +1243,7 @@ enddebug]]
 							end
 						end
 				end
-		end
+		end --ice trap
 		if fromEnemy and event == "SPELL_CREATE" and spellID == 13809 and ((sadb.myself and ((myTarget == sourceName) or (myFocus == sourceName))) or sadb.enemyinrange) then
 		self:PlaySpell (self.spellList.castSuccess,spellID)
 		end
