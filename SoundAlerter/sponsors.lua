@@ -17,5 +17,7 @@ SA_sponsors = {
 	--Deathwing
 	["Jeuriess"] = { ["Realm"] = "Deathwing x12", ["Type"] = "C" },
 	["Sanathas"] = { ["Realm"] = "Deathwing x12", ["Type"] = "C" },
+	["Natasi"] = { ["Realm"] = "Deathwing x12", ["Type"] = "C" },
+	["Aloysius"] = { ["Realm"] = "Deathwing x12", ["Type"] = "C" },
 	["Kayrop"] = { ["Realm"] = "Ragnaros x20", ["Type"] = "C" }
 	}
