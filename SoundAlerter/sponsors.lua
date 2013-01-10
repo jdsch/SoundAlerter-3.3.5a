@@ -19,6 +19,6 @@ SA_sponsors = {
 	["Sanathas"] = { ["Realm"] = "Deathwing x12", ["Type"] = "C" },
 	["Natasi"] = { ["Realm"] = "Ragnaros x20", ["Type"] = "C" },
 	["Aloysius"] = { ["Realm"] = "Ragnaros x20", ["Type"] = "C" },
-	["Santhas"] = { ["Realm"] = "Ragnaros x20", ["Type"] = "C" },
+	["Sanathas"] = { ["Realm"] = "Ragnaros x20", ["Type"] = "C" },
 	["Kayrop"] = { ["Realm"] = "Ragnaros x20", ["Type"] = "C" }
 	}
