@@ -1179,6 +1179,7 @@ enddebug]]
 			end
 --Vanish Chat Alerts
 		if (spellID == 26889) then
+			self:PlaySpell (self.spellList.castSuccess,spellID)
 				if not sadb.chatalerts then
 					if sadb.vanishalert then
 							if sadb.party then
@@ -1193,12 +1194,12 @@ enddebug]]
 							if sadb.bgchat then
 							SendChatMessage("["..sourceName.."]: "..sadb.spelltext.." \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "BATTLEGROUND", nil, nil)
 							end
-						self:PlaySpell (self.spellList.castSuccess,spellID)
 					end
 				end
 		end
 --Stealth Chat Alerts
-			if spellID == 1784 then
+		if spellID == 1784 then
+			self:PlaySpell (self.spellList.castSuccess,spellID)
 				if not sadb.chatalerts then
 					if sadb.stealthalert then
 							if sadb.party then
@@ -1213,10 +1214,9 @@ enddebug]]
 							if sadb.bgchat then
 							SendChatMessage("["..sourceName.."]: "..sadb.spelltext.." \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "BATTLEGROUND", nil, nil)
 							end
-						self:PlaySpell (self.spellList.castSuccess,spellID)
 					end
 				end
-			end
+		end
 	end
 	--SPELL_CAST_SUCCESS means that spell cast was successfull, not interrupted, but still can be missed on a player (refer to aura_applied)
 			if ((event == "SPELL_CAST_SUCCESS") and not sadb.castSuccess) then
