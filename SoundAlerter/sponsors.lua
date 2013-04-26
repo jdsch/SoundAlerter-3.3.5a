@@ -15,6 +15,7 @@ SA_sponsors = {
 --[[IMPORTANT: Removed Frostwolf, Neltharion and Warsong contributers as they are upgrading to Cataclysm
 				if you want you name added back to list on another realm, PM me on the forums]]
 	--Deathwing
+	["Buttercocoa"] = { ["Realm"] = "Ragnaros x20", ["Type"] = "C" },
 	["Jeuriess"] = { ["Realm"] = "Deathwing x12", ["Type"] = "C" },
 	["Sanathas"] = { ["Realm"] = "Deathwing x12", ["Type"] = "C" },
 	["Natasi"] = { ["Realm"] = "Ragnaros x20", ["Type"] = "C" },

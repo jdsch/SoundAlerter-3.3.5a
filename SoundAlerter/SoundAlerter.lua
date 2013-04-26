@@ -457,7 +457,7 @@ function SoundAlerter:OnOptionsCreate()
 						inline = true,
 						name = "|cffABD473Hunter|r",
 						order = 12,
-						args = listOptions({34471,19263,34471},"auraApplied"),
+						args = listOptions({34471,19263,53480},"auraApplied"),
 					},
 					races = {
 						type = 'group',
@@ -682,7 +682,7 @@ function SoundAlerter:OnOptionsCreate()
 						inline = true,
 						name = "|cffABD473Hunter|r",
 						order = 10,
-						args = listOptions({23989,19386,34490,49050,14311,13810},"castSuccess"),
+						args = listOptions({53271,23989,19386,34490,49050,14311,13810},"castSuccess"),
 					},
 					warlock = {
 						type = 'group',
@@ -1025,7 +1025,6 @@ local myTarget = UnitName("target")
 local myFocus = UnitName("focus")
 local mouseover = UnitName("mouseover")
 local mouseovertarget = UnitName("mouseovertarget")
-
 --[[debug
 	if (spellName == "Starfire") and sadb.debugmode then
 		print (sourceName,destName,event,spellName,spellID)
@@ -1085,7 +1084,7 @@ enddebug]]
 											--[[shaman]]or spellID == 30823 or spellID == 974 or spellID == 16188 or spellID == 33736 or spellID == 16166 or spellID == 57960
 											--[[mage]] or spellID == 45438 or spellID == 12042 or spellID == 12472 or spellID == 12043 or spellID == 28682
 											--[[DK]] or spellID == 49039 or spellID == 48792 or spellID == 55233 or spellID == 48707 or spellID == 49222 or spellID == 49016
-											--[[hunter]] or spellID == 34471 or spellID == 19263
+											--[[hunter]] or spellID == 34471 or spellID == 19263 or spellID == 53480
 											--[[lock]] or spellID == 17941) then
 							if ((sadb.myself and ((myTarget == sourceName) or fromFocus)) or sadb.enemyinrange) or ((mouseover == sourceName) and sadb.mouseovername) then
 							self:PlaySpell (self.spellList.auraApplied,spellID)
@@ -1220,7 +1219,7 @@ enddebug]]
 	end
 	--SPELL_CAST_SUCCESS means that spell cast was successfull, not interrupted, but still can be missed on a player (refer to aura_applied)
 			if ((event == "SPELL_CAST_SUCCESS") and not sadb.castSuccess) then
-				if (spellID == 2139 or spellID == 72 or spellID == 1766 or spellID == 47528 or spellID == 2094 or spellID == 51724 or spellID == 48173 or spellID == 10890 or spellID == 33786 or spellID == 10308 or spellID == 51514 or spellID == 12826 or spellID == 6215 or spellID == 12051 or spellID == 11958 or spellID == 44445 or spellID == 66 or spellID == 47476 or spellID == 47568 or spellID == 49206 or spellID == 49203 or spellID == 61606 or spellID == 23989 or spellID == 19386 or spellID == 49010 or spellID == 34490 or spellID == 19434 or spellID == 49050 or spellID == 60192 or spellID == 14311
+				if (spellID == 53271 or spellID == 2139 or spellID == 72 or spellID == 1766 or spellID == 47528 or spellID == 2094 or spellID == 51724 or spellID == 48173 or spellID == 10890 or spellID == 33786 or spellID == 10308 or spellID == 51514 or spellID == 12826 or spellID == 6215 or spellID == 12051 or spellID == 11958 or spellID == 44445 or spellID == 66 or spellID == 47476 or spellID == 47568 or spellID == 49206 or spellID == 49203 or spellID == 61606 or spellID == 23989 or spellID == 19386 or spellID == 49010 or spellID == 34490 or spellID == 19434 or spellID == 49050 or spellID == 60192 or spellID == 14311
 						--[[Warlock]]or spellID == 17928 or spellID == 5138 or spellID == 19647 or spellID == 48020 or spellID == 47860 or spellID == 6358
 						--[[other]]  or spellID == 20066 or spellID == 31884 or spellID == 51722 or spellID == 14185 or spellID == 26889 or spellID == 13877 or spellID == 8143 or spellID == 2825 or spellID == 32182 or spellID == 65992 or spellID == 16190 or spellID == 2484 or spellID == 8177 or spellID == 676 or spellID == 5246 or spellID == 6552 or spellID == 2457 or spellID == 71 or spellID == 2458 or spellID == 34433 or spellID == 64044) then
 						if ((((sadb.myself and ((fromFocus and fromEnemy) or ((sourceName == myTarget) and fromEnemy))) or sadb.enemyinrange and fromEnemy) or (toSelf and spellID == 51724) or (toSelf and fromEnemy)) and not sadb.castSuccess) then
@@ -1418,7 +1417,7 @@ if (event == "SPELL_INTERRUPT" and (toEnemy or fromEnemy) and not sadb.interrupt
 	end
 --Drink Spell in Arenas
 function SoundAlerter:UNIT_AURA(event,uid)
-	if ((currentZoneType == "arena") or (pvpType == "arena")) and sadb.drinking and toEnemy then
+	if ((currentZoneType == "arena") or (pvpType == "arena")) and sadb.drinking then
 		if UnitAura (uid,DRINK_SPELL) then
 			PlaySoundFile(sadb.sapath.."drinking.mp3");
 		end

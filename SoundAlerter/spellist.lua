@@ -77,6 +77,7 @@ function SoundAlerter:GetSpellList ()
 			[49222] = "boneshield",	--works
 			[49016] = "hysteria",
 			--Hunter
+			[53480] = "roarofsacrifice",
 			[34471] = "theBeastWithin",
 			[19263] = "deterrence",	
 			--Warlock
@@ -184,6 +185,7 @@ function SoundAlerter:GetSpellList ()
 			[34490] = "silencingshot",
 			[49050] = "aimedshot", --rank9
 			[19434] = "aimedshot", --rank1
+			[53271] = "masterscall",
 			[60192] = "freezingtrap", --double check
 			[14309] = "freezingtrap", --freezing trap effect
 			[13810] = "frosttrap", --frost trap aura
