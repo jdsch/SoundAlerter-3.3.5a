@@ -1193,6 +1193,7 @@ enddebug]]
 							if sadb.bgchat then
 							SendChatMessage("["..sourceName.."]: "..sadb.spelltext.." \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "BATTLEGROUND", nil, nil)
 							end
+						self:PlaySpell (self.spellList.castSuccess,spellID)
 					end
 				end
 		end
@@ -1221,7 +1222,7 @@ enddebug]]
 			if ((event == "SPELL_CAST_SUCCESS") and not sadb.castSuccess) then
 				if (spellID == 53271 or spellID == 2139 or spellID == 72 or spellID == 1766 or spellID == 47528 or spellID == 2094 or spellID == 51724 or spellID == 48173 or spellID == 10890 or spellID == 33786 or spellID == 10308 or spellID == 51514 or spellID == 12826 or spellID == 6215 or spellID == 12051 or spellID == 11958 or spellID == 44445 or spellID == 66 or spellID == 47476 or spellID == 47568 or spellID == 49206 or spellID == 49203 or spellID == 61606 or spellID == 23989 or spellID == 19386 or spellID == 49010 or spellID == 34490 or spellID == 19434 or spellID == 49050 or spellID == 60192 or spellID == 14311
 						--[[Warlock]]or spellID == 17928 or spellID == 5138 or spellID == 19647 or spellID == 48020 or spellID == 47860 or spellID == 6358
-						--[[other]]  or spellID == 20066 or spellID == 31884 or spellID == 51722 or spellID == 14185 or spellID == 26889 or spellID == 13877 or spellID == 8143 or spellID == 2825 or spellID == 32182 or spellID == 65992 or spellID == 16190 or spellID == 2484 or spellID == 8177 or spellID == 676 or spellID == 5246 or spellID == 6552 or spellID == 2457 or spellID == 71 or spellID == 2458 or spellID == 34433 or spellID == 64044) then
+						--[[other]]  or spellID == 20066 or spellID == 31884 or spellID == 51722 or spellID == 14185 or spellID == 13877 or spellID == 8143 or spellID == 2825 or spellID == 32182 or spellID == 65992 or spellID == 16190 or spellID == 2484 or spellID == 8177 or spellID == 676 or spellID == 5246 or spellID == 6552 or spellID == 2457 or spellID == 71 or spellID == 2458 or spellID == 34433 or spellID == 64044) then
 						if ((((sadb.myself and ((fromFocus and fromEnemy) or ((sourceName == myTarget) and fromEnemy))) or sadb.enemyinrange and fromEnemy) or (toSelf and spellID == 51724) or (toSelf and fromEnemy)) and not sadb.castSuccess) then
 							if toFriend and (spellID == 2139 or spellID == 2094 or spellID == 51724 or spellID == 33786 or spellID == 10308 or spellID == 51514 or spellID == 12826 or spellID ==  6215 or spellID == 10890) then
 								if ((currentZoneType == "arena") or (pvpType == "arena")) and isinparty ~= nil and not sadb.ArenaPartner then
@@ -1351,7 +1352,7 @@ if (event == "SPELL_INTERRUPT" and (toEnemy or fromEnemy) and not sadb.interrupt
 						if toSelf and (spellID == 57994 or spellID == 50613) then
 						PlaySoundFile(sadb.sapath.."Interrupted.mp3");
 						end
-			end
+					end
 					if sadb.enemyinterrupts and sourceName == playerName then
 					PlaySoundFile(sadb.sapath.."lockout.mp3");
 					end
@@ -1365,7 +1366,6 @@ if (event == "SPELL_INTERRUPT" and (toEnemy or fromEnemy) and not sadb.interrupt
 								if toSelf then
 								SendChatMessage("["..sourceName.."]: "..sadb.InterruptText.." me with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "PARTY", nil, nil)
 								else
-								--if (toEnemy and ((sadb.myself and (toTarget or toFocus)) or sadb.enemyinrange)) then
 								if ((currentZoneType == "arena") or (pvpType == "arena")) and ((destName ~= playerName) or (sourceName ~= playerName)) and isinparty ~= nil then
 								SendChatMessage("["..sourceName.."]: "..sadb.InterruptText.." ["..destName.."]:  with \124cff71d5ff\124Hspell:"..spellID.."\124h["..spellName.."]\124h\124r", "PARTY", nil, nil)
 								end
