@@ -7,25 +7,34 @@ function SoundAlerter:GetSpellList ()
 		auraApplied = {					-- aura applied [spellid] = ".mp3 file name",
 			--Races
 			[58984] = "Shadowmeld",
-			[26297] = "berserking", --works
+			[26297] = "berserking",
 			[20594] = "stoneform",
-			[20572] = "BloodFury", --works
-			[33702] = "BloodFury", --works
+			[20572] = "BloodFury",
+			[33702] = "BloodFury",
 			[7744] = "willoftheforsaken",
 			[28880] = "giftofthenaaru",
 			--Druid
 			[61336] = "survivalInstincts",
-			[29166] = "innervate",  --works
-			[22812] = "barkskin",  --works
-			[17116] = "naturesSwiftness", 
-			[53312] = "naturesGrasp", --works
-			[22842] = "frenziedRegeneration", 
-			[53201] = "starfall",
-			[50334] = "berserk", --works
-			[1850] = "dash",
+			[29166] = "innervate",
+			[22812] = "barkskin",
+			[17116] = "naturesSwiftness",
+			[17329] = "naturesGrasp",	--Natures Grasp rank 6
+			[27009] = "naturesGrasp",	--Natures Grasp rank 7
+			[53312] = "naturesGrasp",	--Natures Grasp rank 8
+			[22842] = "frenziedRegeneration",
+			[48505] = "starfall",	--starfall rank 1
+			[53199] = "starfall",	--starfall rank 2
+			[53200] = "starfall",	--starfall rank 3
+			[53201] = "starfall",	--starfall rank 4
+			[50334] = "berserk",
+			[1850] = "dash",	--dash rank 1
+			[9821] = "dash",	--dash rank 2
+			[33357] = "dash",	--dash rank 3
 			--Paladin
 			[31821] = "auraMastery",
-			[10278] = "handOfProtection",
+			[1022] = "handOfProtection",	--Hand of Protection rank 1
+			[5599] = "handOfProtection",	--Hand of Protection rank 2
+			[10278] = "handOfProtection",	--Hand of Protection rank 3
 			[1044] = "handOfFreedom",
 			[642] = "divineShield",
 			[6940] = "handofsacrifice", --don't know
@@ -33,36 +42,51 @@ function SoundAlerter:GetSpellList ()
 			[498] = "DivineProtection", 
 			[54428] = "divinePlea",
 			--Rogue
-			[11305] = "sprint", --test2983
-			[51713] = "shadowDance", --works
-			[31224] = "cloakOfShadows", --works
+			[2983] = "sprint",	--Sprint rank 1
+			[8696] = "sprint",	--Sprint rank 3
+			[11305] = "sprint",	--Sprint rank 2
+			[51713] = "shadowDance",
+			[31224] = "cloakOfShadows",
 			[13750] = "adrenalineRush",
-			[26669] = "evasion", --works
+			[5277] = "evasion", --Evasion rank 1
+			[26669] = "evasion", --Evasion rank 2
 			[14177] = "coldBlood",
 			--Warrior
-			[55694] = "EnragedRegeneration", --works
+			[55694] = "EnragedRegeneration",
 			[1719] = "Recklessness",
-			[871] = "shieldWall", --works
-			[12975] = "lastStand", --don't know
-			[18499] = "berserkerRage", --works
-			[20230] = "Retaliation", --works
-			[23920] = "spellReflection", --works
-			[12328] = "sweepingStrikes", --works
-			[46924] = "bladestorm", --works
-			[12292] = "deathWish", --dont know
+			[871] = "shieldWall",
+			[12975] = "lastStand",
+			[18499] = "berserkerRage",
+			[20230] = "Retaliation",
+			[23920] = "spellReflection",
+			[12328] = "sweepingStrikes",
+			[46924] = "bladestorm",
+			[12292] = "deathWish",
 			--Priest
-			[33206] = "painSuppression", --works
-			[10060] = "powerInfusion", --works
-			[6346] = "fearWard", --works
-			[47585] = "dispersion", --works
+			[33206] = "painSuppression",
+			[10060] = "powerInfusion",
+			[6346] = "fearWard",
+			[47585] = "dispersion",
 			[14751] = "innerfocus",
 			[47788] = "GuardianSpirit",
 			--Shaman
-			[30823] = "shamanisticRage", --works
-			[974] = "earthShield", --works
-			[16188] = "naturesSwiftness2", --works
-			[57960] = "waterShield", --works
-			[16166] = "ElementalMastery", --works
+			[30823] = "shamanisticRage",
+			[974] = "earthShield",	--Earth Shield rank 1
+			[32593] = "earthShield",	--Earth Shield rank 2
+			[32594] = "earthShield",	--Earth Shield rank 3
+			[49283] = "earthShield",	--Earth Shield rank 4
+			[49284] = "earthShield",	--Earth Shield rank 5
+			[16188] = "naturesSwiftness2",
+			[52127] = "waterShield",	--Water Shield rank 1
+			[52129] = "waterShield",	--Water Shield rank 2
+			[52131] = "waterShield",	--Water Shield rank 3
+			[52134] = "waterShield",	--Water Shield rank 4
+			[52136] = "waterShield",	--Water Shield rank 5
+			[52138] = "waterShield",	--Water Shield rank 6
+			[24398] = "waterShield",	--Water Shield rank 7
+			[33736] = "waterShield",	--Water Shield rank 8
+			[57960] = "waterShield",	--Water Shield rank 9
+			[16166] = "ElementalMastery",
 			--Mage
 			[45438] = "iceBlock",
 			[12042] = "arcanePower",
@@ -74,7 +98,7 @@ function SoundAlerter:GetSpellList ()
 			[48792] = "iceboundFortitude",
 			[55233] = "vampiricBlood",
 			[48707] = "antimagicshell",
-			[49222] = "boneshield",	--works
+			[49222] = "boneshield",
 			[49016] = "hysteria",
 			--Hunter
 			[53480] = "roarofsacrifice",
@@ -88,17 +112,17 @@ function SoundAlerter:GetSpellList ()
 			[46924] = "bladestormdown",
 			[1719] = "RecklessnessDown",
 			[871] = "shieldWallDown",
-			[12292] = "deathWishdown", --dont know
+			[12292] = "deathWishdown",
 			--Paladin
 			[498] = "DivineProtectionDown", 
 			[10278] = "protectionDown",
 			[642] = "bubbleDown",
 			--Rogue
 			[31224] = "cloakDown",
-			[26669] = "evasionDown", --works 
+			[26669] = "evasionDown",
 			--Priest
-			[33206] = "PSDown", --works
-			[47585] = "dispersionDown", --works
+			[33206] = "PSDown",
+			[47585] = "dispersionDown",
 			--Mage
 			[45438] = "iceBlockDown",
 			--DK
@@ -106,23 +130,84 @@ function SoundAlerter:GetSpellList ()
 			[49039] = "lichborneDown",
 			[48707] = "antimagicshelldown",
 			--Druid
-			[53201] = "Starfalldown",
+			[48505] = "Starfalldown",	--starfall rank 1
+			[53199] = "Starfalldown",	--starfall rank 2
+			[53200] = "Starfalldown",	--starfall rank 3
+			[53201] = "Starfalldown",	--starfall rank 4
 			--Hunter
 			[19263] = "Deterrencedown",
 			[34471] = "beastwithindown",
 		},
 		castStart = {
 			--general
-			[48782] = "bigHeal",
-			[2060] = "bigHeal",
-			[635] = "bigHeal",
-			[49273] = "bigHeal",
-			[5185] = "bigHeal",
-			[25391] = "bigHeal", --healing wave rank 11
-			[2006] = "resurrection",
-			[7328] = "resurrection",
-			[2008] = "resurrection",
-			[50769] = "resurrection", 
+			[635] = "bigHeal",	--Holy Light rank 1
+			[639] = "bigHeal",	--Holy Light rank 2
+			[647] = "bigHeal",	--Holy Light rank 3
+			[1026] = "bigHeal",	--Holy Light rank 4
+			[1042] = "bigHeal",	--Holy Light rank 5
+			[3472] = "bigHeal",	--Holy Light rank 6
+			[10328] = "bigHeal",	--Holy Light rank 7
+			[10329] = "bigHeal",	--Holy Light rank 8
+			[25292] = "bigHeal",	--Holy Light rank 9
+			[27135] = "bigHeal",	--Holy Light rank 10
+			[27136] = "bigHeal",	--Holy Light rank 11
+			[48782] = "bigHeal",	--Holy Light rank 12
+			[2054] = "bigHeal",		--Heal rank 1
+			[2055] = "bigHeal",		--Heal rank 2
+			[6063] = "bigHeal",		--Heal rank 3
+			[6064] = "bigHeal",		--Heal rank 4
+			[2060] = "bigHeal",		--Greater Heal rank 1
+			[332] = "bigHeal",	--Healing Wave rank 2
+			[547] = "bigHeal",	--Healing Wave rank 3
+			[913] = "bigHeal",	--Healing Wave rank 4
+			[939] = "bigHeal",	--Healing Wave rank 5
+			[959] = "bigHeal",	--Healing Wave rank 6
+			[8005] = "bigHeal",	--Healing Wave rank 7
+			[10395] = "bigHeal",	--Healing Wave rank 8
+			[10396] = "bigHeal",	--Healing Wave rank 9
+			[25357] = "bigHeal",	--Healing Wave rank 10
+			[25391] = "bigHeal",	--Healing Wave rank 11
+			[25396] = "bigHeal",	--Healing Wave rank 12
+			[49272] = "bigHeal",	--Healing Wave rank 13
+			[49273] = "bigHeal",	--Healing Wave rank 14
+			[5185] = "bigHeal",		--Healing Touch rank 1
+			[5186] = "bigHeal",		--Healing Touch rank 2
+			[5187] = "bigHeal",		--Healing Touch rank 3
+			[5188] = "bigHeal",		--Healing Touch rank 4
+			[5189] = "bigHeal",		--Healing Touch rank 5
+			[6778] = "bigHeal",		--Healing Touch rank 6
+			[8903] = "bigHeal",		--Healing Touch rank 7
+			[9758] = "bigHeal",		--Healing Touch rank 8
+			[9888] = "bigHeal",		--Healing Touch rank 9
+			[9889] = "bigHeal",		--Healing Touch rank 10
+			[25297] = "bigHeal",		--Healing Touch rank 11
+			[26978] = "bigHeal",		--Healing Touch rank 12
+			[26979] = "bigHeal",		--Healing Touch rank 13
+			[48377] = "bigHeal",		--Healing Touch rank 14
+			[48378] = "bigHeal",		--Healing Touch rank 15
+			[2006] = "resurrection",	--Resurrection (priest) rank 1
+			[2010] = "resurrection",	--Resurrection (priest) rank 2
+			[10880] = "resurrection",	--Resurrection (priest) rank 3
+			[10881] = "resurrection",	--Resurrection (priest) rank 4
+			[20770] = "resurrection",	--Resurrection (priest) rank 5
+			[25435] = "resurrection",	--Resurrection (priest) rank 6
+			[48171] = "resurrection",	--Resurrection (priest) rank 7
+			[7328] = "resurrection",	--Redemption rank 1
+			[10322] = "resurrection",	--Redemption rank 2
+			[10324] = "resurrection",	--Redemption rank 3
+			[20772] = "resurrection",	--Redemption rank 4
+			[20773] = "resurrection",	--Redemption rank 5
+			[48949] = "resurrection",	--Redemption rank 6
+			[48950] = "resurrection",	--Redemption rank 7
+			[2008] = "resurrection",	--Ancestral Spirit rank 1
+			[20609] = "resurrection",	--Ancestral Spirit rank 2
+			[50769] = "resurrection",	--Revive rank 1
+			[50768] = "resurrection",	--Revive rank 2
+			[50767] = "resurrection",	--Revive rank 3
+			[50766] = "resurrection",	--Revive rank 4
+			[50765] = "resurrection",	--Revive rank 5
+			[50764] = "resurrection",	--Revive rank 6
+			[50763] = "resurrection",	--Revive rank 7
 			--druid
 			[18658] = "hibernate",
 			[2637] = "hibernate", 
@@ -154,7 +239,7 @@ function SoundAlerter:GetSpellList ()
 			[14327] = "scareBeast",
 			--Warlock
 			[6215] = "fear", --works
-			--[5484] = "fear2", -- Howl of Terror
+			[5484] = "fear2", -- Howl of Terror
 			[17928] = "fear2", --Howl of Terror
 			[710] = "banish",
 			[688] = "summonpet", --works
@@ -183,8 +268,8 @@ function SoundAlerter:GetSpellList ()
 			[19386] = "wyvernSting", 
 			[49010] = "wyvernSting", 
 			[34490] = "silencingshot",
-			[49050] = "aimedshot", --rank9
-			[19434] = "aimedshot", --rank1
+			[19434] = "aimedshot", --Aimed Shot rank 1
+			[49050] = "aimedshot", --Aimed Shot rank 9
 			[53271] = "masterscall",
 			[60192] = "freezingtrap", --double check
 			[14309] = "freezingtrap", --freezing trap effect
@@ -197,22 +282,24 @@ function SoundAlerter:GetSpellList ()
 			[17928] = "fear2", --Howl of Terror
 			[19647] = "spellLock",
 			[48020] = "demonicCircleTeleport",
-			--[6789] = "deathcoil",-- old
-			[47860] = "deathcoil",-- works
+			[6789] = "deathcoil",
+			[47860] = "deathcoil",
 			[6358] = "Seduction",
 			--paladin
-			[20066] = "repentance", --works
-			[10308] = "hammerofjustice", --works
-			[31884] = "avengingWrath", --works
+			[20066] = "repentance",
+			[10308] = "hammerofjustice",
+			[31884] = "avengingWrath",
 			--rogue
-			[51722] = "disarm2", --dismantle, works
-			[51724] = "sap", --works
-			[2094] = "blind", --works
-			[1766] = "kick", --works
-			[14185] = "preparation", --works
-			[26889] = "vanish", --works
-			[13877] = "bladeflurry", --works
-			[1784] = "stealth",	--works
+			[51722] = "disarm2", --dismantle
+			[51724] = "sap",
+			[11297] = "sap",
+			[6770] = "sap",
+			[2094] = "blind",
+			[1766] = "kick",
+			[14185] = "preparation",
+			[26889] = "vanish",
+			[13877] = "bladeflurry",
+			[1784] = "stealth",
 			--shaman
 			[2825] = "bloodlust",
 			[32182] = "heroism",
@@ -295,13 +382,53 @@ function SoundAlerter:GetSpellList ()
 			[118] = "enemypollied",
 			[33786] = "enemycycloned",
 		},
-		friendCCenemyDown = {
+		enemyDebuffdownAP = {
 			[2094] = "Blinddown",
 			[51724] = "Sapdown",
 			[51514] = "Hexdown",
 			[12826] = "Polydown",
 			[118] = "Polydown",
 			[33786] = "CycloneDown",
+		},
+		selfDebuff = {
+			[33786] = "Cyclone",
+			[51514] = "Hex",
+			[12826] = "Polymorph",
+			[118] = "Polymorph",
+			[28272] = "Polymorph",
+			[61305] = "Polymorph",
+			[61721] = "Polymorph",
+			[61025] = "Polymorph",
+			[61780] = "Polymorph",
+			[28271] = "Polymorph",
+			[6215] = "Fear",
+			[60192] = "Freezingtrap", --double check
+			[14309] = "Freezingtrap", --freezing trap effect
+			[13810] = "Frosttrap", --frost trap aura
+			[13809] = "Frosttrap", --frost trap aura
+			[14311] = "Freezingtrap",
+			[1499] = "Frosttrap",
+			[5246] = "Fear3", --intimidating shout
+			[17928] = "Fear2", --Howl of Terror
+			[2094] = "Blind",
+			[51724] = "Sap",
+			[11297] = "Sap",
+			[6770] = "Sap",
+			[10308] = "Hammerofjustice",
+			[10890] = "Fear4", -- Psychic Scream
+			[47860] = "Deathcoil",
+			[5138] = "drainMana",
+			[44572] = "DeepFreeze",
+			[20066] = "Repentance",
+			[34490] = "Silencingshot",
+			[19434] = "Aimedshot", --Aimed Shot rank 1
+			[49050] = "Aimedshot", --Aimed Shot rank 9
+			[47476] = "Strangulate",
+			[51722] = "Disarm2", --dismantle
+			[61606] = "Markofblood",
+			[19386] = "wyvernSting", 
+			[49010] = "wyvernSting", 
+			[6358] = "seduction",
 		},
 	}
 end
