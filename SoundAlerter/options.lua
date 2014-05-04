@@ -1040,24 +1040,24 @@ function SoundAlerter:OnOptionsCreate()
 	})
 	self:AddOption('custom', {
 		type = 'group',
-		name = L["Custom sound alert"],
-		desc = L["Create a custom sound alert with your own ogg sound file"],
+		name = L["Custom Alerts"],
+		desc = L["Create a custom sound or chat alert with text or a sound file"],
 		order = 3,
 		args = {
 			newalert = {
 				type = 'execute',
 				name = function ()
-							if sadb.custom[L["New Sound Alert"]] then  
-								return L["Rename the New Sound Alert entry"]
+							if sadb.custom[L["New Alert"]] then  
+								return L["Rename the New Alert entry"]
 							else
-								return L["New Sound Alert"]
+								return L["New Alert"]
 							end
 						end,
 				order = -1,
 				func = function()
-					sadb.custom[L["New Sound Alert"]] = {
-						name = L["New Sound Alert"],
-						soundfilepath = L["New Sound Alert"]..".[ogg/mp3/wav]",
+					sadb.custom[L["New Alert"]] = {
+						name = L["New Alert"],
+						soundfilepath = L["New Alert"]..".[ogg/mp3/wav]",
 						sourceuidfilter = "any",
 						destuidfilter = "any",
 						eventtype = {
@@ -1075,7 +1075,7 @@ function SoundAlerter:OnOptionsCreate()
 					self:OnOptionsCreate()
 				end,
 				disabled = function ()
-					if sadb.custom[L["New Sound Alert"]] then
+					if sadb.custom[L["New Alert"]] then
 						return true
 					else
 						return false
@@ -1094,24 +1094,40 @@ function SoundAlerter:OnOptionsCreate()
 			order = sadb.custom[key].order,
 			args = {
 				name = {
-					name = L["Spell Name"],
+					name = L["Spell Entry Name"],
+					desc = L["Menu entry for the spell (eg. Hex down on arena partner)"],
 					type = 'input',
 					set = function(info, value)
 						if sadb.custom[value] then log(L["same name already exists"]) return end
 						sadb.custom[key].name = value
 						sadb.custom[key].order = 100
-						sadb.custom[key].soundfilepath = value..".mp3"
 						sadb.custom[value] = sadb.custom[key]
 						sadb.custom[key] = nil
 						--makeoption(value)
 						self.options.args.custom.args[keytemp].name = value
 						key = value
 					end,
+					order = 1,
+				},
+				spellname = {
+					name = L["Spell Name"],
+					type = 'input',
 					order = 10,
+					hidden = function() return not sadb.custom[key].acceptSpellName end,
 				},
 				spellid = {
 					name = L["Spell ID"],
 					desc = L["Can be found on OpenWoW, in the URL"],
+					set = function(info, value)
+					local name = info[#info] sadb.custom[key][name] = value
+						if GetSpellInfo(value) then
+							sadb.custom[key].spellname = GetSpellInfo(value)
+							self.options.args.custom.args[keytemp].spellname = GetSpellInfo(value)
+						else
+						sadb.custom[key].spellname = "Invalid Spell ID"
+						self.options.args.custom.args[keytemp].spellname = "Invalid Spell ID"
+						end
+					end,
 					type = 'input',
 					order = 20,
 					pattern = "%d+$",
@@ -1127,12 +1143,24 @@ function SoundAlerter:OnOptionsCreate()
 						self.options.args.custom.args[keytemp] = nil
 					end,
 				},
+				acceptSpellName = {
+					type = 'toggle',
+					name = "Use specific spell name",
+					desc = "Use this in case there are multiple ranks for this spell",
+					order = 26,
+				},
+				chatAlert = {
+					type = 'toggle',
+					name = "Chat Alert",
+					order = 27,
+				},
 				test = {
 					type = 'execute',
 					order = 28,
 					name = L["Test"],
 					desc = L["If you don't hear anything, try restarting WoW"],
 					func = function() PlaySoundFile("Interface\\Addons\\SoundAlerter\\CustomSounds\\"..sadb.custom[key].soundfilepath) end,
+					hidden = function() if sadb.custom[key].chatAlert then return true end end,
 				},
 				soundfilepath = {
 					name = L["File Path"],
@@ -1140,6 +1168,15 @@ function SoundAlerter:OnOptionsCreate()
 					type = 'input',
 					width = 'double',
 					order = 27,
+					hidden = function() if sadb.custom[key].chatAlert then return true end end,
+				},
+				chatalerttext = {
+					name = "Chat Alert Text",
+					desc = "eg. #enemy# casted #spell# on me! (Use '%t' if you're casting a spell on an enemy)",
+					type = 'input',
+					width = 'double',
+					order = 28,
+					hidden = function() if not sadb.custom[key].chatAlert then return true end end,
 				},
 				eventtype = {
 					type = 'multiselect',
@@ -1174,7 +1211,7 @@ function SoundAlerter:OnOptionsCreate()
 					type = 'select',
 					order = 65,
 					name = L["Spell destination unit"],
-					desc = L["Was the spell's destination towards your target/focus/mouseover? (Leave on 'player' if it's yourself)"],
+					desc = L["Was the spell destination towards your target/focus/mouseover? (Leave on 'player' if it's yourself)"],
 					values = self.SA_UNIT,
 				},
 				desttypefilter = {

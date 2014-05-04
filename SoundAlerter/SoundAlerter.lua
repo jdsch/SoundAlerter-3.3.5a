@@ -35,12 +35,13 @@ local SA_CHATGROUP = {
 }
 self.SA_CHATGROUP = SA_CHATGROUP
 local SA_EVENT = {
-	SPELL_CAST_SUCCESS = L["Spell was successfully casted"],
+	SPELL_CAST_SUCCESS = L["Instant spell was successfully casted"],
 	SPELL_CAST_START = L["Spell is casting"],
-	SPELL_AURA_APPLIED = L["Spell buff has been casted"],
-	SPELL_AURA_REMOVED = L["Spell buff is down"],
+	SPELL_AURA_APPLIED = L["Spell buff/debuff applied"],
+	SPELL_AURA_REMOVED = L["Spell buff/debuff down"],
 	SPELL_INTERRUPT = L["Spell is interrupted"],
-	SPELL_SUMMON = L["Summoning spell"]
+	SPELL_SUMMON = L["Summoning spell"],
+	SPELL_DAMAGE = L["Spell cast successfully damaged"]
 	--UNIT_AURA = "Unit aura changed",
 }
 self.SA_EVENT = SA_EVENT
@@ -80,7 +81,7 @@ function SoundAlerter:OnInitialize()
 		end
 	end
 	self.db1 = LibStub("AceDB-3.0"):New("SoundAlerterDB",dbDefaults, "Default");
-	DEFAULT_CHAT_FRAME:AddMessage("|cffFF7D0ASoundAlerter|r by |cff0070DETrolollolol|r - Sargeras - Molten-WoW.com  - /SOUNDALERTER ");
+	DEFAULT_CHAT_FRAME:AddMessage("|cffFF7D0ASoundAlerter|r by |cff0070DETrolollolol|r - Ragnaros - Molten-WoW.com  - /SOUNDALERTER ");
 	--LibStub("AceConfig-3.0"):RegisterOptionsTable("SoundAlerter", SoundAlerter.Options, {"SoundAlerter", "SS"})
 	self.db1.RegisterCallback(self, "OnProfileChanged", "ChangeProfile")
 	self.db1.RegisterCallback(self, "OnProfileCopied", "ChangeProfile")
@@ -416,14 +417,31 @@ local myFocus = UnitName("focus")
 			else
 				sourceuid.custom = false 
 			end--custom sound alert
-			if sadb.debugmode and css.name == sadb.cspell and spellID == tonumber(css.spellid)  then
-				log(css.name..": event: "..(css.eventtype[event] and "true" or "false")..", dest spell: "..(destuid[css.destuidfilter] and "true" or "false")..", dest type: "..(desttype[css.desttypefilter] and "true" or "false")..", sourceunit: "..(sourceuid[css.sourceuidfilter] and "true" or "false")..", source type: "..(sourcetype[css.sourcetypefilter] and "true" or "false"))
+			if sadb.debugmode and css.name == sadb.cspell and (spellID == tonumber(css.spellid) or (css.acceptSpellName and (css.spellname == spellName))) then
+				log(css.name..": event: "..(css.eventtype[event] and "true" or "false")..", actual event: "..event..", dest spell: "..(destuid[css.destuidfilter] and "true" or "false")..", dest type: "..(desttype[css.desttypefilter] and "true" or "false")..", sourceunit: "..(sourceuid[css.sourceuidfilter] and "true" or "false")..", source type: "..(sourcetype[css.sourcetypefilter] and "true" or "false"))
 			end
-			if css.eventtype[event] and destuid[css.destuidfilter] and desttype[css.desttypefilter] and sourceuid[css.sourceuidfilter] and sourcetype[css.sourcetypefilter] and spellID == tonumber(css.spellid) then
+			if css.eventtype[event] and destuid[css.destuidfilter] and desttype[css.desttypefilter] and sourceuid[css.sourceuidfilter] and sourcetype[css.sourcetypefilter] and (spellID == tonumber(css.spellid) or (css.acceptSpellName and (css.spellname == spellName))) then
 					if sadb.debugmode then
-					self:Print("playing css "..css.soundfilepath)
+					self:Print("playing css "..css.name)
 					end
-				PlaySoundFile("Interface\\Addons\\SoundAlerter\\CustomSounds\\"..css.soundfilepath,"Master")
+				if not css.chatAlert then
+					PlaySoundFile("Interface\\Addons\\SoundAlerter\\CustomSounds\\"..css.soundfilepath,"Master")
+				else
+					local spell = gsub(css.chatalerttext, "(#spell#)", GetSpellLink(spellID))
+					if destuid[css.destuidfilter] or desttype[css.desttypefilter] then
+						if event == "SPELL_CAST_START" then
+							SendChatMessage(gsub(spell, "(#enemy#)", ""), sadb.chatgroup, nil, nil)
+						else
+							SendChatMessage(gsub(spell, "(#enemy#)", destName), sadb.chatgroup, nil, nil)
+						end
+					elseif sourceuid[css.sourceuidfilter] or sourcetype[css.sourcetypefilter] then
+						if event == "SPELL_CAST_START" then
+							SendChatMessage(gsub(spell, "(#enemy#)", ""), sadb.chatgroup, nil, nil)
+						else
+							SendChatMessage(gsub(spell, "(#enemy#)", sourceName), sadb.chatgroup, nil, nil)
+						end
+					end
+				end
 			end
 		end
 end
