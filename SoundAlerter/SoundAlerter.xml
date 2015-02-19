@@ -13,8 +13,5 @@
 	<Include file="Libs\AceConsole-3.0\AceConsole-3.0.xml" />
 	<Include file="Libs\AceGUI-3.0\AceGUI-3.0.xml" />
 	<Include file="Libs\AceConfig-3.0\AceConfig-3.0.xml" />
-
-	<Include file="Libs\LibsharedMedia-3.0\lib.xml"/>
-	<!--<Include file="Libs\AceGUI-3.0-SharedMediaWidgets\widget.xml"/>
-	@end-no-lib-strip@-->
+	<!--@end-no-lib-strip@-->
 </Ui>

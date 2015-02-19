@@ -2,7 +2,6 @@ local sadb
 local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 local AceConfig = LibStub("AceConfig-3.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("SoundAlerter")
-local LSM = LibStub("LibSharedMedia-3.0")
 local self, SoundAlerter = SoundAlerter, SoundAlerter
 
 local function initOptions()

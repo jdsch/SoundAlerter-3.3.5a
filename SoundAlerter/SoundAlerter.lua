@@ -82,7 +82,6 @@ function SoundAlerter:OnInitialize()
 	end
 	self.db1 = LibStub("AceDB-3.0"):New("SoundAlerterDB",dbDefaults, "Default");
 	DEFAULT_CHAT_FRAME:AddMessage("|cffFF7D0ASoundAlerter|r by |cff0070DETrolollolol|r - Ragnaros - Molten-WoW.com  - /SOUNDALERTER ");
-	--LibStub("AceConfig-3.0"):RegisterOptionsTable("SoundAlerter", SoundAlerter.Options, {"SoundAlerter", "SS"})
 	self.db1.RegisterCallback(self, "OnProfileChanged", "ChangeProfile")
 	self.db1.RegisterCallback(self, "OnProfileCopied", "ChangeProfile")
 	self.db1.RegisterCallback(self, "OnProfileReset", "ChangeProfile")
