@@ -8,7 +8,7 @@ SoundAlerter = LibStub("AceAddon-3.0"):NewAddon("SoundAlerter", "AceEvent-3.0","
 local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 local AceConfig = LibStub("AceConfig-3.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("SoundAlerter")
-local self , SoundAlerter = SoundAlerter , SoundAlerter
+local self, SoundAlerter = SoundAlerter, SoundAlerter
 local sadb
 local playerName = UnitName("player")
 
@@ -109,6 +109,7 @@ function SoundAlerter:OnInitialize()
 	LibStub("AceConfig-3.0"):RegisterOptionsTable("SoundAlerter_bliz", bliz_options)
 	AceConfigDialog:AddToBlizOptions("SoundAlerter_bliz", "SoundAlerter")
 end
+
 function SoundAlerter:OnEnable()
 	SoundAlerter:RegisterEvent("PLAYER_ENTERING_WORLD")
 	SoundAlerter:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
@@ -117,22 +118,22 @@ function SoundAlerter:OnEnable()
 	self.throttled = {}
 	self.smarter = 0
 end
-
-function SoundAlerter:OnDisable()
-end
 	GameTooltip:HookScript("OnTooltipSetUnit", function(tip)
         local name, server = tip:GetUnit()
 		local Realm = GetRealmName()
         if (SA_sponsors[name] ) then if ( SA_sponsors[name]["Realm"] == Realm ) then
 		tip:AddLine(SA_sponsors[SA_sponsors[name].Type], 1, 0, 0 ) end; end
     end)
+	
 function SoundAlerter:PlayTrinket()
 	PlaySoundFile(sadb.sapath.."Trinket.mp3");
 end
+
 function SoundAlerter:Interrupted()
 	PlaySoundFile(sadb.sapath.."Interrupted.mp3");
 end
- function spellOptions(order, spellID, ...)
+
+function SoundAlerter:spellOptions(order, spellID, ...)
 	local spellname,_,icon = GetSpellInfo(spellID)
 	if spellname ~= nil then
 	return {
@@ -156,37 +157,32 @@ function SoundAlerter:ArenaClass(id)
 		end
 	end
 end
+
 function SoundAlerter:PLAYER_ENTERING_WORLD()
 	CombatLogClearEntries()
 end
+
 function SoundAlerter:PlaySpell(list, spellID, ...)
 	if list[spellID] then
 		if not sadb[list[spellID]] then return end
-		if sadb.debugmode then
-			print("<SA> DEBUG: Playing sound file: "..list[spellID]..".mp3");
-		end
+		if sadb.debugmode then print("<SA> DEBUG: Playing sound file: "..list[spellID]..".mp3"); end
 		PlaySoundFile(sadb.sapath..list[spellID]..".mp3");
 	end
 end
 
 function SoundAlerter:COMBAT_LOG_EVENT_UNFILTERED(event , ...)
 --todo: divine shield+trinket chat alerts
-local _,currentZoneType = IsInInstance()
-local pvpType, isFFA, faction = GetZonePVPInfo();
+	local _,currentZoneType = IsInInstance()
+	local pvpType, isFFA, faction = GetZonePVPInfo();
 	if (not ((pvpType == "contested" and sadb.field) or (pvpType == "hostile" and sadb.field) or (pvpType == "friendly" and sadb.field) or (currentZoneType == "pvp" and sadb.battleground) or (((currentZoneType == "arena") or (pvpType == "arena")) and sadb.arena) or sadb.all)) then
 		return
 	end
 	local timestamp,event,sourceGUID,sourceName,sourceFlags,destGUID,destName,destFlags,spellID,spellName= select ( 1 , ... );
-	local toSelf,toEnemy,fromEnemy,toTarget,fromFocus = false , false , false , false , false
-local focusTarget = UnitName("focustarget")
-local enemyTarget2 = UnitName("targettarget")
-local arena1 = UnitName("arena1target")
-local arena2 = UnitName("arena2target")
-local arena3 = UnitName("arena3target")
-local arena4 = UnitName("arena4target")
-local arena5 = UnitName("arena5target")
-local myTarget = UnitName("target")
-local myFocus = UnitName("focus")
+	local toSelf,toEnemy,fromEnemy,toTarget,fromFocus = false, false, false, false, false
+	local focusTarget = UnitName("focustarget")
+	local enemyTarget2 = UnitName("targettarget")
+	local myTarget = UnitName("target")
+	local myFocus = UnitName("focus")
 	if (destFlags) then
 		for k in pairs(SA_TYPE) do
 			desttype[k] = CombatLog_Object_IsA(destFlags,k)
@@ -254,13 +250,13 @@ local myFocus = UnitName("focus")
 				if currentZoneType == "arena" then
 					for i = 1 , 5 do
 						if sourceGUID == UnitGUID(k..i) then
-						sourceuid[k] = (UnitGUID(k..i) == sourceGUID)
-						break
+							sourceuid[k] = (UnitGUID(k..i) == sourceGUID)
+							break
 						end
 					end
 				end
 			else
-			sourceuid[k] = (UnitGUID(k) == sourceGUID)
+				sourceuid[k] = (UnitGUID(k) == sourceGUID)
 			end
 			--log("sourceuid:"..k.."="..(sourceuid[k] and "true" or "false"))
 		end
@@ -273,7 +269,7 @@ local myFocus = UnitName("focus")
 	sourceuid.any = true
 	
 	if sadb.debugmode and sadb.spelldebug then
-	print(spellName,spellID,event,sourceName,destName)
+		print(spellName,spellID,event,sourceName,destName)
 	end
 	if sadb.debugmode and spellName == sadb.csname and spellName then
 		print("Custom spell name: "..spellName,spellID,event,sourceName,destName)
@@ -322,7 +318,7 @@ local myFocus = UnitName("focus")
 					--chat alerts, enemy casted a spell on friend
 					if (not sadb.chatalerts and not desttype[COMBATLOG_FILTER_ME] and (destuid.target or destuid.focus or (currentZoneType == "arena" or pvpType == "arena"))) then
 						if (spellID == 6770 or spellID == 11297 or spellID == 51724) and sadb.sapselffriend then --this worked by default, everything below didn't / replacing "(#friend#)" with destName did nothing either
-							local sapfriendtext = gsub(sadb.friendtext, "(#spell#)", GetSpellLink(spellID))
+							local sapfriendtext = gsub(sadb.sapfriendtext, "(#spell#)", GetSpellLink(spellID))
 							SendChatMessage(gsub(sapfriendtext, "(#friend#)", destName), sadb.chatgroup, nil, nil)
 						elseif ((spellID == 51514 and sadb.hexselffriend) or 
 							(spellID == 642 and sadb.bubbleselffriend) or 
@@ -398,11 +394,15 @@ local myFocus = UnitName("focus")
 				if not sadb.castStart and (sadb.myself and (sourceuid.target or sourceuid.focus) or sadb.enemyinrange) then
 					self:PlaySpell (self.spellList.castStart,spellID)
 				elseif ((currentZoneType == "arena") or (pvpType == "arena")) and not sadb.dArenaPartner then
-						if (arena1 ~= playerName and arena2 ~= playerName and arena3 ~= playerName and arena4 ~= playerName and arena5 ~= playerName) and not sadb.dArenaPartner then
-							self:PlaySpell (self.spellList.friendCCs,spellID)
-						elseif (arena1 == playerName or arena2 == playerName or arena3 == playerName or arena4 == playerName or arena5 == playerName) and not sadb.dArenaPartner then
-							self:PlaySpell (self.spellList.castStart,spellID)
-						end		
+					for i = 1, 6 do 
+						if i == 6 then 
+							self:PlaySpell(self.spellList.friendCCs,spellID)
+							break 
+						elseif playerName == UnitName("arena"..i.."target") then
+							self:PlaySpell(self.spellList.castStart,spellID)
+							break
+						end
+					end
 				end
 			end
 		end
@@ -449,7 +449,7 @@ end
 local DRINK_SPELL = GetSpellInfo(57073)
 function SoundAlerter:UNIT_AURA(event,uid)
 	if ((currentZoneType == "arena") or (pvpType == "arena")) and sadb.drinking then
-		if UnitAura (uid,DRINK_SPELL) then
+		if UnitAura(uid,DRINK_SPELL) then
 			PlaySoundFile(sadb.sapath.."drinking.mp3");
 		end
 	end

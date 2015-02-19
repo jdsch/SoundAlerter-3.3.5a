@@ -3,6 +3,7 @@ local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 local AceConfig = LibStub("AceConfig-3.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("SoundAlerter")
 local LSM = LibStub("LibSharedMedia-3.0")
+local self, SoundAlerter = SoundAlerter, SoundAlerter
 
 local function initOptions()
 	if SoundAlerter.options.args.general then
@@ -47,7 +48,7 @@ end
 	local args = {}
 	for k,v in pairs(spellList) do
 		if SoundAlerter.spellList[listType][v] then
-			rawset(args, SoundAlerter.spellList[listType][v] ,spellOptions(k, v))
+			rawset(args, SoundAlerter.spellList[listType][v], self:spellOptions(k, v))
 		else
 			print(v)
 		end
@@ -1172,7 +1173,7 @@ function SoundAlerter:OnOptionsCreate()
 				},
 				chatalerttext = {
 					name = "Chat Alert Text",
-					desc = "eg. #enemy# casted #spell# on me! (Use '%t' if you're casting a spell on an enemy)",
+					desc = "eg. #enemy# casted #spell# on me! (Use '%t' if you're casting a spell on an enemy. )",
 					type = 'input',
 					width = 'double',
 					order = 28,
